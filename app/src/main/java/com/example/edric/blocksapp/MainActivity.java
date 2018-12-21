@@ -95,10 +95,11 @@ public class MainActivity extends AppCompatActivity {
         if (x == 1) {
             time = selectedTask.getTimeAllocated();
         }
-        int minutes = (int) (time / 1000) / 60;
+        int hours = (int) (time / 3600000);
+        int minutes = (int) (time / 60000) % 60;
         int seconds = (int) (time / 1000) % 60;
 
-        String timeLeftFormatted = String.format(Locale.getDefault(),"%02d:%02d",minutes, seconds);
+        String timeLeftFormatted = String.format(Locale.getDefault(),"%02d:%02d:%02d",hours, minutes, seconds);
 
         taskTime.setText(timeLeftFormatted);
     }
