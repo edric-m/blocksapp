@@ -6,4 +6,108 @@
     android:layout_height="match_parent"
     tools:context=".SettingsActivity">
 
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="42dp"
+        android:layout_marginLeft="42dp"
+        android:layout_marginTop="116dp"
+        android:text="Plan"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="42dp"
+        android:layout_marginLeft="42dp"
+        android:layout_marginBottom="265dp"
+        android:text="Period"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="80dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginTop="102dp"
+        app:layout_constraintStart_toEndOf="@+id/textView3"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <RadioButton
+            android:id="@+id/regular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Regular"
+            tools:layout_editor_absoluteX="117dp"
+            tools:layout_editor_absoluteY="148dp" />
+
+        <RadioButton
+            android:id="@+id/relaxed"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Relaxed"
+            tools:layout_editor_absoluteX="116dp"
+            tools:layout_editor_absoluteY="180dp" />
+
+        <RadioButton
+            android:id="@+id/allnight"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="All night"
+            tools:layout_editor_absoluteX="117dp"
+            tools:layout_editor_absoluteY="116dp" />
+
+    </RadioGroup>
+
+    <RadioGroup
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="80dp"
+        android:layout_marginLeft="80dp"
+        android:layout_marginBottom="204dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/textView4">
+
+        <RadioButton
+            android:id="@+id/day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Day"
+            tools:layout_editor_absoluteX="117dp"
+            tools:layout_editor_absoluteY="283dp" />
+
+        <RadioButton
+            android:id="@+id/week"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Week"
+            tools:layout_editor_absoluteX="116dp"
+            tools:layout_editor_absoluteY="315dp" />
+
+        <RadioButton
+            android:id="@+id/month"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Month"
+            tools:layout_editor_absoluteX="117dp"
+            tools:layout_editor_absoluteY="347dp" />
+
+
+    </RadioGroup>
+
+    <Button
+        android:id="@+id/button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="submit"
+        android:text="Button"
+        tools:layout_editor_absoluteX="131dp"
+        tools:layout_editor_absoluteY="406dp" />
+
+
 </android.support.constraint.ConstraintLayout>

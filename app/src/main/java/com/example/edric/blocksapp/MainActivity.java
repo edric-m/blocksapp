@@ -25,6 +25,9 @@ public class MainActivity extends AppCompatActivity {
     private long timePaused;
     private boolean mPaused;
 
+    private int setPlanPref;
+    private int setPeriodPref;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -141,6 +144,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void goLeft(View view) {
         //settings
+        Intent i = new Intent(this, SettingsActivity.class);
+        startActivityForResult(i, 2);
     }
 
     public void goRight(View view) {
@@ -165,31 +170,37 @@ public class MainActivity extends AppCompatActivity {
         layout.setBackgroundColor(Color.parseColor(selectedTask.getColour()));
     }
 
+    //error checking on all user input code
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-        if (resultCode == RESULT_OK && requestCode == 1) {
-            if (data.hasExtra(NewTask.NAME_KEY) && data.hasExtra(NewTask.TIME_KEY)) {
-                String n = data.getExtras().getString(NewTask.NAME_KEY);
-                String t = data.getExtras().getString(NewTask.TIME_KEY);
+        if (resultCode == RESULT_OK) {
+            if (requestCode == 1) {
+                if (data.hasExtra(NewTask.NAME_KEY) && data.hasExtra(NewTask.TIME_KEY)) {
+                    String n = data.getExtras().getString(NewTask.NAME_KEY);
+                    String t = data.getExtras().getString(NewTask.TIME_KEY);
 
-                list.addTask(n,Integer.parseInt(t));
-                pauseTimer();
-                selectedTask = list.selectNewTask();
-                refreshText();
-                startTimer();
+                    list.addTask(n, Integer.parseInt(t));
+                    pauseTimer();
+                    selectedTask = list.selectNewTask();
+                    refreshText();
+                    startTimer();
+                }
+
             }
-            /*
-            if (data.hasExtra("returnKey2")) {
-                t = data.getExtras().getInt("returnKey2");
+
+            if (requestCode == 2) {
+                if (data.hasExtra(SettingsActivity.PLAN_KEY) && data.hasExtra(SettingsActivity.PERIOD_KEY)) {
+                    String pl = data.getExtras().getString(SettingsActivity.PLAN_KEY);
+                    String pd = data.getExtras().getString(SettingsActivity.PERIOD_KEY);
+
+                    //change settings
+                    //change variables on all timers in the list
+                    pauseTimer();
+                    refreshText();
+                    startTimer();
+                }
             }
-            //if both true
-            list.addTask(n,t);
-            selectedTask = list.selectNewTask();
-            pauseTimer();
-            refreshText();
-            startTimer();
-            */
         }
     }
 }
