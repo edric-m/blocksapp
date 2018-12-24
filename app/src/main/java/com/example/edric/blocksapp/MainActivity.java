@@ -40,6 +40,9 @@ public class MainActivity extends AppCompatActivity {
 
         mTimerRunning = false;
         mPaused = false;
+
+        setPeriodPref = 1;
+        setPlanPref = 1;
         //refresh display
         selectedTask = list.selectNewTask();
         //refresh display
@@ -194,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
                     String pl = data.getExtras().getString(SettingsActivity.PLAN_KEY);
                     String pd = data.getExtras().getString(SettingsActivity.PERIOD_KEY);
 
+                    setPlanPref = Integer.parseInt(pl);
+                    setPeriodPref = Integer.parseInt(pd);
                     //change settings
                     //change variables on all timers in the list
                     pauseTimer();

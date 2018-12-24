@@ -5,27 +5,22 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 
 public class SettingsActivity extends AppCompatActivity {
 
     public static final String PLAN_KEY = "plan";
     public static final String PERIOD_KEY = "period";
 
-    private RadioButton reg, rel, alln;
-    private RadioButton d, w, m;
+    private RadioGroup group1, group2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        reg = findViewById(R.id.regular);
-        rel = findViewById(R.id.relaxed);
-        alln = findViewById(R.id.allnight);
-
-        d = findViewById(R.id.day);
-        m = findViewById(R.id.month);
-        w = findViewById(R.id.week);
+        group1 = findViewById(R.id.radioGroup3);
+        group2 = findViewById(R.id.radioGroup2);
     }
 
     public void submit(View view) {
@@ -36,8 +31,16 @@ public class SettingsActivity extends AppCompatActivity {
     public void finish() {
         // Prepare data intent
         Intent data = new Intent();
-        //data.putExtra(PLAN_KEY, name.getText().toString());
-        //data.putExtra(PERIOD_KEY, time.getText().toString());
+
+        int radioButtonID = group1.getCheckedRadioButtonId();
+        View radioButton = group1.findViewById(radioButtonID);
+        int idx = group1.indexOfChild(radioButton);
+        data.putExtra(PLAN_KEY, idx);
+
+        radioButtonID = group2.getCheckedRadioButtonId();
+        radioButton = group2.findViewById(radioButtonID);
+        idx = group2.indexOfChild(radioButton);
+        data.putExtra(PERIOD_KEY, idx);
         // Activity finished ok, return the data
         setResult(RESULT_OK, data);
         super.finish();

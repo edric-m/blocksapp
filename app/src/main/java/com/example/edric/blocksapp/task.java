@@ -16,6 +16,8 @@ public class task {
         this.name = _name;
         timeSpent = 0;
         timeAllocated = _timeAllocated;
+
+        //set random colour that lies within specific range
         int max = 249;
         int min = 172;
         int r = random.nextInt(max - min + 1) + min; //between 172 and 249 random.nextInt(max - min + 1) + min
@@ -24,6 +26,9 @@ public class task {
         colour = String.format("#%02x%02x%02x", r, g, b);
     }
 
+    public void setPeriod(int setPref) {
+
+    }
     public void decrementTime() {
         if (timeAllocated >= 0) {
             timeAllocated = timeAllocated - 1000;
