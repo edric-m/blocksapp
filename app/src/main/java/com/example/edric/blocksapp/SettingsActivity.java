@@ -29,6 +29,7 @@ public class SettingsActivity extends AppCompatActivity {
         group1 = findViewById(R.id.radioGroup3);
         group2 = findViewById(R.id.radioGroup2);
 
+        /*
         t = (tasks)getIntent().getSerializableExtra("list");
 
         ct = t.selectFirstTask();
@@ -36,6 +37,7 @@ public class SettingsActivity extends AppCompatActivity {
         {
             ct = t.switchTask();
         }
+        */
     }
 
     public void submit(View view) {

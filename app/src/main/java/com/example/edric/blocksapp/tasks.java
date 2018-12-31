@@ -1,4 +1,6 @@
 package com.example.edric.blocksapp;
+import android.os.Parcelable;
+
 import java.io.Serializable;
 import java.util.LinkedList;
 

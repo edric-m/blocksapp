@@ -68,12 +68,16 @@ public class MainActivity extends AppCompatActivity {
         }.start();
 
         mTimerRunning = true;
+        if(mPaused) {
+            mPauseTimer.cancel();
+            mPaused = false;
+        }
     }
 
     public void pauseTimer() {
-        mCountdownTimer.cancel();
-        if (mTimerRunning) {
 
+        if (mTimerRunning) {
+            mCountdownTimer.cancel();
             taskName.setText("break time");
             mPauseTimer = new CountDownTimer(600000,1000) {
                 @Override
@@ -87,9 +91,10 @@ public class MainActivity extends AppCompatActivity {
 
                 }
             }.start();
+            mTimerRunning = false;
+            mPaused = true;
         }
-        mTimerRunning = false;
-        mPaused = true;
+
     }
 
     private void updateCountDownText(int x) {
@@ -112,36 +117,35 @@ public class MainActivity extends AppCompatActivity {
 
     public void goUp(View view) {
         //pause timer
-        if (mTimerRunning) {
-            pauseTimer();
-        }
-
+        pauseTimer();
     }
 
     public void goDown(View view) { //theres a bug here on startup
 
         if (mPaused) {
-            mPauseTimer.cancel();
+            startTimer();
             refreshText();
-            mPaused = false;
+            //mPaused = false;
         }
 
         //resume task or
         if (mTimerRunning){
-
+            pauseTimer();
             //switch task
             selectedTask = list.switchTask();
             //refresh display
             refreshText();
+            startTimer();
 
             //layout.setBackgroundColor(Color.parseColor(selectedTask.getColour()));
         }
         //following should be in an else
+        /*
         if(!mTimerRunning) {
 
             //selectedTask = list.resumeTask();
             startTimer();
-        }
+        }*/
 
     }
 
