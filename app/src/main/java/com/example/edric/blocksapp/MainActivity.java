@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
     public void goLeft(View view) {
         //settings
         Intent i = new Intent(this, SettingsActivity.class);
+        i.putExtra("list", list);
         startActivityForResult(i, 2);
     }
 

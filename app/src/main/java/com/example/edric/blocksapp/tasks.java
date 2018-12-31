@@ -1,7 +1,8 @@
 package com.example.edric.blocksapp;
+import java.io.Serializable;
 import java.util.LinkedList;
 
-public class tasks {
+public class tasks implements Serializable {
     private LinkedList<task> taskList = new LinkedList<task>();
     private int current;
 
@@ -12,6 +13,12 @@ public class tasks {
         taskList.add(new task("app", 18000000));
         taskList.add(new task("exercise / yoga", 3600000));
         //constructor
+    }
+
+    //public void edit
+    public task selectFirstTask() {
+        current = 0;
+        return taskList.get(current);
     }
 
     public int size(){
