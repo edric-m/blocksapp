@@ -10,6 +10,8 @@ import android.widget.TextView;
 import java.util.Locale;
 import android.view.View;
 
+import org.w3c.dom.Text;
+
 public class MainActivity extends AppCompatActivity {
     private tasks list;
     private task selectedTask;
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
         selectedTask = list.selectNewTask();
         //refresh display
         refreshText();
+        startTimer();
     }
 
     public void startTimer() {
@@ -152,8 +155,17 @@ public class MainActivity extends AppCompatActivity {
     public void goLeft(View view) {
         //settings
         Intent i = new Intent(this, SettingsActivity.class);
-        i.putExtra("list", list);
+        int idx = 0;
+        for (task t: list.getList()) {
+            i.putExtra("item"+Integer.toString(idx),t.getName());
+        }
+        i.putExtra("item_count", Integer.toString(idx));
         startActivityForResult(i, 2);
+        
+    }
+
+    public void submitTest(View view) {
+
     }
 
     public void goRight(View view) {

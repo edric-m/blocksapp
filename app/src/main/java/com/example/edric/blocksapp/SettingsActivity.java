@@ -4,8 +4,10 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import java.util.ArrayList;
 
 public class SettingsActivity extends AppCompatActivity {
 
@@ -15,8 +17,11 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String TASKS_KEY = "list";
 
     private RadioGroup group1, group2;
+    private Button b;
     private tasks t;
     private task ct;
+
+    private ArrayList<String> strList = new ArrayList<String>();
 
 
 
@@ -28,7 +33,13 @@ public class SettingsActivity extends AppCompatActivity {
 
         group1 = findViewById(R.id.radioGroup3);
         group2 = findViewById(R.id.radioGroup2);
+        b = findViewById(R.id.button2);
 
+        Intent i = getIntent();
+        int y = Integer.parseInt(i.getStringExtra("item_count"));
+        for(int x=0;x<y;x++) {
+            strList.add(i.getStringExtra("item"+Integer.toString(x)));
+        }
         /*
         t = (tasks)getIntent().getSerializableExtra("list");
 
@@ -41,7 +52,8 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public void submit(View view) {
-        finish();
+        b.setText("clicked");
+        //finish();
     }
 
     @Override

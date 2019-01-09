@@ -17,6 +17,9 @@ public class tasks implements Serializable {
         //constructor
     }
 
+    public LinkedList<task> getList () {
+        return taskList;
+    }
     //public void edit
     public task selectFirstTask() {
         current = 0;
