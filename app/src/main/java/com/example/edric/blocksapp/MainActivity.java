@@ -158,6 +158,7 @@ public class MainActivity extends AppCompatActivity {
         int idx = 0;
         for (task t: list.getList()) {
             i.putExtra("item"+Integer.toString(idx),t.getName());
+            idx++;
         }
         i.putExtra("item_count", Integer.toString(idx));
         startActivityForResult(i, 2);
@@ -211,6 +212,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (requestCode == 2) {
                 if (data.hasExtra(SettingsActivity.PLAN_KEY) && data.hasExtra(SettingsActivity.PERIOD_KEY)) {
+                    /*
                     String pl = data.getExtras().getString(SettingsActivity.PLAN_KEY);
                     String pd = data.getExtras().getString(SettingsActivity.PERIOD_KEY);
 
@@ -221,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
                     pauseTimer();
                     refreshText();
                     startTimer();
+                    */
                 }
             }
         }

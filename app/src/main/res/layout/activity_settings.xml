@@ -1,12 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".SettingsActivity">
 
-    <TextView
+    <Spinner
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/period_spinner"></Spinner>
+    <Spinner
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/plan_spinner"
+        android:layout_toRightOf="@+id/period_spinner"></Spinner>
+
+    <Button
+        android:id="@+id/button_settings"
+        android:layout_width="100dp"
+        android:layout_height="30dp"
+        android:layout_below="@+id/period_spinner"
+        android:onClick="closeSettings" />
+
+    <android.support.v7.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/button_settings"
+        android:id="@+id/recyclerv_view">
+    </android.support.v7.widget.RecyclerView>
+
+    <!--<TextView
         android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -112,6 +136,8 @@
         android:text="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+    -->
 
 
-</android.support.constraint.ConstraintLayout>
+
+</RelativeLayout>
