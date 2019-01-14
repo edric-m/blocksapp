@@ -33,9 +33,25 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
+    public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
 
         viewHolder.itemName.setText(mNameList.get(i));
+        viewHolder.itemSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                viewHolder.itemValue.setText(Integer.toString(progress));
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
     }
 
     @Override
@@ -47,12 +63,14 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
         TextView itemName;
         SeekBar itemSeekbar;
+        TextView itemValue;
         RelativeLayout listitemLayout; //example uses it for onclick listener
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemName = itemView.findViewById(R.id.list_name);
             itemSeekbar = itemView.findViewById(R.id.list_seekbar);
+            itemValue = itemView.findViewById(R.id.list_value);
             listitemLayout = itemView.findViewById(R.id.listitem_layout);
         }
     }

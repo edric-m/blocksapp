@@ -13,6 +13,12 @@
         android:layout_width="match_parent"
         android:layout_height="30dp"
         android:id="@+id/list_seekbar"
+        android:layout_toRightOf="@+id/list_value"/>
+
+    <TextView
+        android:layout_width="50dp"
+        android:layout_height="30dp"
+        android:id="@+id/list_value"
         android:layout_toRightOf="@+id/list_name"/>
 
 </RelativeLayout>

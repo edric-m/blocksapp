@@ -18,16 +18,16 @@ public class SettingsActivity extends AppCompatActivity {
 
     public static final String TASKS_KEY = "list";
 
+    private int count;
+    private int period = 1, plan = 100, blockSize = 10;
+
+    private RecyclerView recyclerView;
     private RadioGroup group1, group2;
     private Button b;
     private tasks t;
     private task ct;
 
     private ArrayList<String> strList = new ArrayList<String>();
-    private ArrayList<String> testList = new ArrayList<>();
-
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,15 +39,14 @@ public class SettingsActivity extends AppCompatActivity {
         group2 = findViewById(R.id.radioGroup2);
         b = findViewById(R.id.button2);
         */
-
+        recyclerView = findViewById(R.id.recyclerv_view);
         Intent i = getIntent();
         int y = Integer.parseInt(i.getStringExtra("item_count"));
+        count = y;
         for(int x=0;x<y;x++) {
             strList.add(i.getStringExtra("item"+Integer.toString(x)));
         }
 
-        testList.add("blah");
-        testList.add("blahblah"); //this works
         initRecyclerView();
         /*
         t = (tasks)getIntent().getSerializableExtra("list");
@@ -61,7 +60,7 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView(){
-        RecyclerView recyclerView = findViewById(R.id.recyclerv_view);
+
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, strList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -73,22 +72,36 @@ public class SettingsActivity extends AppCompatActivity {
         //finish();
     }*/
 
-    public void closeSettings(View view) {finish();}
+    public void closeSettings(View view) {
+        finish();
+    }
 
     @Override
     public void finish() {
+        //calculation variables
+        int total = 0;
+        float[] returnTimeList = new float[count];
+        int[] valueList = new int[count];
         // Prepare data intent
         Intent data = new Intent();
-/*
-        int radioButtonID = group1.getCheckedRadioButtonId();
-        View radioButton = group1.findViewById(radioButtonID);
-        int idx = group1.indexOfChild(radioButton);*/
-        data.putExtra(PLAN_KEY, 0);
-/*
-        radioButtonID = group2.getCheckedRadioButtonId();
-        radioButton = group2.findViewById(radioButtonID);
-        idx = group2.indexOfChild(radioButton);*/
-        data.putExtra(PERIOD_KEY, 0);
+        RecyclerViewAdapter.ViewHolder item;
+
+        for(int x=0;x<count;x++)  {
+            item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(x);
+            //process the task
+            valueList[x] = Integer.parseInt((String)item.itemValue.getText());
+            total = total + valueList[x];
+        }
+        //calculate task weight, then calculate the time
+        for(int x=0;x<count;x++) {
+            returnTimeList[x] = ((period * plan * blockSize) * (valueList[x]/total));
+            data.putExtra("item"+Integer.toString(x),
+                    ((period * plan * blockSize) * (valueList[x]/total)));
+        }
+        //calculate break time
+        //use a struct
+        //calculate extra time
+
         // Activity finished ok, return the data
         setResult(RESULT_OK, data);
         super.finish();
