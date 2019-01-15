@@ -55,6 +55,10 @@ public class task {
         this.name = _name;
     }
 
+    public void setTimeAllocated(long newTime) {
+        this.timeAllocated = newTime;
+    }
+
     /*
     public int getId() {
         return id;

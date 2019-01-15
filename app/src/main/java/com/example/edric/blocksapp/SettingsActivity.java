@@ -12,22 +12,22 @@ import android.widget.RadioGroup;
 import java.util.ArrayList;
 
 public class SettingsActivity extends AppCompatActivity {
-
+    //multi activity variables
     public static final String PLAN_KEY = "plan";
     public static final String PERIOD_KEY = "period";
-
     public static final String TASKS_KEY = "list";
-
-    private int count;
-    private int period = 1, plan = 100, blockSize = 10;
-
+    //class variables
+    private int count = 0;
+    private double period = 1, plan = 100, blockSize = 10, mintoms = 60000;
+    private ArrayList<String> strList = new ArrayList<String>();
+    //widget variables
     private RecyclerView recyclerView;
+    /*
     private RadioGroup group1, group2;
     private Button b;
     private tasks t;
     private task ct;
-
-    private ArrayList<String> strList = new ArrayList<String>();
+    */
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,17 +60,24 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void initRecyclerView(){
-
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, strList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    /*
-    public void submit(View view) {
-        b.setText("clicked");
-        //finish();
-    }*/
+
+    public void testGetValue(View view) {
+        RecyclerViewAdapter.ViewHolder item;
+        int[] valueList = new int[count];
+        int y=0, total=0;
+        for(int x=0;x<count;x++)  {
+            item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(x);
+            //process the task
+            valueList[x] = Integer.parseInt((String)item.itemValue.getText());
+            total = total + valueList[x];
+            item.itemName.setText(Double.toString(3d/(double)total));
+        }
+    }
 
     public void closeSettings(View view) {
         finish();
@@ -80,7 +87,7 @@ public class SettingsActivity extends AppCompatActivity {
     public void finish() {
         //calculation variables
         int total = 0;
-        float[] returnTimeList = new float[count];
+        double[] returnTimeList = new double[count];
         int[] valueList = new int[count];
         // Prepare data intent
         Intent data = new Intent();
@@ -94,9 +101,8 @@ public class SettingsActivity extends AppCompatActivity {
         }
         //calculate task weight, then calculate the time
         for(int x=0;x<count;x++) {
-            returnTimeList[x] = ((period * plan * blockSize) * (valueList[x]/total));
-            data.putExtra("item"+Integer.toString(x),
-                    ((period * plan * blockSize) * (valueList[x]/total)));
+            returnTimeList[x] = (int)Math.round((period * plan * blockSize * mintoms) * ((double)valueList[x]/(double)total));
+            data.putExtra("item"+Integer.toString(x), returnTimeList[x]);
         }
         //calculate break time
         //use a struct

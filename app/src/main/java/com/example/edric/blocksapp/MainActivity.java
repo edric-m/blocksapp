@@ -211,20 +211,22 @@ public class MainActivity extends AppCompatActivity {
             }
 
             if (requestCode == 2) {
-                if (data.hasExtra(SettingsActivity.PLAN_KEY) && data.hasExtra(SettingsActivity.PERIOD_KEY)) {
-                    /*
-                    String pl = data.getExtras().getString(SettingsActivity.PLAN_KEY);
-                    String pd = data.getExtras().getString(SettingsActivity.PERIOD_KEY);
 
-                    setPlanPref = Integer.parseInt(pl);
-                    setPeriodPref = Integer.parseInt(pd);
-                    //change settings
-                    //change variables on all timers in the list
-                    pauseTimer();
-                    refreshText();
-                    startTimer();
-                    */
+
+                selectedTask = list.selectFirstTask();
+                for(int x=0;x<list.size();x++) {
+                    if(data.hasExtra("item"+Integer.toString(x))) {
+                        selectedTask.setTimeAllocated(
+                                (long)data.getExtras().getDouble("item"+Integer.toString(x)));
+                    }
+                    selectedTask = list.switchTask();
                 }
+                //change settings
+                //change variables on all timers in the list
+                pauseTimer();
+                selectedTask = list.selectFirstTask();
+                refreshText();
+                startTimer();
             }
         }
     }
