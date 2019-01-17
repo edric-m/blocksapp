@@ -18,11 +18,11 @@ public class task {
         timeAllocated = _timeAllocated;
 
         //set random colour that lies within specific range
-        int max = 249;
-        int min = 172;
-        int r = random.nextInt(max - min + 1) + min; //between 172 and 249 random.nextInt(max - min + 1) + min
-        int g = random.nextInt(max - min + 1) + min;
-        int b = random.nextInt(max - min + 1) + min;
+        //int max = 249;
+        //int min = 172;
+        int r = random.nextInt(135 - 79 + 1) + 79; //between 172 and 249 random.nextInt(max - min + 1) + min
+        int g = random.nextInt(181 - 146 + 1) + 146;
+        int b = 255;//random.nextInt(max - min + 1) + min;
         colour = String.format("#%02x%02x%02x", r, g, b);
     }
 

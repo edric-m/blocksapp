@@ -10,10 +10,10 @@ public class tasks implements Serializable {
 
     public tasks() {
         current = 0;
-        taskList.add(new task("music", 7200000));
-        taskList.add(new task("machine code", 10800000));
-        taskList.add(new task("app", 18000000));
-        taskList.add(new task("exercise / yoga", 3600000));
+        taskList.add(new task("set up some tasks", 300000)); //0.5 blocks
+        //taskList.add(new task("machine code", 10800000));
+        //taskList.add(new task("app", 18000000));
+        //taskList.add(new task("exercise / yoga", 3600000));
         //constructor
     }
 

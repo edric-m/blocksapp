@@ -5,10 +5,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.DragEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.TextView;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -18,7 +22,7 @@ public class SettingsActivity extends AppCompatActivity {
     public static final String TASKS_KEY = "list";
     //class variables
     private int count = 0;
-    private double period = 1, plan = 100, blockSize = 10, mintoms = 60000;
+    private double period = 1, plan = 48+46, blockSize = 10, mintoms = 60000; //46 blocks for r&r
     private ArrayList<String> strList = new ArrayList<String>();
     //widget variables
     private RecyclerView recyclerView;
@@ -63,6 +67,16 @@ public class SettingsActivity extends AppCompatActivity {
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, strList);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        /* //use intents inside the viewholder?
+        recyclerView.setOnDragListener(new RecyclerView.OnDragListener() {
+            @Override
+            public boolean onDrag(View v, DragEvent event) {
+                TextView t = findViewById(R.id.debug_text_settings);
+                t.setText("clicked");
+                return false;
+            }
+        });
+        */
     }
 
 
@@ -76,6 +90,31 @@ public class SettingsActivity extends AppCompatActivity {
             valueList[x] = Integer.parseInt((String)item.itemValue.getText());
             total = total + valueList[x];
             item.itemName.setText(Double.toString(3d/(double)total));
+        }
+    }
+
+    public void calculateTime () {
+        //calculation variables
+        int total = 0;
+        double[] returnTimeList = new double[count];
+        int[] valueList = new int[count];
+        // Prepare data intent
+        Intent data = new Intent();
+        RecyclerViewAdapter.ViewHolder item;
+        DecimalFormat df = new DecimalFormat("#.#");
+
+        for(int x=0;x<count;x++)  {
+            item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(x);
+            //process the task
+            valueList[x] = item.position;
+            total = total + valueList[x];
+        }
+        //calculate task weight, then calculate the time
+        for(int x=0;x<count;x++) {
+            returnTimeList[x] = (period * plan * blockSize *0.01666) * ((double)valueList[x]/(double)total);
+            item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(x);
+            item.itemValue.setText(df.format(returnTimeList[x])+ " hrs");
+            //data.putExtra("item"+Integer.toString(x), returnTimeList[x]);
         }
     }
 
@@ -96,7 +135,7 @@ public class SettingsActivity extends AppCompatActivity {
         for(int x=0;x<count;x++)  {
             item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(x);
             //process the task
-            valueList[x] = Integer.parseInt((String)item.itemValue.getText());
+            valueList[x] = item.position;
             total = total + valueList[x];
         }
         //calculate task weight, then calculate the time

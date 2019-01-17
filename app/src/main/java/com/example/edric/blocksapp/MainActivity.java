@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
                     String n = data.getExtras().getString(NewTask.NAME_KEY);
                     String t = data.getExtras().getString(NewTask.TIME_KEY);
 
-                    list.addTask(n, Integer.parseInt(t));
+                    list.addTask(n, Integer.parseInt(t)*60 *60000);
                     pauseTimer();
                     selectedTask = list.selectNewTask();
                     refreshText();

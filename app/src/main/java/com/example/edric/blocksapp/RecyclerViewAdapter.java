@@ -17,11 +17,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     private ArrayList<String> mNameList = new ArrayList<>();
     //list of seekbars?
     //variable to layout?
-    private Context mContext;
+    private SettingsActivity mContext;
 
     public RecyclerViewAdapter(Context context, ArrayList<String> nameList) {
         this.mNameList = nameList;
-        this.mContext = context;
+        this.mContext = (SettingsActivity)context;
     }
 
     @NonNull
@@ -39,7 +39,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         viewHolder.itemSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                viewHolder.itemValue.setText(Integer.toString(progress));
+                //viewHolder.itemValue.setText(Integer.toString(progress));
+                viewHolder.position = progress;
+                mContext.calculateTime();
             }
 
             @Override
@@ -65,6 +67,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         SeekBar itemSeekbar;
         TextView itemValue;
         RelativeLayout listitemLayout; //example uses it for onclick listener
+        int position;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -72,6 +75,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             itemSeekbar = itemView.findViewById(R.id.list_seekbar);
             itemValue = itemView.findViewById(R.id.list_value);
             listitemLayout = itemView.findViewById(R.id.listitem_layout);
+            position = 1;
         }
     }
 }
