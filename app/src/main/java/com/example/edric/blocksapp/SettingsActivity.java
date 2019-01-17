@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -26,6 +27,9 @@ public class SettingsActivity extends AppCompatActivity {
     private ArrayList<String> strList = new ArrayList<String>();
     //widget variables
     private RecyclerView recyclerView;
+    private SeekBar mTimeSeekbar;
+    private TextView mTimeText, mPeriodText;
+    private Button mPeriodBtnDay, mPeriodBtnWeek;
     /*
     private RadioGroup group1, group2;
     private Button b;
@@ -43,6 +47,45 @@ public class SettingsActivity extends AppCompatActivity {
         group2 = findViewById(R.id.radioGroup2);
         b = findViewById(R.id.button2);
         */
+        mPeriodText = findViewById(R.id.period_text);
+        mPeriodBtnDay = findViewById(R.id.day_button);
+        mPeriodBtnDay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                period = 1;
+                mPeriodText.setText("Period = Day");
+                calculateTime();
+            }
+        });
+        mPeriodBtnWeek = findViewById(R.id.week_button);
+        mPeriodBtnWeek.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                period = 7;
+                mPeriodText.setText("Period = Week");
+                calculateTime();
+            }
+        });
+        mTimeText = findViewById(R.id.time_text);
+        mTimeSeekbar = findViewById(R.id.seekbar_time);
+        mTimeSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                plan = progress;
+                mTimeText.setText("Total time per day: "+new DecimalFormat("#.#").format(plan*0.16666)+" hrs");
+                calculateTime();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
         recyclerView = findViewById(R.id.recyclerv_view);
         Intent i = getIntent();
         int y = Integer.parseInt(i.getStringExtra("item_count"));
@@ -52,6 +95,7 @@ public class SettingsActivity extends AppCompatActivity {
         }
 
         initRecyclerView();
+        //calculateTime(); //breaks
         /*
         t = (tasks)getIntent().getSerializableExtra("list");
 

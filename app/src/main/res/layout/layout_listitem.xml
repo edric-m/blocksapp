@@ -16,7 +16,7 @@
         android:layout_toRightOf="@+id/list_value"/>
 
     <TextView
-        android:layout_width="50dp"
+        android:layout_width="60dp"
         android:layout_height="30dp"
         android:id="@+id/list_value"
         android:text="1"
