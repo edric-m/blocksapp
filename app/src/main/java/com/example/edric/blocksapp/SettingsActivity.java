@@ -27,9 +27,8 @@ public class SettingsActivity extends AppCompatActivity {
     private ArrayList<String> strList = new ArrayList<String>();
     //widget variables
     private RecyclerView recyclerView;
-    private SeekBar mTimeSeekbar;
+    private SeekBar mTimeSeekbar, mPeriodSeekbar;
     private TextView mTimeText, mPeriodText;
-    private Button mPeriodBtnDay, mPeriodBtnWeek;
     /*
     private RadioGroup group1, group2;
     private Button b;
@@ -48,22 +47,25 @@ public class SettingsActivity extends AppCompatActivity {
         b = findViewById(R.id.button2);
         */
         mPeriodText = findViewById(R.id.period_text);
-        mPeriodBtnDay = findViewById(R.id.day_button);
-        mPeriodBtnDay.setOnClickListener(new View.OnClickListener() {
+        mPeriodSeekbar = findViewById(R.id.seekbar_period);
+        mPeriodSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
-            public void onClick(View v) {
-                period = 1;
-                mPeriodText.setText("Period = Day");
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                period = (int)Math.round(progress/7);
+                if(period == 0)
+                    period = 1;
+                mPeriodText.setText("Total days: "+Double.toString(period));
                 calculateTime();
             }
-        });
-        mPeriodBtnWeek = findViewById(R.id.week_button);
-        mPeriodBtnWeek.setOnClickListener(new View.OnClickListener() {
+
             @Override
-            public void onClick(View v) {
-                period = 7;
-                mPeriodText.setText("Period = Week");
-                calculateTime();
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
         mTimeText = findViewById(R.id.time_text);
@@ -72,6 +74,8 @@ public class SettingsActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 plan = progress;
+                if(plan == 0)
+                    plan = 1;
                 mTimeText.setText("Total time per day: "+new DecimalFormat("#.#").format(plan*0.16666)+" hrs");
                 calculateTime();
             }
