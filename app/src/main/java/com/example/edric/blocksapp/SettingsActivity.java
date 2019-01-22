@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.DragEvent;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -25,6 +26,7 @@ public class SettingsActivity extends AppCompatActivity {
     private int count = 0;
     private double period = 1, plan = 48+46, blockSize = 10, mintoms = 60000; //46 blocks for r&r
     private ArrayList<String> strList = new ArrayList<String>();
+    private float initialX, initialY;
     //widget variables
     private RecyclerView recyclerView;
     private SeekBar mTimeSeekbar, mPeriodSeekbar;
@@ -40,7 +42,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-
+        overridePendingTransition(R.anim.left_in, R.anim.left_out);
         /*
         group1 = findViewById(R.id.radioGroup3);
         group2 = findViewById(R.id.radioGroup2);
@@ -198,5 +200,60 @@ public class SettingsActivity extends AppCompatActivity {
         // Activity finished ok, return the data
         setResult(RESULT_OK, data);
         super.finish();
+    }
+
+    @Override
+    public boolean onTouchEvent (MotionEvent event) {
+
+
+        int action = event.getActionMasked();
+
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                initialX = event.getX();
+                initialY = event.getY();
+
+                break;
+
+            case MotionEvent.ACTION_MOVE: //drag?
+                break;
+
+            case MotionEvent.ACTION_UP:
+                float finalX = event.getX();
+                float finalY = event.getY();
+
+
+                if (initialX < finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
+                    //Log.d(TAG, "Left to Right swipe performed");
+                    //goLeft();
+                }
+
+                if (initialX > finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
+                    //Log.d(TAG, "Right to Left swipe performed");
+                    //goRight();
+                    finish();
+                }
+
+                if (initialY < finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
+                    //Log.d(TAG, "Up to Down swipe performed");
+                    //goUp();
+                }
+
+                if (initialY > finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
+                    //Log.d(TAG, "Down to Up swipe performed");
+                    //goDown();
+                }
+
+                break;
+
+            case MotionEvent.ACTION_CANCEL:
+                //Log.d(TAG,"Action was CANCEL");
+                break;
+
+            case MotionEvent.ACTION_OUTSIDE:
+                //Log.d(TAG, "Movement occurred outside bounds of current screen element");
+                break;
+        }
+        return super.onTouchEvent(event);
     }
 }

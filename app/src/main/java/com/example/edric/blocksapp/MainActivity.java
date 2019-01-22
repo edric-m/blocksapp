@@ -1,16 +1,22 @@
 package com.example.edric.blocksapp;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
 import android.os.CountDownTimer;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.MotionEvent;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import java.util.Locale;
 import android.view.View;
+import android.widget.Toast;
 
-import org.w3c.dom.Text;
+//import org.w3c.dom.Text;
 
 public class MainActivity extends AppCompatActivity {
     private tasks list;
@@ -26,9 +32,10 @@ public class MainActivity extends AppCompatActivity {
     private CountDownTimer mPauseTimer;
     private long timePaused;
     private boolean mPaused;
+    private float initialX, initialY;
 
-    private int setPlanPref;
-    private int setPeriodPref;
+    //private int setPlanPref;
+    //private int setPeriodPref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,13 +50,82 @@ public class MainActivity extends AppCompatActivity {
         mTimerRunning = false;
         mPaused = false;
 
-        setPeriodPref = 1;
-        setPlanPref = 1;
+        //setPeriodPref = 1;
+        //setPlanPref = 1;
         //refresh display
-        selectedTask = list.selectNewTask();
+        //selectedTask = list.selectNewTask();
         //refresh display
-        refreshText();
-        startTimer();
+        //refreshText();
+        //startTimer();
+    }
+
+    @Override
+    public boolean onTouchEvent (MotionEvent event) {
+        int action = event.getActionMasked();
+        //toast that works
+
+        Context context = getApplicationContext();
+        CharSequence text = "Hello toast!";
+        int duration = Toast.LENGTH_LONG;
+        Toast toast = Toast.makeText(context, text, duration);
+        /*
+        LayoutInflater inflater = getLayoutInflater();
+        View l = inflater.inflate(R.layout.help_toast,
+                (ViewGroup) findViewById(R.id.layout));
+        Toast toast = new Toast(getApplicationContext());
+        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
+        toast.setDuration(Toast.LENGTH_LONG);
+        toast.setView(l);*/
+//start here
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                initialX = event.getX();
+                initialY = event.getY();
+                toast.show();
+
+                break;
+
+            case MotionEvent.ACTION_MOVE: //drag?
+                toast.setText("");
+                toast.show();
+                toast.cancel();
+                break;
+
+            case MotionEvent.ACTION_UP:
+                float finalX = event.getX();
+                float finalY = event.getY();
+
+                if (initialX < finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
+                    //Log.d(TAG, "Left to Right swipe performed");
+                    goLeft();
+                }
+
+                if (initialX > finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
+                    //Log.d(TAG, "Right to Left swipe performed");
+                    goRight();
+                }
+
+                if (initialY < finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
+                    //Log.d(TAG, "Up to Down swipe performed");
+                    goUp();
+                }
+
+                if (initialY > finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
+                    //Log.d(TAG, "Down to Up swipe performed");
+                    goDown();
+                }
+
+                break;
+
+            case MotionEvent.ACTION_CANCEL:
+                //Log.d(TAG,"Action was CANCEL");
+                break;
+
+            case MotionEvent.ACTION_OUTSIDE:
+                //Log.d(TAG, "Movement occurred outside bounds of current screen element");
+                break;
+        }
+        return super.onTouchEvent(event);
     }
 
     public void startTimer() {
@@ -64,8 +140,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 //mTimerRunning = false;
-                selectedTask = list.switchTask();
-                layout.setBackgroundColor(Color.parseColor(selectedTask.getColour()));
+                //selectedTask = list.switchTask();
+                //layout.setBackgroundColor(Color.parseColor(selectedTask.getColour()));
                 pauseTimer();
             }
         }.start();
@@ -118,12 +194,12 @@ public class MainActivity extends AppCompatActivity {
         taskTime.setText(timeLeftFormatted);
     }
 
-    public void goUp(View view) {
+    public void goUp() {
         //pause timer
         pauseTimer();
     }
 
-    public void goDown(View view) { //theres a bug here on startup
+    public void goDown() { //theres a bug here on startup
 
         if (mPaused) {
             startTimer();
@@ -152,16 +228,18 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void goLeft(View view) {
-        //settings
-        Intent i = new Intent(this, SettingsActivity.class);
-        int idx = 0;
-        for (task t: list.getList()) {
-            i.putExtra("item"+Integer.toString(idx),t.getName());
-            idx++;
+    public void goLeft() {
+        if(mTimerRunning || mPaused) {
+            //settings
+            Intent i = new Intent(this, SettingsActivity.class);
+            int idx = 0;
+            for (task t : list.getList()) {
+                i.putExtra("item" + Integer.toString(idx), t.getName());
+                idx++;
+            }
+            i.putExtra("item_count", Integer.toString(idx));
+            startActivityForResult(i, 2);
         }
-        i.putExtra("item_count", Integer.toString(idx));
-        startActivityForResult(i, 2);
         
     }
 
@@ -169,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void goRight(View view) {
+    public void goRight() {
         //new task
         Intent i = new Intent(this, NewTask.class);
         //i.putExtra("Value1", "Task Name");
@@ -201,11 +279,15 @@ public class MainActivity extends AppCompatActivity {
                     String n = data.getExtras().getString(NewTask.NAME_KEY);
                     String t = data.getExtras().getString(NewTask.TIME_KEY);
 
-                    list.addTask(n, Integer.parseInt(t)*60 *60000);
+                    list.addTask(n, Integer.parseInt(t) *60000); //t is in minutes, need to convert to ms
                     pauseTimer();
                     selectedTask = list.selectNewTask();
                     refreshText();
                     startTimer();
+
+                    if(data.getBooleanExtra("StartNew", false)) {
+                        goRight();
+                    }
                 }
 
             }
