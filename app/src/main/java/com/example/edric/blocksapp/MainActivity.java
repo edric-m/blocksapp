@@ -12,6 +12,7 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.Locale;
 import android.view.View;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView taskName;
     private TextView taskTime, mtextviewBreak;
     private ConstraintLayout layout;
+    private ImageView mImageView;
     //private TextView[] taskNames = new TextView[6]; TODO: list all tasks queued
     //private TextView[] taskTimes = new TextView[6];
 
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
         taskTime = findViewById(R.id.task_time);
         layout = findViewById(R.id.layout);
         mtextviewBreak = findViewById(R.id.textview_break);
+        mImageView = findViewById(R.id.imageview_back);
 
         mTimerRunning = false;
         mPaused = false;
@@ -167,7 +170,9 @@ public class MainActivity extends AppCompatActivity {
             taskName.setText("");
             mtextviewBreak.setText("break time");
             //layout.setBackgroundColor(Color.parseColor("#42f4c8"));
-            layout.setBackgroundResource(R.drawable.background_pause); //TODO: reducing the size may improve speed
+            mImageView.setImageResource(R.drawable.background_pause_small);
+            layout.setBackgroundColor(Color.parseColor("#1B1F59"));
+            //layout.setBackgroundResource(R.drawable.background_pause); //TODO: reducing the size may improve speed
             mPauseTimer = new CountDownTimer(600000,1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
@@ -291,7 +296,9 @@ public class MainActivity extends AppCompatActivity {
         mtextviewBreak.setText("");
         updateCountDownText(1);
         //layout.setBackgroundColor(Color.parseColor(selectedTask.getColour()));
-        layout.setBackgroundResource(R.drawable.background_resume);
+        //layout.setBackgroundResource(R.drawable.background_resume);
+        mImageView.setImageResource(R.drawable.background_resume_small);
+        layout.setBackgroundColor(Color.parseColor("#1B1F59"));
     }
 
     //error checking on all user input code
