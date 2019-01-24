@@ -41,6 +41,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 //viewHolder.itemValue.setText(Integer.toString(progress));
                 viewHolder.position = progress;
+                mContext.setChangesMade();
                 mContext.calculateTime();
             }
 

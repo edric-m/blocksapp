@@ -1,6 +1,7 @@
 package com.example.edric.blocksapp;
 
 import android.content.Context;
+import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
@@ -23,8 +24,10 @@ public class MainActivity extends AppCompatActivity {
     private task selectedTask;
 
     private TextView taskName;
-    private TextView taskTime;
+    private TextView taskTime, mtextviewBreak;
     private ConstraintLayout layout;
+    //private TextView[] taskNames = new TextView[6]; TODO: list all tasks queued
+    //private TextView[] taskTimes = new TextView[6];
 
     private CountDownTimer mCountdownTimer;
     private boolean mTimerRunning;
@@ -46,10 +49,13 @@ public class MainActivity extends AppCompatActivity {
         taskName = findViewById(R.id.task_name);
         taskTime = findViewById(R.id.task_time);
         layout = findViewById(R.id.layout);
+        mtextviewBreak = findViewById(R.id.textview_break);
 
         mTimerRunning = false;
         mPaused = false;
 
+        //Drawable id = R.drawable.background_pause;
+        //layout.setBackgroundResource(R.drawable.background_pause);
         //setPeriodPref = 1;
         //setPlanPref = 1;
         //refresh display
@@ -63,12 +69,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean onTouchEvent (MotionEvent event) {
         int action = event.getActionMasked();
         //toast that works
-
+/*
         Context context = getApplicationContext();
         CharSequence text = "Hello toast!";
         int duration = Toast.LENGTH_LONG;
         Toast toast = Toast.makeText(context, text, duration);
-        /*
+
         LayoutInflater inflater = getLayoutInflater();
         View l = inflater.inflate(R.layout.help_toast,
                 (ViewGroup) findViewById(R.id.layout));
@@ -81,14 +87,14 @@ public class MainActivity extends AppCompatActivity {
             case MotionEvent.ACTION_DOWN:
                 initialX = event.getX();
                 initialY = event.getY();
-                toast.show();
+                //toast.show();
 
                 break;
 
             case MotionEvent.ACTION_MOVE: //drag?
-                toast.setText("");
-                toast.show();
-                toast.cancel();
+                //toast.setText("");
+                //toast.show();
+                //toast.cancel();
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -157,7 +163,11 @@ public class MainActivity extends AppCompatActivity {
 
         if (mTimerRunning) {
             mCountdownTimer.cancel();
-            taskName.setText("break time");
+            //taskName.setText("break time");
+            taskName.setText("");
+            mtextviewBreak.setText("break time");
+            //layout.setBackgroundColor(Color.parseColor("#42f4c8"));
+            layout.setBackgroundResource(R.drawable.background_pause); //TODO: reducing the size may improve speed
             mPauseTimer = new CountDownTimer(600000,1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
@@ -195,17 +205,17 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void goUp() {
+        Toast toast = Toast.makeText(getApplicationContext(), "all timers paused", Toast.LENGTH_SHORT);
         //pause timer
         pauseTimer();
+        toast.show();
     }
 
     public void goDown() { //theres a bug here on startup
-
-        if (mPaused) {
-            startTimer();
-            refreshText();
-            //mPaused = false;
-        }
+        Context context = getApplicationContext();
+        CharSequence text = "";
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
 
         //resume task or
         if (mTimerRunning){
@@ -215,9 +225,21 @@ public class MainActivity extends AppCompatActivity {
             //refresh display
             refreshText();
             startTimer();
-
+            toast.setText("switched to " + selectedTask.getName());
+            if(list.size() > 1)
+                toast.show();
             //layout.setBackgroundColor(Color.parseColor(selectedTask.getColour()));
         }
+
+        if (mPaused) {
+            startTimer();
+            refreshText();
+            toast.setText(selectedTask.getName() + " resumed");
+            toast.show();
+            //mPaused = false;
+        }
+
+
         //following should be in an else
         /*
         if(!mTimerRunning) {
@@ -235,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
             int idx = 0;
             for (task t : list.getList()) {
                 i.putExtra("item" + Integer.toString(idx), t.getName());
+                //i.putExtra("itemValue" + Integer.toString(idx), t.getTimeAllocated());
                 idx++;
             }
             i.putExtra("item_count", Integer.toString(idx));
@@ -265,8 +288,10 @@ public class MainActivity extends AppCompatActivity {
 
     public void refreshText() {
         taskName.setText(selectedTask.getName());
+        mtextviewBreak.setText("");
         updateCountDownText(1);
-        layout.setBackgroundColor(Color.parseColor(selectedTask.getColour()));
+        //layout.setBackgroundColor(Color.parseColor(selectedTask.getColour()));
+        layout.setBackgroundResource(R.drawable.background_resume);
     }
 
     //error checking on all user input code

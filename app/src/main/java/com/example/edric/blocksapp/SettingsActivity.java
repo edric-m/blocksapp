@@ -26,6 +26,7 @@ public class SettingsActivity extends AppCompatActivity {
     private int count = 0;
     private double period = 1, plan = 48+46, blockSize = 10, mintoms = 60000; //46 blocks for r&r
     private ArrayList<String> strList = new ArrayList<String>();
+    private boolean changesMade = false;
     private float initialX, initialY;
     //widget variables
     private RecyclerView recyclerView;
@@ -130,6 +131,10 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
 
+    public void setChangesMade() {
+        changesMade = true;
+    }
+
     public void testGetValue(View view) {
         RecyclerViewAdapter.ViewHolder item;
         int[] valueList = new int[count];
@@ -171,6 +176,10 @@ public class SettingsActivity extends AppCompatActivity {
     public void closeSettings(View view) {
         finish();
     }
+    public void cancelSettings(View view) {
+        changesMade = false;
+        finish();
+    }
 
     @Override
     public void finish() {
@@ -198,10 +207,15 @@ public class SettingsActivity extends AppCompatActivity {
         //calculate extra time
 
         // Activity finished ok, return the data
-        setResult(RESULT_OK, data);
+        if(changesMade) {
+            setResult(RESULT_OK, data);
+        }
+        else {
+            setResult(RESULT_CANCELED, data);
+        }
         super.finish();
     }
-
+    /* //probably best not to have this functionality TODO: load the time values in
     @Override
     public boolean onTouchEvent (MotionEvent event) {
 
@@ -256,4 +270,5 @@ public class SettingsActivity extends AppCompatActivity {
         }
         return super.onTouchEvent(event);
     }
+    */
 }

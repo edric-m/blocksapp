@@ -21,8 +21,7 @@ public class NewTask extends AppCompatActivity {
     private SeekBar mSeekBarHours, mSeekBarMinutes;
 
     private float initialX, initialY;
-    private int hoursSet;
-    private double minSet;
+    private int hoursSet, minSet;
     private boolean newActivity;
 
     @Override
@@ -41,8 +40,8 @@ public class NewTask extends AppCompatActivity {
         mSeekBarHours.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                hoursSet = progress;
-                mTimeLabel.setText("Hours: " + Integer.toString(progress));
+                hoursSet = (int) Math.round((double)progress * 0.16);;
+                mTimeLabel.setText("Hrs: " + Integer.toString(hoursSet));
             }
 
             @Override
@@ -60,7 +59,7 @@ public class NewTask extends AppCompatActivity {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 minSet = (int) Math.round((double)progress * 0.6);
-                mMinLabel.setText("Minutes: "+Double.toString(minSet));
+                mMinLabel.setText("Mins: "+Double.toString(minSet));
             }
 
             @Override
@@ -76,6 +75,10 @@ public class NewTask extends AppCompatActivity {
     }
 
     public void submitEntry(View view) {
+        if(name.getText().toString().equals("must_rename")) {
+            hoursSet = 0;
+            minSet = 0;
+        }
         finish();
     }
 
@@ -83,7 +86,7 @@ public class NewTask extends AppCompatActivity {
     public void finish() {
         // Prepare data intent
         Intent data = new Intent();
-        int x = (hoursSet * 60) + (int)minSet;
+        int x = (hoursSet * 60) + minSet;
         if(x <= 0) {
             setResult(RESULT_CANCELED, data);
         }
@@ -122,7 +125,7 @@ public class NewTask extends AppCompatActivity {
 
                 if (initialX < finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
                     //Log.d(TAG, "Left to Right swipe performed");
-                    if(name.getText().toString().equals("newtask")) {
+                    if(name.getText().toString().equals("must_rename")) {
                         //dont finish();
                     }
                     else {
@@ -134,7 +137,7 @@ public class NewTask extends AppCompatActivity {
 
                 if (initialX > finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
                     //Log.d(TAG, "Right to Left swipe performed");
-                    if(name.getText().toString().equals("newtask")) {
+                    if(name.getText().toString().equals("must_rename")) {
                         //dont finish();
                     }
                     else {
