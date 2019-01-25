@@ -1,103 +1,83 @@
 package com.example.edric.blocksapp;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
 import android.os.CountDownTimer;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import java.util.Locale;
-import android.view.View;
 import android.widget.Toast;
 
-//import org.w3c.dom.Text;
+//TODO: implement try-catch where needed
 
 public class MainActivity extends AppCompatActivity {
-    private tasks list;
-    private task selectedTask;
+    private tasks list; /*!< Contains the array list of the tasks */
+    private task selectedTask; /*!< The task that the activity will focus on */
 
-    private TextView taskName;
-    private TextView taskTime, mtextviewBreak;
-    private ConstraintLayout layout;
-    private ImageView mImageView;
-    //private TextView[] taskNames = new TextView[6]; TODO: list all tasks queued
-    //private TextView[] taskTimes = new TextView[6];
+    private TextView taskName; /*!< Controls the TextView that displays the current action*/
+    private TextView taskTime, mtextviewBreak; /*!< Controls the TextView that displays the time */
+    private ConstraintLayout layout; /*!< Needed to set the background colour of the activity */
+    private ImageView mImageView; /*!< Controls the background image */
 
-    private CountDownTimer mCountdownTimer;
-    private boolean mTimerRunning;
+    private CountDownTimer mOnTickTimer; /*!< Timer class to start an onTick event */
+    private long timePaused; /*!< Counts the amount of time the pause timer has run */
+    private boolean mTimerRunning; /*!< Bool for whether the timer for a task is running */
+    private boolean mHasTasks; /*!< Bool for whether a task has been added to the activity */
 
-    private CountDownTimer mPauseTimer;
-    private long timePaused;
-    private boolean mPaused;
-    private float initialX, initialY;
+    private float initialX, initialY; /*!< Screen x,y position used for screen touch events */
 
-    //private int setPlanPref;
-    //private int setPeriodPref;
+    //constant variables
+    static final int MS_IN_1SEC = 1000; /*!< Constant used for onTick event*/
+    static final int MS_IN_10MIN = 600000; /*!< Constant used for onTick event */
+    static final int MS_IN_1MIN = 60000; /*!< Constant used for adding new tasks */
+    static final String BREAK_TIME_TEXT = "break time";/*!< Constant used when setting a textview */
 
+    /**
+     * >Brief: onCreate method for MainActivity
+     * >Param: savedInstanceState
+     * >Note: Initialises views and globals except selectedTask
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        //Initialise a list of tasks
         list = new tasks();
+        //View variables that will be used
         taskName = findViewById(R.id.task_name);
         taskTime = findViewById(R.id.task_time);
         layout = findViewById(R.id.layout);
         mtextviewBreak = findViewById(R.id.textview_break);
         mImageView = findViewById(R.id.imageview_back);
-
+        //Timer variables initialise
         mTimerRunning = false;
-        mPaused = false;
+        mHasTasks = false;
 
-        //Drawable id = R.drawable.background_pause;
-        //layout.setBackgroundResource(R.drawable.background_pause);
-        //setPeriodPref = 1;
-        //setPlanPref = 1;
-        //refresh display
-        //selectedTask = list.selectNewTask();
-        //refresh display
-        //refreshText();
-        //startTimer();
+        //start the on tick event
+        startOnTickEvent();
     }
 
+    /**
+     * >Brief: responds to straight swipes from one side of the screen to the other.
+     * >Param: MotionEvent
+     * >Return: bool
+     * >Note: requires mHasTasks boolean has been initialised
+     */
     @Override
     public boolean onTouchEvent (MotionEvent event) {
         int action = event.getActionMasked();
-        //toast that works
-/*
-        Context context = getApplicationContext();
-        CharSequence text = "Hello toast!";
-        int duration = Toast.LENGTH_LONG;
-        Toast toast = Toast.makeText(context, text, duration);
-
-        LayoutInflater inflater = getLayoutInflater();
-        View l = inflater.inflate(R.layout.help_toast,
-                (ViewGroup) findViewById(R.id.layout));
-        Toast toast = new Toast(getApplicationContext());
-        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0);
-        toast.setDuration(Toast.LENGTH_LONG);
-        toast.setView(l);*/
-//start here
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 initialX = event.getX();
                 initialY = event.getY();
-                //toast.show();
-
                 break;
 
             case MotionEvent.ACTION_MOVE: //drag?
-                //toast.setText("");
-                //toast.show();
-                //toast.cancel();
                 break;
 
             case MotionEvent.ACTION_UP:
@@ -106,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
                 if (initialX < finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
                     //Log.d(TAG, "Left to Right swipe performed");
-                    goLeft();
+                    if(mHasTasks)
+                        goLeft();
                 }
 
                 if (initialX > finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
@@ -116,14 +97,15 @@ public class MainActivity extends AppCompatActivity {
 
                 if (initialY < finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
                     //Log.d(TAG, "Up to Down swipe performed");
-                    goUp();
+                    if(mHasTasks)
+                        goUp();
                 }
 
                 if (initialY > finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
                     //Log.d(TAG, "Down to Up swipe performed");
-                    goDown();
+                    if(mHasTasks)
+                        goDown();
                 }
-
                 break;
 
             case MotionEvent.ACTION_CANCEL:
@@ -137,67 +119,46 @@ public class MainActivity extends AppCompatActivity {
         return super.onTouchEvent(event);
     }
 
-    public void startTimer() {
-        mCountdownTimer = new CountDownTimer(selectedTask.getTimeAllocated(),1000) {
+    /**
+     * >Brief: Initialises infinite onTick event. Called by onCreate. Is called only once.
+     * >Note: Depends on mHasTasks and mTimerRunning booleans.
+     */
+    public void startOnTickEvent() {
+        mOnTickTimer = new CountDownTimer(MS_IN_10MIN, MS_IN_1SEC) {
             @Override
             public void onTick(long millisUntilFinished) {
-                //selectedTask.setTimeAllocated(millisUntilFinished); //replace with allocated time
-                selectedTask.decrementTime();
-                updateCountDownText(1);
+                if(mHasTasks) {
+                    if(mTimerRunning) {
+                        selectedTask.decrementTime();
+                        updateCountDownText(false);
+                    }
+                    else {
+                        timePaused = timePaused + 1000;
+                        updateCountDownText(true);
+                    }
+                }
             }
 
             @Override
             public void onFinish() {
-                //mTimerRunning = false;
-                //selectedTask = list.switchTask();
-                //layout.setBackgroundColor(Color.parseColor(selectedTask.getColour()));
-                pauseTimer();
+                mOnTickTimer.start();
             }
         }.start();
-
-        mTimerRunning = true;
-        if(mPaused) {
-            mPauseTimer.cancel();
-            mPaused = false;
-        }
     }
 
-    public void pauseTimer() {
-
-        if (mTimerRunning) {
-            mCountdownTimer.cancel();
-            //taskName.setText("break time");
-            taskName.setText("");
-            mtextviewBreak.setText("break time");
-            //layout.setBackgroundColor(Color.parseColor("#42f4c8"));
-            mImageView.setImageResource(R.drawable.background_pause_small);
-            layout.setBackgroundColor(Color.parseColor("#1B1F59"));
-            //layout.setBackgroundResource(R.drawable.background_pause); //TODO: reducing the size may improve speed
-            mPauseTimer = new CountDownTimer(600000,1000) {
-                @Override
-                public void onTick(long millisUntilFinished) {
-                    timePaused = timePaused + 1000;
-                    updateCountDownText(0);
-                }
-
-                @Override
-                public void onFinish() {
-
-                }
-            }.start();
-            mTimerRunning = false;
-            mPaused = true;
-        }
-
-    }
-
-    private void updateCountDownText(int x) {
+    /**
+     * >Brief: Updates the timer textView and formats it to hrs:min:sec, depending on the
+     * mTimerRunning boolean.
+     * >Param: boolean paused - if true displays alternate time for when all timers paused
+     * >Note: requires selectedTask has a value
+     */
+    private void updateCountDownText(boolean paused) {
         long time = 0;
 
-        if (x == 0) {
+        if (paused) {
             time = timePaused;
         }
-        if (x == 1) {
+        if (!paused) {
             time = selectedTask.getTimeAllocated();
         }
         int hours = (int) (time / 3600000);
@@ -209,13 +170,25 @@ public class MainActivity extends AppCompatActivity {
         taskTime.setText(timeLeftFormatted);
     }
 
+    /**
+     * >Brief: Pauses the timer. Called when onTouch detects a swipe from bottom to top of the
+     * screen.
+     * >Note: Changes mTimerRunning to false
+     */
     public void goUp() {
+        mTimerRunning = false;
+        refreshDisplay(true);
         Toast toast = Toast.makeText(getApplicationContext(), "all timers paused", Toast.LENGTH_SHORT);
         //pause timer
-        pauseTimer();
+        //pauseTimer();
         toast.show();
     }
 
+    /**
+     * >Brief: Resumes or switches tasks. Called when onTouch detects a swipe from top to bottom of
+     * the screen.
+     * >Note: Changes mTimerRunning to true if all timers paused.
+     */
     public void goDown() { //theres a bug here on startup
         Context context = getApplicationContext();
         CharSequence text = "";
@@ -224,123 +197,136 @@ public class MainActivity extends AppCompatActivity {
 
         //resume task or
         if (mTimerRunning){
-            pauseTimer();
             //switch task
             selectedTask = list.switchTask();
-            //refresh display
-            refreshText();
-            startTimer();
+            refreshDisplay(false);
             toast.setText("switched to " + selectedTask.getName());
-            if(list.size() > 1)
+            if(list.size() > 1) {
                 toast.show();
-            //layout.setBackgroundColor(Color.parseColor(selectedTask.getColour()));
+            }
         }
-
-        if (mPaused) {
-            startTimer();
-            refreshText();
+        else {
+            mTimerRunning = true;
+            refreshDisplay(false);
             toast.setText(selectedTask.getName() + " resumed");
             toast.show();
-            //mPaused = false;
         }
-
-
-        //following should be in an else
-        /*
-        if(!mTimerRunning) {
-
-            //selectedTask = list.resumeTask();
-            startTimer();
-        }*/
-
     }
 
+    /**
+     * >Brief: Starts the add task activity. Called when onTouch detects a swipe from top to bottom
+     * of the screen.
+     * >Note: Changes mTimerRunning to false, pausing the tasks.
+     */
     public void goLeft() {
-        if(mTimerRunning || mPaused) {
-            //settings
-            Intent i = new Intent(this, SettingsActivity.class);
-            int idx = 0;
-            for (task t : list.getList()) {
-                i.putExtra("item" + Integer.toString(idx), t.getName());
-                //i.putExtra("itemValue" + Integer.toString(idx), t.getTimeAllocated());
-                idx++;
-            }
-            i.putExtra("item_count", Integer.toString(idx));
-            startActivityForResult(i, 2);
+
+        //settings
+        Intent i = new Intent(this, SettingsActivity.class);
+        int idx = 0;
+        for (task t : list.getList()) {
+            i.putExtra("item" + Integer.toString(idx), t.getName());
+            //i.putExtra("itemValue" + Integer.toString(idx), t.getTimeAllocated());
+            idx++;
         }
-        
+        i.putExtra("item_count", Integer.toString(idx));
+        startActivityForResult(i, 2);
+
+        mTimerRunning = false;
     }
 
-    public void submitTest(View view) {
-
-    }
-
+    /**
+     * >Brief: Starts the manage tasks activity. Called when onTouch detects a swipe from top to
+     * bottom of the screen.
+     * >Note: Changes mTimerRunning to false, pausing the tasks.
+     */
     public void goRight() {
         //new task
         Intent i = new Intent(this, NewTask.class);
-        //i.putExtra("Value1", "Task Name");
-        //i.putExtra("Value2", 0);
         startActivityForResult(i, 1); //request code is so we know who we are hearing back from
-        /*
-        list.addTask("new task "+list.size(),600000); //time is in milliseconds
-        selectedTask = list.selectNewTask();
-        pauseTimer();
-        //refresh display
-        refreshText();
-        startTimer();
-        */
+        mTimerRunning = false;
+        //refreshDisplay(true);
     }
 
-    public void refreshText() {
-        taskName.setText(selectedTask.getName());
-        mtextviewBreak.setText("");
-        updateCountDownText(1);
-        //layout.setBackgroundColor(Color.parseColor(selectedTask.getColour()));
-        //layout.setBackgroundResource(R.drawable.background_resume);
-        mImageView.setImageResource(R.drawable.background_resume_small);
-        layout.setBackgroundColor(Color.parseColor("#1B1F59"));
+    /**
+     * >Brief: Changes the background depending on whether tasks are paused or not.
+     * >Param: boolean paused - if tasks are paused or not
+     */
+    private void setBackground(boolean paused) {
+        layout.setBackgroundColor(Color.parseColor("#1B1F59")); //in colors.xml
+        if(paused) {
+            mImageView.setImageResource(R.drawable.background_pause_small);
+        }
+        else {
+            mImageView.setImageResource(R.drawable.background_resume_small);
+        }
     }
 
-    //error checking on all user input code
+    /**
+     * >Brief: Refresh every view on display depending on whether tasks are paused or not
+     * >Param: boolean paused - if tasks are paused or not
+     */
+    private void refreshDisplay(boolean paused) {
+        if(mHasTasks) {
+            if (paused) {
+                taskName.setText("");
+                mtextviewBreak.setText(BREAK_TIME_TEXT);
+            } else {
+                taskName.setText(selectedTask.getName());
+                mtextviewBreak.setText("");
+            }
+            setBackground(paused);
+            updateCountDownText(paused);
+        }
+    }
+
+    /**
+     * >Brief: Called when an activity has a result for MainActivity.
+     * >Param: int requestCode - the code of the activity that has a result
+     * >       int resultCode - success or failure of the calling activity
+     * >       Intent data - the data passed from the calling activity
+     * >Note: mTimerRunning should be false (paused) before this method is called.
+     *        is the only method that changes mhasTasks
+     *        must refreshDisplay() before first if statement, breaks if its after.
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+        mTimerRunning = true;
+        refreshDisplay(!mTimerRunning); //fix this, its confusing
         if (resultCode == RESULT_OK) {
-            if (requestCode == 1) {
-                if (data.hasExtra(NewTask.NAME_KEY) && data.hasExtra(NewTask.TIME_KEY)) {
-                    String n = data.getExtras().getString(NewTask.NAME_KEY);
-                    String t = data.getExtras().getString(NewTask.TIME_KEY);
+            switch(requestCode) {
+                case 1:
+                    if (data.hasExtra(NewTask.NAME_KEY) && data.hasExtra(NewTask.TIME_KEY)) {
+                        String n = data.getExtras().getString(NewTask.NAME_KEY);
+                        String t = data.getExtras().getString(NewTask.TIME_KEY);
 
-                    list.addTask(n, Integer.parseInt(t) *60000); //t is in minutes, need to convert to ms
-                    pauseTimer();
-                    selectedTask = list.selectNewTask();
-                    refreshText();
-                    startTimer();
+                        list.addTask(n, Integer.parseInt(t) * MS_IN_1MIN); //t is in minutes, need to convert to ms
+                        //pauseTimer();
+                        selectedTask = list.selectNewTask();
+                        mTimerRunning = true;
+                        mHasTasks = true;
+                        refreshDisplay(false);
+                        //startTimer();
 
-                    if(data.getBooleanExtra("StartNew", false)) {
-                        goRight();
+                        if(data.getBooleanExtra("StartNew", false)) {
+                            goRight();
+                        }
                     }
-                }
-
-            }
-
-            if (requestCode == 2) {
-
-
-                selectedTask = list.selectFirstTask();
-                for(int x=0;x<list.size();x++) {
-                    if(data.hasExtra("item"+Integer.toString(x))) {
-                        selectedTask.setTimeAllocated(
-                                (long)data.getExtras().getDouble("item"+Integer.toString(x)));
+                    break;
+                case 2:
+                    selectedTask = list.selectFirstTask();
+                    for(int x=0;x<list.size();x++) {
+                        if(data.hasExtra("item"+Integer.toString(x))) {
+                            selectedTask.setTimeAllocated(
+                                    (long)data.getExtras().getDouble("item"+Integer.toString(x)));
+                        }
+                        selectedTask = list.switchTask();
                     }
-                    selectedTask = list.switchTask();
-                }
-                //change settings
-                //change variables on all timers in the list
-                pauseTimer();
-                selectedTask = list.selectFirstTask();
-                refreshText();
-                startTimer();
+                    selectedTask = list.selectFirstTask();
+                    mTimerRunning = true;
+                    refreshDisplay(false);
+                    break;
+                default:
+                    break;
             }
         }
     }
