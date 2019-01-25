@@ -170,9 +170,9 @@ public class MainActivity extends AppCompatActivity {
             taskName.setText("");
             mtextviewBreak.setText("break time");
             //layout.setBackgroundColor(Color.parseColor("#42f4c8"));
-            //mImageView.setImageResource(R.drawable.background_pause_small);
-            //layout.setBackgroundColor(Color.parseColor("#1B1F59"));
-            layout.setBackgroundResource(R.drawable.background_pause); //TODO: reducing the size may improve speed
+            mImageView.setImageResource(R.drawable.background_pause_small);
+            layout.setBackgroundColor(Color.parseColor("#1B1F59"));
+            //layout.setBackgroundResource(R.drawable.background_pause); //TODO: reducing the size may improve speed
             mPauseTimer = new CountDownTimer(600000,1000) {
                 @Override
                 public void onTick(long millisUntilFinished) {
@@ -296,9 +296,9 @@ public class MainActivity extends AppCompatActivity {
         mtextviewBreak.setText("");
         updateCountDownText(1);
         //layout.setBackgroundColor(Color.parseColor(selectedTask.getColour()));
-        layout.setBackgroundResource(R.drawable.background_resume);
-        //mImageView.setImageResource(R.drawable.background_resume_small);
-        //layout.setBackgroundColor(Color.parseColor("#1B1F59"));
+        //layout.setBackgroundResource(R.drawable.background_resume);
+        mImageView.setImageResource(R.drawable.background_resume_small);
+        layout.setBackgroundColor(Color.parseColor("#1B1F59"));
     }
 
     //error checking on all user input code
