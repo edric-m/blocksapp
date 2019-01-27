@@ -13,17 +13,22 @@ import static java.lang.Math.round;
 
 public class NewTask extends AppCompatActivity {
 
-    public static final String NAME_KEY = "U-name";
-    public static final String TIME_KEY = "add";
+    public static final String NAME_KEY = "U-name"; /*!< String associated with this activities result */
+    public static final String TIME_KEY = "add"; /*!< String associated with this activities result */
 
-    private EditText name;
-    private TextView mTimeLabel, mMinLabel;
-    private SeekBar mSeekBarHours, mSeekBarMinutes;
+    private EditText name; /*!< User text input for the new tasks name */
+    private TextView mTimeLabel, mMinLabel; /*!< Label that shows the user input */
+    private SeekBar mSeekBarHours, mSeekBarMinutes; /*!< Seekbar input for the desired hours and mins to set */
 
-    private float initialX, initialY;
-    private int hoursSet, minSet;
-    private boolean newActivity;
+    private float initialX, initialY; /*!< Co-ordinates for the onTouch event */
+    private int hoursSet, minSet; /*!< Time selected by user variables */
+    private boolean newActivity; /*!< Used to determine if the user wants to make another task */
 
+    /**
+     * @Brief: Initialises the variables and sets up the view events
+     * @Param: Bundle savedInstanceState
+     * @Note: This class is only called by the MainActivity class
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +41,13 @@ public class NewTask extends AppCompatActivity {
         name = findViewById(R.id.editText);
         mTimeLabel = findViewById(R.id.textView2);
         mMinLabel = findViewById(R.id.textView4);
+        setupSeekbars();
+    }
+
+    /**
+     * @Brief: Attatches the seekbar to the view and sets up the progress changed event
+     */
+    private void setupSeekbars() {
         mSeekBarHours = findViewById(R.id.newtime_seekbar);
         mSeekBarHours.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -74,6 +86,10 @@ public class NewTask extends AppCompatActivity {
         });
     }
 
+    /**
+     * @Brief: Called by the finish buttons onClick event. And processes the users input for a
+     * valid one.
+     */
     public void submitEntry(View view) {
         if(name.getText().toString().equals("must_rename")) {
             hoursSet = 0;
@@ -82,6 +98,11 @@ public class NewTask extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * @Brief: When the task is confirmed it calculates the time to send back to the MainActivity
+     * as well as the name to give the task. It checks that the values were changed from 0,
+     * so a task will have time.
+     */
     @Override
     public void finish() {
         // Prepare data intent
@@ -102,10 +123,13 @@ public class NewTask extends AppCompatActivity {
         overridePendingTransition(R.anim.back_out, R.anim.back_in);
     }
 
+    /**
+     * @Brief: responds to straight swipes from one side of the screen to the other.
+     * @Param: MotionEvent
+     * @Return: bool
+     */
     @Override
     public boolean onTouchEvent (MotionEvent event) {
-
-
         int action = event.getActionMasked();
 
         switch (action) {

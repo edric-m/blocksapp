@@ -38,9 +38,9 @@ public class MainActivity extends AppCompatActivity {
     static final String BREAK_TIME_TEXT = "break time";/*!< Constant used when setting a textview */
 
     /**
-     * >Brief: onCreate method for MainActivity
-     * >Param: savedInstanceState
-     * >Note: Initialises views and globals except selectedTask
+     * @Brief: onCreate method for MainActivity
+     * @Param: savedInstanceState
+     * @Note: Initialises views and globals except selectedTask
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +63,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * >Brief: responds to straight swipes from one side of the screen to the other.
-     * >Param: MotionEvent
-     * >Return: bool
-     * >Note: requires mHasTasks boolean has been initialised
+     * @Brief: responds to straight swipes from one side of the screen to the other.
+     * @Param: MotionEvent
+     * @Return: bool
+     * @Note: requires mHasTasks boolean has been initialised
      */
     @Override
     public boolean onTouchEvent (MotionEvent event) {
@@ -120,8 +120,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * >Brief: Initialises infinite onTick event. Called by onCreate. Is called only once.
-     * >Note: Depends on mHasTasks and mTimerRunning booleans.
+     * @Brief: Initialises infinite onTick event. Called by onCreate. Is called only once.
+     * @Note: Depends on mHasTasks and mTimerRunning booleans.
      */
     public void startOnTickEvent() {
         mOnTickTimer = new CountDownTimer(MS_IN_10MIN, MS_IN_1SEC) {
@@ -147,10 +147,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * >Brief: Updates the timer textView and formats it to hrs:min:sec, depending on the
+     * @Brief: Updates the timer textView and formats it to hrs:min:sec, depending on the
      * mTimerRunning boolean.
-     * >Param: boolean paused - if true displays alternate time for when all timers paused
-     * >Note: requires selectedTask has a value
+     * @Param: boolean paused - if true displays alternate time for when all timers paused
+     * @Note: requires selectedTask has a value
      */
     private void updateCountDownText(boolean paused) {
         long time = 0;
@@ -171,9 +171,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * >Brief: Pauses the timer. Called when onTouch detects a swipe from bottom to top of the
+     * @Brief: Pauses the timer. Called when onTouch detects a swipe from bottom to top of the
      * screen.
-     * >Note: Changes mTimerRunning to false
+     * @Note: Changes mTimerRunning to false
      */
     public void goUp() {
         mTimerRunning = false;
@@ -185,9 +185,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * >Brief: Resumes or switches tasks. Called when onTouch detects a swipe from top to bottom of
+     * @Brief: Resumes or switches tasks. Called when onTouch detects a swipe from top to bottom of
      * the screen.
-     * >Note: Changes mTimerRunning to true if all timers paused.
+     * @Note: Changes mTimerRunning to true if all timers paused.
      */
     public void goDown() { //theres a bug here on startup
         Context context = getApplicationContext();
@@ -214,9 +214,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * >Brief: Starts the add task activity. Called when onTouch detects a swipe from top to bottom
+     * @Brief: Starts the add task activity. Called when onTouch detects a swipe from top to bottom
      * of the screen.
-     * >Note: Changes mTimerRunning to false, pausing the tasks.
+     * @Note: Changes mTimerRunning to false, pausing the tasks.
      */
     public void goLeft() {
 
@@ -235,9 +235,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * >Brief: Starts the manage tasks activity. Called when onTouch detects a swipe from top to
+     * @Brief: Starts the manage tasks activity. Called when onTouch detects a swipe from top to
      * bottom of the screen.
-     * >Note: Changes mTimerRunning to false, pausing the tasks.
+     * @Note: Changes mTimerRunning to false, pausing the tasks.
      */
     public void goRight() {
         //new task
@@ -248,8 +248,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * >Brief: Changes the background depending on whether tasks are paused or not.
-     * >Param: boolean paused - if tasks are paused or not
+     * @Brief: Changes the background depending on whether tasks are paused or not.
+     * @Param: boolean paused - if tasks are paused or not
      */
     private void setBackground(boolean paused) {
         layout.setBackgroundColor(Color.parseColor("#1B1F59")); //in colors.xml
@@ -262,8 +262,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * >Brief: Refresh every view on display depending on whether tasks are paused or not
-     * >Param: boolean paused - if tasks are paused or not
+     * @Brief: Refresh every view on display depending on whether tasks are paused or not
+     * @Param: boolean paused - if tasks are paused or not
      */
     private void refreshDisplay(boolean paused) {
         if(mHasTasks) {
@@ -280,13 +280,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * >Brief: Called when an activity has a result for MainActivity.
-     * >Param: int requestCode - the code of the activity that has a result
-     * >       int resultCode - success or failure of the calling activity
-     * >       Intent data - the data passed from the calling activity
-     * >Note: mTimerRunning should be false (paused) before this method is called.
-     *        is the only method that changes mhasTasks
-     *        must refreshDisplay() before first if statement, breaks if its after.
+     * @Brief: Called when an activity has a result for MainActivity.
+     * @Param: -int requestCode - the code of the activity that has a result.
+     * -int resultCode - success or failure of the calling activity.
+     * -Intent data - the data passed from the calling activity.
+     * @Note: -mTimerRunning should be false (paused) before this method is called.
+     * -is the only method that changes mhasTasks
+     * -must refreshDisplay() before first if statement, breaks if its after.
      */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
