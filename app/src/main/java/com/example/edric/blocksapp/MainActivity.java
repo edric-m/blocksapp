@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void goRight() {
         //new task
-        Intent i = new Intent(this, NewTask.class);
+        Intent i = new Intent(this, NewTaskActivity.class);
         startActivityForResult(i, 1); //request code is so we know who we are hearing back from
         mTimerRunning = false;
         //refreshDisplay(true);
@@ -306,9 +306,9 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch(requestCode) {
                 case 1:
-                    if (data.hasExtra(NewTask.NAME_KEY) && data.hasExtra(NewTask.TIME_KEY)) {
-                        String n = data.getExtras().getString(NewTask.NAME_KEY);
-                        String t = data.getExtras().getString(NewTask.TIME_KEY);
+                    if (data.hasExtra(NewTaskActivity.NAME_KEY) && data.hasExtra(NewTaskActivity.TIME_KEY)) {
+                        String n = data.getExtras().getString(NewTaskActivity.NAME_KEY);
+                        String t = data.getExtras().getString(NewTaskActivity.TIME_KEY);
 
                         list.addTask(n, Integer.parseInt(t) * MS_IN_1MIN); //t is in minutes, need to convert to ms
                         //pauseTimer();
