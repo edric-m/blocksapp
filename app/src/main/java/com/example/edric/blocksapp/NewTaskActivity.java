@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import static java.lang.Math.round;
 
-public class NewTask extends AppCompatActivity {
+public class NewTaskActivity extends AppCompatActivity {
 
     public static final String NAME_KEY = "U-name"; /*!< String associated with this activities result */
     public static final String TIME_KEY = "add"; /*!< String associated with this activities result */

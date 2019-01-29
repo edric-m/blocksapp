@@ -46,7 +46,21 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        init();
+        listeners();
+
+
+    }
+
+    private void listeners() {
+        //start the on tick event
+        startOnTickEvent();
+    }
+
+    private void init() {
         //Initialise a list of tasks
+        //load tasks from the database
         list = new tasks();
         //View variables that will be used
         taskName = findViewById(R.id.task_name);
@@ -57,9 +71,6 @@ public class MainActivity extends AppCompatActivity {
         //Timer variables initialise
         mTimerRunning = false;
         mHasTasks = false;
-
-        //start the on tick event
-        startOnTickEvent();
     }
 
     /**
