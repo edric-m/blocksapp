@@ -32,10 +32,10 @@ public class MainActivity extends AppCompatActivity {
     private float initialX, initialY; /*!< Screen x,y position used for screen touch events */
 
     //constant variables
-    static final int MS_IN_1SEC = 1000; /*!< Constant used for onTick event*/
-    static final int MS_IN_10MIN = 600000; /*!< Constant used for onTick event */
-    static final int MS_IN_1MIN = 60000; /*!< Constant used for adding new tasks */
-    static final String BREAK_TIME_TEXT = "break time";/*!< Constant used when setting a textview */
+    private static final int MS_IN_1SEC = 1000; /*!< Constant used for onTick event*/
+    private static final int MS_IN_10MIN = 600000; /*!< Constant used for onTick event */
+    private static final int MS_IN_1MIN = 60000; /*!< Constant used for adding new tasks */
+    private static final String BREAK_TIME_TEXT = "break time";/*!< Constant used when setting a textview */
 
     /**
      * @Brief: onCreate method for MainActivity
@@ -47,10 +47,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //FeedReaderDbHelper db = new FeedReaderDbHelper(this);
         init();
         listeners();
-
-
     }
 
     private void listeners() {

@@ -4,25 +4,25 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-public class FeedReaderDbHelper extends SQLiteOpenHelper {
+public class StatusReaderDbHelper extends SQLiteOpenHelper {
 
     //private SQLiteDatabase mydatabase;
     public static final String DATABASE_NAME = "allotawatch.db";
     public static final int DATABASE_VERSION = 1;
     private static final String SQL_CREATE_ENTRIES =
-            "CREATE TABLE " + DbContract.FeedEntry.TASK_TABLE_NAME + " (" +
-            DbContract.FeedEntry._ID + " INTEGER PRIMARY KEY," +
-            DbContract.FeedEntry.TASK_COLUMN_NAME + " TEXT," +
-            DbContract.FeedEntry.TASK_COLUMN_TIME_SPENT + " INTEGER," +
-            DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING + " INTEGER," +
-            DbContract.FeedEntry.TASK_COLUMN_LIFETIME + " INTEGER)";
+            "CREATE TABLE " + DbContract.StatusEntry.STATUS_TABLE_NAME + " (" +
+            DbContract.StatusEntry._ID + " INTEGER PRIMARY KEY," +
+            DbContract.StatusEntry.STATUS_COLUMN_ACTIVE_TASK + " TEXT," +
+            DbContract.StatusEntry.STATUS_COLUMN_BREAK_TIME + " INTEGER," +
+            DbContract.StatusEntry.STATUS_COLUMN_DESTROY_DATE + " INTEGER," +
+            DbContract.StatusEntry.STATUS_COLUMN_DESTROY_TIME_MIN + "INTEGER," +
+            DbContract.StatusEntry.STATUS_COLUMN_TIME_PERIOD + " INTEGER)";
     private static final String SQL_DELETE_ENTRIES =
-            "DROP TABLE IF EXISTS " + DbContract.FeedEntry.TASK_TABLE_NAME;
+            "DROP TABLE IF EXISTS " + DbContract.StatusEntry.STATUS_TABLE_NAME;
 
-    public FeedReaderDbHelper (Context context) {
+    public StatusReaderDbHelper (Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
-
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(SQL_CREATE_ENTRIES);
@@ -41,30 +41,11 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         onUpgrade(db, oldVersion, newVersion);
     }
 
-    public boolean addTask() {
+    public boolean updateStatus() {
         return false;
     }
 
-    public boolean updateTask(int id) {
+    public boolean getStatus() {
         return false;
-    }
-
-    public boolean deleteTask(int id) {
-        return false;
-    }
-
-    public boolean readTask(int id) {
-        return false;
-    }
-
-    public tasks readAllTasks() {
-        return null;
-    }
-
-    public boolean updateAllTasks(tasks list) {
-        return false;
-    }
-    public int size(){
-        return 0;
     }
 }
