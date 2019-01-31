@@ -1,15 +1,21 @@
 package com.example.edric.blocksapp;
 
 import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.io.IOException;
 import java.util.Locale;
 import android.widget.Toast;
 
@@ -23,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView taskTime, mtextviewBreak; /*!< Controls the TextView that displays the time */
     private ConstraintLayout layout; /*!< Needed to set the background colour of the activity */
     private ImageView mImageView; /*!< Controls the background image */
+    private Button mClearBtn;
 
     private CountDownTimer mOnTickTimer; /*!< Timer class to start an onTick event */
     private long timePaused; /*!< Counts the amount of time the pause timer has run */
@@ -50,26 +57,110 @@ public class MainActivity extends AppCompatActivity {
         //FeedReaderDbHelper db = new FeedReaderDbHelper(this);
         init();
         listeners();
+
+
     }
 
     private void listeners() {
         //start the on tick event
+        mClearBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteDb();
+            }
+        });
         startOnTickEvent();
+    }
+
+    private void deleteDb() {
+        FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+        db.deleteAllTasks();
+        this.finish();
+        System.exit(0);
     }
 
     private void init() {
         //Initialise a list of tasks
         //load tasks from the database
-        list = new tasks();
+
         //View variables that will be used
         taskName = findViewById(R.id.task_name);
         taskTime = findViewById(R.id.task_time);
         layout = findViewById(R.id.layout);
         mtextviewBreak = findViewById(R.id.textview_break);
         mImageView = findViewById(R.id.imageview_back);
+        mClearBtn = findViewById(R.id.button_clear_tasks);
         //Timer variables initialise
         mTimerRunning = false;
         mHasTasks = false;
+
+        if(!readDb()) {
+            list = new tasks();
+            taskName.setText("bad load db");
+        } else {
+            //mHasTasks = true;
+            //mTimerRunning = true;
+            //selectedTask = list.selectFirstTask();
+            //taskName.setText("good load db");
+            Log.d("MyActivity", "db loaded" );
+        }
+    }
+
+    private boolean readDb() {
+        boolean result = true;
+        try {
+            FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+            list = db.readAllTasks();
+            if(list.size() > 0) {
+                selectedTask = list.selectFirstTask();
+                mTimerRunning = true;
+                mHasTasks = true;
+                result = true;
+                refreshDisplay(false);
+            } else {
+                result = false;
+            }
+        } catch (Exception e) {
+            //result = false;
+        }
+        return result;
+    }
+
+
+    private void saveDb() {
+        //super.finish();
+        Log.d("MyActivity", "save called" );
+        try {
+            FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+            if(list.size() > 0)
+                db.updateAllTasks(list);
+        } catch (Exception e) {
+            Log.d("MyActivity", e.getMessage());
+        }
+    }
+
+    /* not enough time to save db
+     *
+     */
+    protected void onDestroy() {
+        super.onDestroy();
+        saveDb();
+        Log.d("MyActivity", "destroy called" );
+
+    }
+
+
+    protected void onStop() {
+        super.onStop();
+        Log.d("MyActivity", "stop called" );
+        saveDb();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d("MyActivity", "pause called" );
+        //finifsh();
     }
 
     /**
@@ -102,6 +193,11 @@ public class MainActivity extends AppCompatActivity {
 
                 if (initialX > finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
                     //Log.d(TAG, "Right to Left swipe performed");
+                    /*
+                    FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+                    db.addTask();
+                    taskName.setText("ok so far");
+                    */
                     goRight();
                 }
 
@@ -161,6 +257,7 @@ public class MainActivity extends AppCompatActivity {
      * mTimerRunning boolean.
      * @Param: boolean paused - if true displays alternate time for when all timers paused
      * @Note: requires selectedTask has a value
+     *      - change param to an enum structure
      */
     private void updateCountDownText(boolean paused) {
         long time = 0;

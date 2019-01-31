@@ -7,6 +7,7 @@ import java.util.LinkedList;
 public class tasks implements Serializable {
     private LinkedList<task> taskList = new LinkedList<task>();
     private int current;
+    private static final int TASK_LIMIT = 40;
 
     public tasks() {
         current = 0;
@@ -44,8 +45,16 @@ public class tasks implements Serializable {
         return taskList.get(current);
     }
 
-    public void addTask(String name, int time) {
-        taskList.add(new task(name,time));
+    public boolean addTask(String name, int time) {
+        boolean tooManyTasks;
+        if(this.size() <= TASK_LIMIT)
+        {
+            tooManyTasks = false;
+            taskList.add(new task(name,time));
+        } else {
+            tooManyTasks = true;
+        }
+        return tooManyTasks;
     }
 
     public void removeTask(String name) {
