@@ -57,8 +57,8 @@ public class tasks implements Serializable {
         return tooManyTasks;
     }
 
-    public void removeTask(String name) {
-        taskList.remove(name);   //test this
+    public void removeTask(task t) {
+        taskList.remove(t);   //test this
     }
 }
 

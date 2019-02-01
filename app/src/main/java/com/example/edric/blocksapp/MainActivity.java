@@ -66,17 +66,36 @@ public class MainActivity extends AppCompatActivity {
         mClearBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteDb();
+                deleteTask();
             }
         });
         startOnTickEvent();
     }
 
-    private void deleteDb() {
+    private void deleteTask() {
+        if(mTimerRunning) {
+            FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+            db.deleteTask(selectedTask.getName());
+            list.removeTask(selectedTask);
+            if(list.size()>0) {
+                selectedTask = list.selectFirstTask();
+                refreshDisplay(false);
+            } else {
+                mTimerRunning = false;
+                mHasTasks = false;
+                taskName.setText("swipe to the left");
+                taskTime.setText("to begin");
+                layout.setBackgroundColor(Color.parseColor("#4576c1"));
+                mClearBtn.setVisibility(View.INVISIBLE);
+                mImageView.setImageDrawable(null);
+            }
+        }
+        /* //delete the whole list of tasks. then exit app
         FeedReaderDbHelper db = new FeedReaderDbHelper(this);
         db.deleteAllTasks();
         this.finish();
         System.exit(0);
+        */
     }
 
     private void init() {
@@ -96,7 +115,8 @@ public class MainActivity extends AppCompatActivity {
 
         if(!readDb()) {
             list = new tasks();
-            taskName.setText("bad load db");
+            //taskName.setText("bad load db");
+            Log.d("MyActivity", "db not loaded" );
         } else {
             //mHasTasks = true;
             //mTimerRunning = true;
@@ -144,7 +164,7 @@ public class MainActivity extends AppCompatActivity {
      */
     protected void onDestroy() {
         super.onDestroy();
-        saveDb();
+        //saveDb();
         Log.d("MyActivity", "destroy called" );
 
     }
@@ -153,14 +173,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
         Log.d("MyActivity", "stop called" );
-        saveDb();
+        //saveDb();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         Log.d("MyActivity", "pause called" );
-        //finifsh();
+        saveDb();
     }
 
     /**
@@ -286,6 +306,7 @@ public class MainActivity extends AppCompatActivity {
         mTimerRunning = false;
         refreshDisplay(true);
         Toast toast = Toast.makeText(getApplicationContext(), "all timers paused", Toast.LENGTH_SHORT);
+
         //pause timer
         //pauseTimer();
         toast.show();
@@ -377,9 +398,11 @@ public class MainActivity extends AppCompatActivity {
             if (paused) {
                 taskName.setText("");
                 mtextviewBreak.setText(BREAK_TIME_TEXT);
+                mClearBtn.setVisibility(View.INVISIBLE);
             } else {
                 taskName.setText(selectedTask.getName());
                 mtextviewBreak.setText("");
+                mClearBtn.setVisibility(View.VISIBLE);
             }
             setBackground(paused);
             updateCountDownText(paused);

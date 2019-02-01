@@ -70,8 +70,19 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         return false;
     }
 
-    public boolean deleteTask(int id) {
-        return false;
+    public boolean deleteTask(String name) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        // Define 'where' part of query.
+        String selection = DbContract.FeedEntry.TASK_COLUMN_NAME + " LIKE ?";
+        // Specify arguments in placeholder order.
+        String[] selectionArgs = { name };
+        // Issue SQL statement.
+        int deletedRows = db.delete(DbContract.FeedEntry.TASK_TABLE_NAME, selection, selectionArgs);
+        if(deletedRows != 0) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     public task readTask(int id) {
@@ -129,7 +140,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
                         //new String[]{Integer.toString(x)});
                         new String[] { selectedTask.getName()});
 
-                if(rowsAffected != 1) {
+                if(rowsAffected == 0) {
                     contentValues.put(DbContract.FeedEntry.TASK_COLUMN_NAME, selectedTask.getName());
                     db.insert(DbContract.FeedEntry.TASK_TABLE_NAME, null, contentValues);
                 }
@@ -147,6 +158,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
 
     public void deleteAllTasks() {
         SQLiteDatabase db = this.getReadableDatabase();
+        //db.execSQL(SQL_DELETE_ENTRIES);
         db.execSQL("DELETE FROM " + DbContract.FeedEntry.TASK_TABLE_NAME);
         db.execSQL("vacuum");
     }
