@@ -81,6 +81,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         if(deletedRows != 0) {
             return false;
         } else {
+            db.execSQL("vacuum");
             return true;
         }
     }
