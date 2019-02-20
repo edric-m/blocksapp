@@ -2,6 +2,7 @@ package com.example.edric.blocksapp;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.content.Intent;
@@ -42,6 +43,7 @@ public class NewTaskActivity extends AppCompatActivity {
         mTimeLabel = findViewById(R.id.textView2);
         mMinLabel = findViewById(R.id.textView4);
         setupSeekbars();
+        Log.d("NewTaskActivity", "onCreate called");
     }
 
     /**

@@ -1,6 +1,8 @@
 package com.example.edric.blocksapp;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private long timePaused; /*!< Counts the amount of time the pause timer has run */
     private boolean mTimerRunning; /*!< Bool for whether the timer for a task is running */
     private boolean mHasTasks; /*!< Bool for whether a task has been added to the activity */
+    private boolean mServiceStarted;
 
     private float initialX, initialY; /*!< Screen x,y position used for screen touch events */
 
@@ -43,6 +46,16 @@ public class MainActivity extends AppCompatActivity {
     private static final int MS_IN_10MIN = 600000; /*!< Constant used for onTick event */
     private static final int MS_IN_1MIN = 60000; /*!< Constant used for adding new tasks */
     private static final String BREAK_TIME_TEXT = "break time";/*!< Constant used when setting a textview */
+
+    private BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            //recieve data from service
+            int arg = intent.getIntExtra("task_time",0);
+            selectedTask.setTimeAllocated((long)arg);
+            Log.d("MyActivity", "onRecieve called");
+        }
+    };
 
     /**
      * @Brief: onCreate method for MainActivity
@@ -70,6 +83,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         startOnTickEvent();
+        //not start service here
     }
 
     private void deleteTask() {
@@ -112,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
         //Timer variables initialise
         mTimerRunning = false;
         mHasTasks = false;
+        mServiceStarted = false;
 
         if(!readDb()) {
             list = new tasks();
@@ -133,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             list = db.readAllTasks();
             if(list.size() > 0) {
                 selectedTask = list.selectFirstTask();
-                mTimerRunning = true;
+                mTimerRunning = true; //start broadcast at mTimerRunning = true
                 mHasTasks = true;
                 result = true;
                 refreshDisplay(false);
@@ -145,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
         }
         return result;
     }
-
 
     private void saveDb() {
         //super.finish();
@@ -163,14 +177,17 @@ public class MainActivity extends AppCompatActivity {
      *
      */
     protected void onDestroy() {
+        //stop service
+        if(mServiceStarted)
+            this.stopService(new Intent(this, BroadcastService.class));
         super.onDestroy();
         //saveDb();
         Log.d("MyActivity", "destroy called" );
 
     }
 
-
     protected void onStop() {
+        //start service
         super.onStop();
         Log.d("MyActivity", "stop called" );
         //saveDb();
@@ -178,9 +195,31 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        mServiceStarted = true;
+        //start service
+        this.registerReceiver(br, new IntentFilter(BroadcastService.COUNTDOWN_BR));
+        Intent i = new Intent(this, BroadcastService.class);
+        i.putExtra("set_time", (int)selectedTask.getTimeAllocated());
+        this.startService(i);
+        //register reciever
+
+        //no need to pause timer
         super.onPause();
         Log.d("MyActivity", "pause called" );
         saveDb();
+    }
+
+    @Override
+    protected void onResume() {
+        Log.d("MyActivity", "resume called" );
+        if (mServiceStarted) {
+            //unregister reciever
+            this.unregisterReceiver(br);
+            //stop service
+            stopService(new Intent(this, BroadcastService.class));
+            mServiceStarted = false;
+        }
+        super.onResume();
     }
 
     /**
