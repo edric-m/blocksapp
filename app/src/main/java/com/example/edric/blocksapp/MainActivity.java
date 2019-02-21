@@ -51,8 +51,13 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             //recieve data from service
-            int arg = intent.getIntExtra("task_time",0);
-            selectedTask.setTimeAllocated((long)arg);
+            int arg = intent.getIntExtra("time_left",0);
+
+            if (arg != 0) {
+                selectedTask.setTimeAllocated((long) arg);
+            } else {
+                timePaused = timePaused + intent.getIntExtra("pause_time", 0);
+            }
             Log.d("MyActivity", "onRecieve called");
         }
     };
@@ -195,15 +200,23 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
-        mServiceStarted = true;
-        //start service
-        this.registerReceiver(br, new IntentFilter(BroadcastService.COUNTDOWN_BR));
-        Intent i = new Intent(this, BroadcastService.class);
-        i.putExtra("set_time", (int)selectedTask.getTimeAllocated());
-        this.startService(i);
-        //register reciever
 
-        //no need to pause timer
+        if(mHasTasks) {
+            mServiceStarted = true;
+            //start service
+            Intent i = new Intent(this, BroadcastService.class);
+            if(mTimerRunning) {
+                i.putExtra("set_time", (int) selectedTask.getTimeAllocated());
+                Log.d("MyActivity", "time send");
+            } else {
+                i.putExtra("paused",true);
+            }
+            this.startService(i);
+            //register reciever
+            this.registerReceiver(br, new IntentFilter(BroadcastService.COUNTDOWN_BR));
+            //no need to pause timer
+        }
+
         super.onPause();
         Log.d("MyActivity", "pause called" );
         saveDb();
@@ -213,10 +226,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         Log.d("MyActivity", "resume called" );
         if (mServiceStarted) {
+            stopService(new Intent(this, BroadcastService.class));
             //unregister reciever
             this.unregisterReceiver(br);
             //stop service
-            stopService(new Intent(this, BroadcastService.class));
+
             mServiceStarted = false;
         }
         super.onResume();
@@ -398,7 +412,7 @@ public class MainActivity extends AppCompatActivity {
         i.putExtra("item_count", Integer.toString(idx));
         startActivityForResult(i, 2);
 
-        mTimerRunning = false;
+        //mTimerRunning = false;
     }
 
     /**
@@ -410,7 +424,7 @@ public class MainActivity extends AppCompatActivity {
         //new task
         Intent i = new Intent(this, NewTaskActivity.class);
         startActivityForResult(i, 1); //request code is so we know who we are hearing back from
-        mTimerRunning = false;
+        //mTimerRunning = false;
         //refreshDisplay(true);
     }
 

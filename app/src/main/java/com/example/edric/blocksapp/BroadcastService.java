@@ -16,13 +16,16 @@ public class BroadcastService extends Service {
 
     CountDownTimer cdt = null;
     private int taskTime;
+    private int pauseTime;
+    private boolean paused;
 
     private static final int MS_IN_1SEC = 1000; /*!< Constant used for onTick event*/
+    private static final int MS_IN_10MIN = 600000;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
+        paused = false;
         Log.d(TAG, "Starting service timer...");
         //get the time needed to set timer from an intents extra
 
@@ -34,7 +37,14 @@ public class BroadcastService extends Service {
             @Override
             public void onTick(long millisUntilFinished) {
                 Log.d(TAG, "service tick");
-                taskTime = taskTime - 1000;
+                if(paused) {
+                    pauseTime = pauseTime + 1000;
+                    bi.putExtra("pause_time", pauseTime);
+                } else {
+                    taskTime = taskTime - 1000;
+                    bi.putExtra("time_left", taskTime);
+                }
+                sendBroadcast(bi); //TODO: change send local broadcast instead
             }
 
             @Override
@@ -49,19 +59,26 @@ public class BroadcastService extends Service {
     public void onDestroy() {
 
         //broadcast the time to mainactivity using localbroadcastmanager
-        bi.putExtra("time_left", taskTime);
-        sendBroadcast(bi); //send local broadcast instead
+
         cdt.cancel();
         Log.d(TAG, "service timer cancelled");
         super.onDestroy();
     }
 
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        taskTime = intent.getIntExtra("set_time", 0);
-        //cdt.cancel();
-        timerStart(taskTime);
+        paused = intent.getBooleanExtra("paused", false);
+        if(paused) {
+            pauseTime = 0;
+            timerStart(MS_IN_10MIN);
+        } else {
+            taskTime = intent.getIntExtra("set_time", 0);
+            //cdt.cancel();
+            if(taskTime > 0)
+                Log.d(TAG, "time good");
+            timerStart(taskTime);
+        }
         Log.d(TAG, "onStartCommand called");
         return super.onStartCommand(intent, flags, startId);
     }
