@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
             if (arg != 0) {
                 selectedTask.setTimeAllocated((long) arg);
             } else {
-                timePaused = timePaused + intent.getIntExtra("pause_time", 0);
+                timePaused = timePaused + intent.getIntExtra("pause_time", 0); //TODO: pause time is doubled when service is running
             }
             Log.d("MyActivity", "onRecieve called");
         }
