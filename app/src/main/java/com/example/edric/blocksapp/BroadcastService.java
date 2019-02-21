@@ -36,7 +36,7 @@ public class BroadcastService extends Service {
         cdt = new CountDownTimer(ms, MS_IN_1SEC) {
             @Override
             public void onTick(long millisUntilFinished) {
-                Log.d(TAG, "service tick");
+                //Log.d(TAG, "service tick");
                 if(paused) {
                     pauseTime = pauseTime + 1000;
                     bi.putExtra("pause_time", pauseTime);
@@ -79,7 +79,7 @@ public class BroadcastService extends Service {
                 Log.d(TAG, "time good");
             timerStart(taskTime);
         }
-        Log.d(TAG, "onStartCommand called");
+        //Log.d(TAG, "onStartCommand called");
         return super.onStartCommand(intent, flags, startId);
     }
 

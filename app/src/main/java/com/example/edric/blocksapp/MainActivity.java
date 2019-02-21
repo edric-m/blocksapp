@@ -191,12 +191,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /*
     protected void onStop() {
         //start service
         super.onStop();
         Log.d("MyActivity", "stop called" );
         //saveDb();
     }
+    */
 
     @Override
     protected void onPause() {
@@ -224,13 +226,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onResume() {
-        Log.d("MyActivity", "resume called" );
+
         if (mServiceStarted) {
             stopService(new Intent(this, BroadcastService.class));
             //unregister reciever
             this.unregisterReceiver(br);
             //stop service
-
+            Log.d("MyActivity", "service canceled" );
             mServiceStarted = false;
         }
         super.onResume();
