@@ -91,7 +91,7 @@ public class BroadcastService extends Service {
     @Override
     public void onDestroy() {
         //broadcast the time to mainactivity using localbroadcastmanager
-        //stopForeground(STOP_FOREGROUND_REMOVE);
+        stopForeground(STOP_FOREGROUND_REMOVE);
         //unregister receiver?
         cdt.cancel();
         Log.d(TAG, "service timer cancelled");
@@ -129,7 +129,7 @@ public class BroadcastService extends Service {
         //builder.setSmallIcon(R.drawable.ic_launcher_foreground);
         builder.setTicker("App info string");
         builder.setContentIntent(pi);
-        //builder.setOngoing(true);
+        builder.setOngoing(true);
         builder.setOnlyAlertOnce(true);
 
 
