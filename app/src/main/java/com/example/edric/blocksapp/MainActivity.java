@@ -211,9 +211,11 @@ public class MainActivity extends AppCompatActivity {
             Intent i = new Intent(this, BroadcastService.class);
             if(mTimerRunning) {
                 i.putExtra("set_time", (int) selectedTask.getTimeAllocated());
+                i.putExtra("task_name", selectedTask.getName());
                 Log.d("MyActivity", "time send");
             } else {
                 i.putExtra("paused",true);
+                i.putExtra("pause_time", timePaused);
             }
             this.startService(i);
             //register reciever

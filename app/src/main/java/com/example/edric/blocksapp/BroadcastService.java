@@ -13,6 +13,8 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import java.util.Locale;
+
 public class BroadcastService extends Service {
 
     private final static String TAG = "BroadcastService"; //debug tag
@@ -23,8 +25,11 @@ public class BroadcastService extends Service {
 
     CountDownTimer cdt = null;
     private int taskTime;
+    private String taskName;
     private int pauseTime;
     private boolean paused = false;
+    //private Notification n;
+    private NotificationCompat.Builder b;
 
     private static final int MS_IN_1SEC = 1000; /*!< Constant used for onTick event*/
     private static final int MS_IN_10MIN = 600000;
@@ -50,6 +55,9 @@ public class BroadcastService extends Service {
                 } else {
                     taskTime = taskTime - 1000;
                     bi.putExtra("time_left", taskTime);
+                    NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+                    b.setContentText(convertMsToClock(taskTime));
+                    notificationManager.notify(NOTIFICATION_ID, b.build());
                 }
                 sendBroadcast(bi); //TODO: change send local broadcast instead
             }
@@ -66,6 +74,18 @@ public class BroadcastService extends Service {
                 cdt.start();
             }
         }.start();
+    }
+
+    private String convertMsToClock(int ms) {
+        long time = ms;
+
+        int hours = (int) (time / 3600000);
+        int minutes = (int) (time / 60000) % 60;
+        int seconds = (int) (time / 1000) % 60;
+
+        String timeLeftFormatted = String.format(Locale.getDefault(),"%02d:%02d:%02d",hours, minutes, seconds);
+
+        return timeLeftFormatted;
     }
 
     private void notifyTaskEnd() {
@@ -91,7 +111,7 @@ public class BroadcastService extends Service {
     @Override
     public void onDestroy() {
         //broadcast the time to mainactivity using localbroadcastmanager
-        stopForeground(STOP_FOREGROUND_REMOVE);
+        //stopForeground(STOP_FOREGROUND_REMOVE); //causes error?
         //unregister receiver?
         cdt.cancel();
         Log.d(TAG, "service timer cancelled");
@@ -109,6 +129,7 @@ public class BroadcastService extends Service {
             //load in and remember the current pause time instead
         } else {
             taskTime = intent.getIntExtra("set_time", 0);
+            taskName = intent.getStringExtra("task_name");
             //cdt.cancel();
             if(taskTime > 0)
                 Log.d(TAG, "time good");
@@ -120,19 +141,24 @@ public class BroadcastService extends Service {
     }
 
     public void setNotification() {
+
         Intent intent = new Intent(this, MainActivity.class);
         //Intent intent = new Intent();
         PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"default");
 
-        //builder.setSmallIcon(R.drawable.ic_launcher_foreground);
+        builder.setSmallIcon(R.mipmap.ic_launcher_foreground);
         builder.setTicker("App info string");
         builder.setContentIntent(pi);
         builder.setOngoing(true);
         builder.setOnlyAlertOnce(true);
+        builder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+        builder.setContentTitle(taskName);
+        builder.setShowWhen(false);
+        builder.setContentText(convertMsToClock(taskTime));
 
-
+        b = builder;
         Notification notification = builder.build();
         // optionally set a custom view
 
