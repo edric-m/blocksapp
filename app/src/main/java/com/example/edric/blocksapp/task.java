@@ -33,6 +33,8 @@ public class task {
         if (timeAllocated >= 0) {
             timeAllocated = timeAllocated - 1000;
             timeSpent = timeSpent + 1000;
+        } else {
+            //show notification
         }
     }
 

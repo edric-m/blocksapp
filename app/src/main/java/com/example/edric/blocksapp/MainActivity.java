@@ -183,8 +183,10 @@ public class MainActivity extends AppCompatActivity {
      */
     protected void onDestroy() {
         //stop service
-        if(mServiceStarted)
+        if(mServiceStarted) {
+            unregisterReceiver(br); //TODO: this is not a good idea, ondestroy is not always called
             this.stopService(new Intent(this, BroadcastService.class));
+        }
         super.onDestroy();
         //saveDb();
         Log.d("MyActivity", "destroy called" );
