@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
@@ -33,6 +34,7 @@ public class BroadcastService extends Service {
     //private Notification n;
     private NotificationCompat.Builder b;
     PowerManager.WakeLock wl;
+    NotificationManager notificationManager;
 
     private static final int MS_IN_1SEC = 1000; /*!< Constant used for onTick event*/
     private static final int MS_IN_10MIN = 600000;
@@ -43,9 +45,10 @@ public class BroadcastService extends Service {
         //paused = false;
         Log.d(TAG, "Starting service timer...");
         //get the time needed to set timer from an intents extra
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
         wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "myapp:bcwklck");
-        wl.acquire();
+        wl.acquire(); //TODO: look into setting a timeout
     }
 
     private void timerStart(int ms) {
@@ -56,10 +59,13 @@ public class BroadcastService extends Service {
                 if(paused) {
                     pauseTime = pauseTime + 1000;
                     bi.putExtra("pause_time", pauseTime);
+
+                    b.setContentText(convertMsToClock(pauseTime));
+                    notificationManager.notify(NOTIFICATION_ID, b.build());
                 } else {
                     taskTime = taskTime - 1000;
                     bi.putExtra("time_left", taskTime);
-                    NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
                     b.setContentText(convertMsToClock(taskTime));
                     notificationManager.notify(NOTIFICATION_ID, b.build());
                 }
@@ -69,13 +75,19 @@ public class BroadcastService extends Service {
             @Override
             public void onFinish() {
                 //display notification: "task finished at x o'clock, switching to break time"
-                notifyTaskEnd();
-                //start the break timer on mainactivity
-                //if not paused, if paused just restart the timer
-                taskTime = 0;
+                if(!paused) {
+                    notifyTaskEnd();
+                    //start the break timer on mainactivity
+                    //if not paused, if paused just restart the timer
+                    taskTime = 0;
+                    bi.putExtra("time_left", taskTime);
+                    sendBroadcast(bi);
+                }
+                taskName = "break time";
+                b.setContentTitle(taskName);
                 paused = true;
                 //pauseTime = load in the pause time if not done so already
-                cdt.start();
+                cdt.start(); //call timerStart() instead?
             }
         }.start();
     }
@@ -93,22 +105,23 @@ public class BroadcastService extends Service {
     }
 
     private void notifyTaskEnd() {
-        /* //does not work
+        //does not work
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this, "default")
                         //.setSmallIcon(R.drawable.abc)
-                        .setContentTitle("Notifications Example")
-                        .setContentText("This is a test notification");
+                        .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                        .setContentTitle(taskName + " has ended")
+                        .setContentText("app has switched to break time")
+                        .setLights(Color.WHITE,1,1)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
-        Intent notificationIntent = new Intent(this, MainActivity.class);
+        Intent notificationIntent = new Intent(this, BroadcastService.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(contentIntent);
 
         // Add as notification
-        NotificationManager manager = (NotificationManager) getSystemService(this.NOTIFICATION_SERVICE);
-        manager.notify(0, builder.build());
-        */
+        notificationManager.notify(0, builder.build());
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -128,10 +141,11 @@ public class BroadcastService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         paused = intent.getBooleanExtra("paused", false);
+        pauseTime = intent.getIntExtra("pause_time", 0);
         if(paused) {
-            pauseTime = 0;
-            timerStart(MS_IN_10MIN);
             //load in and remember the current pause time instead
+            taskName = "break time";
+            timerStart(MS_IN_10MIN); //leave as this
         } else {
             taskTime = intent.getIntExtra("set_time", 0);
             taskName = intent.getStringExtra("task_name");
@@ -147,7 +161,7 @@ public class BroadcastService extends Service {
 
     public void setNotification() {
 
-        Intent intent = new Intent(this, BroadcastService.class); //TODO: to test
+        Intent intent = new Intent(this, BroadcastService.class); //TODO: no difference?
         //Intent intent = new Intent();
         PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
 
@@ -162,7 +176,7 @@ public class BroadcastService extends Service {
         builder.setContentTitle(taskName);
         builder.setShowWhen(false);
         builder.setContentText(convertMsToClock(taskTime));
-        builder.setPriority(NotificationCompat.PRIORITY_LOW); //TODO: to test
+        builder.setPriority(NotificationCompat.PRIORITY_LOW); //TODO: no difference?
 
         b = builder;
         Notification notification = builder.build();
