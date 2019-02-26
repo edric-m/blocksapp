@@ -4,10 +4,12 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
+import android.os.PowerManager;
 import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationCompat;
@@ -30,6 +32,7 @@ public class BroadcastService extends Service {
     private boolean paused = false;
     //private Notification n;
     private NotificationCompat.Builder b;
+    PowerManager.WakeLock wl;
 
     private static final int MS_IN_1SEC = 1000; /*!< Constant used for onTick event*/
     private static final int MS_IN_10MIN = 600000;
@@ -40,8 +43,9 @@ public class BroadcastService extends Service {
         //paused = false;
         Log.d(TAG, "Starting service timer...");
         //get the time needed to set timer from an intents extra
-
-
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "myapp:bcwklck");
+        wl.acquire();
     }
 
     private void timerStart(int ms) {
@@ -113,6 +117,7 @@ public class BroadcastService extends Service {
         //broadcast the time to mainactivity using localbroadcastmanager
         //stopForeground(STOP_FOREGROUND_REMOVE); //causes error?
         //unregister receiver?
+        wl.release();
         cdt.cancel();
         Log.d(TAG, "service timer cancelled");
         super.onDestroy();
@@ -142,7 +147,7 @@ public class BroadcastService extends Service {
 
     public void setNotification() {
 
-        Intent intent = new Intent(this, MainActivity.class);
+        Intent intent = new Intent(this, BroadcastService.class); //TODO: to test
         //Intent intent = new Intent();
         PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
 
@@ -157,6 +162,7 @@ public class BroadcastService extends Service {
         builder.setContentTitle(taskName);
         builder.setShowWhen(false);
         builder.setContentText(convertMsToClock(taskTime));
+        builder.setPriority(NotificationCompat.PRIORITY_LOW); //TODO: to test
 
         b = builder;
         Notification notification = builder.build();
