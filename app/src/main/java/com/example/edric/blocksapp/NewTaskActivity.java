@@ -130,6 +130,7 @@ public class NewTaskActivity extends AppCompatActivity {
      * @Param: MotionEvent
      * @Return: bool
      */
+    /*
     @Override
     public boolean onTouchEvent (MotionEvent event) {
         int action = event.getActionMasked();
@@ -151,6 +152,7 @@ public class NewTaskActivity extends AppCompatActivity {
 
                 if (initialX < finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
                     //Log.d(TAG, "Left to Right swipe performed");
+
                     if(name.getText().toString().equals("must_rename")) {
                         //dont finish();
                     }
@@ -159,10 +161,12 @@ public class NewTaskActivity extends AppCompatActivity {
                         finish();
                     }
 
+
                 }
 
                 if (initialX > finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
                     //Log.d(TAG, "Right to Left swipe performed");
+
                     if(name.getText().toString().equals("must_rename")) {
                         //dont finish();
                     }
@@ -170,6 +174,7 @@ public class NewTaskActivity extends AppCompatActivity {
                         newActivity = true;
                         finish();
                     }
+
                 }
 
                 if (initialY < finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
@@ -192,4 +197,5 @@ public class NewTaskActivity extends AppCompatActivity {
         }
         return super.onTouchEvent(event);
     }
+    */
 }

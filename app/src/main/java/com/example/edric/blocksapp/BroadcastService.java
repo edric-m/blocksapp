@@ -110,7 +110,9 @@ public class BroadcastService extends Service {
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this, "default")
                         //.setSmallIcon(R.drawable.abc)
-                        .setSmallIcon(R.mipmap.ic_launcher_foreground)
+                        .setSmallIcon(R.drawable.ic_action_name)
+                        .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
+                                R.drawable.aw_iconcheck))
                         .setContentTitle(taskName + " has ended")
                         .setContentText("app has switched to break time")
                         .setLights(Color.WHITE,1,1)
@@ -169,7 +171,7 @@ public class BroadcastService extends Service {
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"default");
 
-        builder.setSmallIcon(R.mipmap.ic_launcher_foreground);
+        builder.setSmallIcon(R.drawable.ic_action_name);
         builder.setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.largeicon));
         builder.setTicker("App info string");
