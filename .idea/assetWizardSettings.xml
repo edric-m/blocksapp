@@ -50,7 +50,7 @@
                                           <PersistentState>
                                             <option name="values">
                                               <map>
-                                                <entry key="scalingPercent" value="20" />
+                                                <entry key="scalingPercent" value="64" />
                                                 <entry key="trimmed" value="true" />
                                               </map>
                                             </option>
@@ -63,7 +63,7 @@
                                             <option name="values">
                                               <map>
                                                 <entry key="color" value="000000" />
-                                                <entry key="scalingPercent" value="77" />
+                                                <entry key="scalingPercent" value="62" />
                                               </map>
                                             </option>
                                           </PersistentState>
@@ -73,8 +73,11 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="backgroundColor" value="f5f5ff" />
-                                      <entry key="foregroundImage" value="C:\Users\Edric\Desktop\allotawatch_logopng.jpg" />
+                                      <entry key="backgroundAssetType" value="COLOR" />
+                                      <entry key="backgroundColor" value="354ca5" />
+                                      <entry key="foregroundImage" value="C:\Users\Edric\Desktop\Picture2.png" />
+                                      <entry key="legacyIconShape" value="CIRCLE" />
+                                      <entry key="webIconShape" value="CIRCLE" />
                                     </map>
                                   </option>
                                 </PersistentState>

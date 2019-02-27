@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onReceive(Context context, Intent intent) {
             //recieve data from service
+            /*
             int arg = intent.getIntExtra("time_left",0);
 
             if (arg > 0) {
@@ -61,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
                 timePaused = intent.getIntExtra("pause_time", (int)timePaused); //TODO: pause time is doubled when service is running
                 refreshDisplay(mTimerRunning);
             }
+            */
+            selectedTask.setTimeAllocated((long) intent.getIntExtra("time_left",(int)selectedTask.getTimeAllocated()));
+            timePaused = intent.getIntExtra("pause_time", (int)timePaused);
             Log.d("MyActivity", "onRecieve called");
         }
     };
@@ -212,10 +216,11 @@ public class MainActivity extends AppCompatActivity {
             mServiceStarted = true;
             //start service
             Intent i = new Intent(this, BroadcastService.class);
-            i.putExtra("pause_time", (int)timePaused); //duplicate
+            i.putExtra("pause_time", (int)timePaused);
+            i.putExtra("set_time", (int) selectedTask.getTimeAllocated());
+            i.putExtra("task_name", selectedTask.getName());
             if(mTimerRunning) {
-                i.putExtra("set_time", (int) selectedTask.getTimeAllocated());
-                i.putExtra("task_name", selectedTask.getName());
+
                 Log.d("MyActivity", "time send");
             } else {
                 i.putExtra("paused",true);

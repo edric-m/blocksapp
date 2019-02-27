@@ -6,6 +6,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.CountDownTimer;
@@ -142,12 +143,13 @@ public class BroadcastService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         paused = intent.getBooleanExtra("paused", false);
         pauseTime = intent.getIntExtra("pause_time", 0);
+        taskTime = intent.getIntExtra("set_time", 0);
         if(paused) {
             //load in and remember the current pause time instead
             taskName = "break time";
             timerStart(MS_IN_10MIN); //leave as this
         } else {
-            taskTime = intent.getIntExtra("set_time", 0);
+
             taskName = intent.getStringExtra("task_name");
             //cdt.cancel();
             if(taskTime > 0)
@@ -168,6 +170,8 @@ public class BroadcastService extends Service {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"default");
 
         builder.setSmallIcon(R.mipmap.ic_launcher_foreground);
+        builder.setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
+                R.drawable.largeicon));
         builder.setTicker("App info string");
         builder.setContentIntent(pi);
         builder.setOngoing(true);
