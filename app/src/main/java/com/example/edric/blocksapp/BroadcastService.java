@@ -188,6 +188,7 @@ public class BroadcastService extends Service {
         Notification notification = builder.build();
         // optionally set a custom view
 
+        
         startForeground(NOTIFICATION_ID, notification);
     }
 
