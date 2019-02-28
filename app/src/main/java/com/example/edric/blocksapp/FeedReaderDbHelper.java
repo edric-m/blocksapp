@@ -150,7 +150,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
                 //task name not found probably
                 //result = false;
             //} finally {
-                selectedTask = taskList.switchTask();
+                selectedTask = taskList.moveToNextTask();
                 contentValues.clear();
             //}
         }

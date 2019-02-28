@@ -47,7 +47,7 @@ public class tasks implements Serializable {
 
     public task moveToPrevTask() {
         if(current == 0) {
-            current = taskList.size(); //TODO: double check
+            current = taskList.size()-1; //TODO: double check
         } else {
             current--;
         }

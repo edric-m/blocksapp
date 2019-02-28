@@ -24,6 +24,7 @@ public class NewTaskActivity extends AppCompatActivity {
     private float initialX, initialY; /*!< Co-ordinates for the onTouch event */
     private int hoursSet, minSet; /*!< Time selected by user variables */
     private boolean newActivity; /*!< Used to determine if the user wants to make another task */
+    private String newTaskName;
 
     /**
      * @Brief: Initialises the variables and sets up the view events
@@ -39,6 +40,7 @@ public class NewTaskActivity extends AppCompatActivity {
         newActivity = false;
         hoursSet = 0;
         minSet = 0;
+        newTaskName = "Alarm";
         name = findViewById(R.id.editText);
         mTimeLabel = findViewById(R.id.textView2);
         mMinLabel = findViewById(R.id.textView4);
@@ -93,9 +95,10 @@ public class NewTaskActivity extends AppCompatActivity {
      * valid one.
      */
     public void submitEntry(View view) {
-        if(name.getText().toString().equals("must_rename")) {
-            hoursSet = 0;
-            minSet = 0;
+        if(name.getText().toString().equals("rename")) {
+            newTaskName = "Alarm";
+        } else {
+            newTaskName = name.getText().toString();
         }
         finish();
     }
@@ -114,7 +117,7 @@ public class NewTaskActivity extends AppCompatActivity {
             setResult(RESULT_CANCELED, data);
         }
         else {
-            data.putExtra(NAME_KEY, name.getText().toString());
+            data.putExtra(NAME_KEY, newTaskName);
             data.putExtra(TIME_KEY, Integer.toString(x));
             data.putExtra("StartNew", newActivity);
             // Activity finished ok, return the data

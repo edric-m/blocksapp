@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.IBinder;
@@ -106,7 +108,8 @@ public class BroadcastService extends Service {
     }
 
     private void notifyTaskEnd() {
-        //does not work
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(this, "default")
                         //.setSmallIcon(R.drawable.abc)
@@ -116,6 +119,7 @@ public class BroadcastService extends Service {
                         .setContentTitle(taskName + " has ended")
                         .setContentText("app has switched to break time")
                         .setLights(Color.WHITE,1,1)
+                        .setSound(alarmSound)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
         Intent notificationIntent = new Intent(this, BroadcastService.class);

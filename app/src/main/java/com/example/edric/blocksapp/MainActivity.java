@@ -417,7 +417,7 @@ public class MainActivity extends AppCompatActivity {
      * of the screen.
      * @Note: Changes mTimerRunning to false, pausing the tasks. //TODO: rewrite documentation
      */
-    public void switchTask(Direction direction  ) {
+    public void switchTask(Direction direction) {
         if(mTimerRunning) {
             switch (direction) {
                 case PREVIOUS:
