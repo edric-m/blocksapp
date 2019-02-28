@@ -120,12 +120,14 @@ public class BroadcastService extends Service {
                         .setContentText("app has switched to break time")
                         .setLights(Color.WHITE,1,1)
                         .setSound(alarmSound)
+                        .setAutoCancel(true)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(contentIntent);
+        //builder.build().flags |= Notification.FLAG_AUTO_CANCEL; //doesn't need this
 
         // Add as notification
         notificationManager.notify(0, builder.build());
@@ -169,7 +171,8 @@ public class BroadcastService extends Service {
 
         Intent intent = new Intent(this, MainActivity.class); //goes back to main when clicked main must have single instance
         //Intent intent = new Intent();
-        PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, intent,
+                PendingIntent.FLAG_UPDATE_CURRENT); //TODO: check flag is ok
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"default");
 
