@@ -122,7 +122,7 @@ public class BroadcastService extends Service {
                         .setSound(alarmSound)
                         .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
 
-        Intent notificationIntent = new Intent(this, BroadcastService.class);
+        Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(contentIntent);
@@ -141,9 +141,7 @@ public class BroadcastService extends Service {
         cdt.cancel();
         Log.d(TAG, "service timer cancelled");
         super.onDestroy();
-
     }
-
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -169,7 +167,7 @@ public class BroadcastService extends Service {
 
     public void setNotification() {
 
-        Intent intent = new Intent(this, BroadcastService.class); //TODO: no difference?
+        Intent intent = new Intent(this, MainActivity.class); //goes back to main when clicked main must have single instance
         //Intent intent = new Intent();
         PendingIntent pi = PendingIntent.getActivity(this, 0, intent, 0);
 
