@@ -16,6 +16,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.os.Process;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -203,16 +204,17 @@ public class MainActivity extends AppCompatActivity {
     /* not enough time to save db
      *
      */
+    @Override
     protected void onDestroy() {
         //stop service
         if(mServiceStarted) {
             unregisterReceiver(br); //TODO: this is not a good idea, ondestroy is not always called
             this.stopService(new Intent(this, BroadcastService.class));
         }
+        Log.d("MyActivity", "destroy called" );
+        Process.killProcess(Process.myPid());
         super.onDestroy();
         //saveDb();
-        Log.d("MyActivity", "destroy called" );
-
     }
 
     @Override
@@ -399,7 +401,8 @@ public class MainActivity extends AppCompatActivity {
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
         */
-
+        mTimerRunning = false;
+        refreshDisplay(mTimerRunning);
         //settings //TODO: load current tasks into settings
         Intent i = new Intent(this, SettingsActivity.class);
         int idx = 0;
@@ -439,6 +442,8 @@ public class MainActivity extends AppCompatActivity {
      */
     public void addTask() { //TODO: called by action button
         //new task
+        mTimerRunning = false;
+        refreshDisplay(mTimerRunning);
         Intent i = new Intent(this, NewTaskActivity.class);
         startActivityForResult(i, 1); //request code is so we know who we are hearing back from
         //mTimerRunning = false;

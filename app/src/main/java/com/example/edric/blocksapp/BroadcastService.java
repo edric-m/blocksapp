@@ -171,8 +171,7 @@ public class BroadcastService extends Service {
 
         Intent intent = new Intent(this, MainActivity.class); //goes back to main when clicked main must have single instance
         //Intent intent = new Intent();
-        PendingIntent pi = PendingIntent.getActivity(this, 0, intent,
-                PendingIntent.FLAG_UPDATE_CURRENT); //TODO: check flag is ok
+        PendingIntent pi = PendingIntent.getActivity(this, 0, intent,0); //TODO: check flag is ok
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this,"default");
 
