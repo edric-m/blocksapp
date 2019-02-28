@@ -43,7 +43,7 @@ public class SettingsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
-        overridePendingTransition(R.anim.left_in, R.anim.left_out);
+        //overridePendingTransition(R.anim.left_in, R.anim.left_out); //TODO: change animation to down to up
         /*
         group1 = findViewById(R.id.radioGroup3);
         group2 = findViewById(R.id.radioGroup2);

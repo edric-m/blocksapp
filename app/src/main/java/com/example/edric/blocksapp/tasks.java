@@ -36,11 +36,20 @@ public class tasks implements Serializable {
         return taskList.getLast();
     }
 
-    public task switchTask() {
+    public task moveToNextTask() {
         if(current < taskList.size()-1) {
             current++;
         } else {
             current = 0;
+        }
+        return taskList.get(current);
+    }
+
+    public task moveToPrevTask() {
+        if(current == 0) {
+            current = taskList.size(); //TODO: double check
+        } else {
+            current--;
         }
         return taskList.get(current);
     }

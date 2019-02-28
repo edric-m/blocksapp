@@ -20,6 +20,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.Locale;
 import android.widget.Toast;
+import android.support.design.widget.FloatingActionButton;
 
 //TODO: implement try-catch where needed
 
@@ -45,7 +46,12 @@ public class MainActivity extends AppCompatActivity {
     private static final int MS_IN_1SEC = 1000; /*!< Constant used for onTick event*/
     private static final int MS_IN_10MIN = 600000; /*!< Constant used for onTick event */
     private static final int MS_IN_1MIN = 60000; /*!< Constant used for adding new tasks */
-    private static final String BREAK_TIME_TEXT = "break time";/*!< Constant used when setting a textview */
+    private static final String BREAK_TIME_TEXT = "work break";/*!< Constant used when setting a textview */
+
+    private enum Direction {
+        PREVIOUS,
+        NEXT
+    }
 
     private BroadcastReceiver br = new BroadcastReceiver() {
         @Override
@@ -96,6 +102,15 @@ public class MainActivity extends AppCompatActivity {
         });
         startOnTickEvent();
         //not start service here
+
+        //floating action button setup listener
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addTask();
+            }
+        });
     }
 
     private void deleteTask() {
@@ -200,15 +215,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    /*
-    protected void onStop() {
-        //start service
-        super.onStop();
-        Log.d("MyActivity", "stop called" );
-        //saveDb();
-    }
-    */
-
     @Override
     protected void onPause() {
 
@@ -275,30 +281,31 @@ public class MainActivity extends AppCompatActivity {
 
                 if (initialX < finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
                     //Log.d(TAG, "Left to Right swipe performed");
-                    if(mHasTasks)
-                        goLeft();
+                    switchTask(Direction.PREVIOUS);
                 }
 
                 if (initialX > finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
                     //Log.d(TAG, "Right to Left swipe performed");
-                    /*
-                    FeedReaderDbHelper db = new FeedReaderDbHelper(this);
-                    db.addTask();
-                    taskName.setText("ok so far");
-                    */
-                    goRight();
+                    switchTask(Direction.NEXT); //switch task next
                 }
 
                 if (initialY < finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
                     //Log.d(TAG, "Up to Down swipe performed");
                     if(mHasTasks)
-                        goUp();
+                        startWorkBreak(); //work break
                 }
 
                 if (initialY > finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
                     //Log.d(TAG, "Down to Up swipe performed");
                     if(mHasTasks)
-                        goDown();
+                        if(mTimerRunning) {
+                            openSettings();
+                        } else {
+                            mTimerRunning = true;
+                            refreshDisplay(false);
+                            //toast.setText(selectedTask.getName() + " resumed");
+                            //toast.show();
+                        }
                 }
                 break;
 
@@ -370,7 +377,7 @@ public class MainActivity extends AppCompatActivity {
      * screen.
      * @Note: Changes mTimerRunning to false
      */
-    public void goUp() {
+    public void startWorkBreak() {
         mTimerRunning = false;
         refreshDisplay(true);
         Toast toast = Toast.makeText(getApplicationContext(), "all timers paused", Toast.LENGTH_SHORT);
@@ -385,38 +392,15 @@ public class MainActivity extends AppCompatActivity {
      * the screen.
      * @Note: Changes mTimerRunning to true if all timers paused.
      */
-    public void goDown() { //theres a bug here on startup
+    public void openSettings() { //open task settings
+        /*
         Context context = getApplicationContext();
         CharSequence text = "";
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
+        */
 
-        //resume task or
-        if (mTimerRunning){
-            //switch task
-            selectedTask = list.switchTask();
-            refreshDisplay(false);
-            toast.setText("switched to " + selectedTask.getName());
-            if(list.size() > 1) {
-                toast.show();
-            }
-        }
-        else {
-            mTimerRunning = true;
-            refreshDisplay(false);
-            toast.setText(selectedTask.getName() + " resumed");
-            toast.show();
-        }
-    }
-
-    /**
-     * @Brief: Starts the add task activity. Called when onTouch detects a swipe from top to bottom
-     * of the screen.
-     * @Note: Changes mTimerRunning to false, pausing the tasks.
-     */
-    public void goLeft() {
-
-        //settings
+        //settings //TODO: load current tasks into settings
         Intent i = new Intent(this, SettingsActivity.class);
         int idx = 0;
         for (task t : list.getList()) {
@@ -426,8 +410,26 @@ public class MainActivity extends AppCompatActivity {
         }
         i.putExtra("item_count", Integer.toString(idx));
         startActivityForResult(i, 2);
+    }
 
-        //mTimerRunning = false;
+    /**
+     * @Brief: Starts the add task activity. Called when onTouch detects a swipe from top to bottom
+     * of the screen.
+     * @Note: Changes mTimerRunning to false, pausing the tasks. //TODO: rewrite documentation
+     */
+    public void switchTask(Direction direction  ) {
+        if(mTimerRunning) {
+            switch (direction) {
+                case PREVIOUS:
+                    selectedTask = list.moveToPrevTask();
+                    break;
+                case NEXT:
+                    selectedTask = list.moveToNextTask();
+                    break;
+                default:
+            }
+            refreshDisplay(false);
+        }
     }
 
     /**
@@ -435,7 +437,7 @@ public class MainActivity extends AppCompatActivity {
      * bottom of the screen.
      * @Note: Changes mTimerRunning to false, pausing the tasks.
      */
-    public void goRight() {
+    public void addTask() { //TODO: called by action button
         //new task
         Intent i = new Intent(this, NewTaskActivity.class);
         startActivityForResult(i, 1); //request code is so we know who we are hearing back from
@@ -506,7 +508,7 @@ public class MainActivity extends AppCompatActivity {
                         //startTimer();
 
                         if(data.getBooleanExtra("StartNew", false)) {
-                            goRight();
+                            //addTask(); //TODO: remove this functionality?
                         }
                     }
                     break;
@@ -517,7 +519,7 @@ public class MainActivity extends AppCompatActivity {
                             selectedTask.setTimeAllocated(
                                     (long)data.getExtras().getDouble("item"+Integer.toString(x)));
                         }
-                        selectedTask = list.switchTask();
+                        selectedTask = list.moveToNextTask();
                     }
                     selectedTask = list.selectFirstTask();
                     mTimerRunning = true;

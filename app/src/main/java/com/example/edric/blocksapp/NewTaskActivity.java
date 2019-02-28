@@ -34,7 +34,7 @@ public class NewTaskActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_task);
-        overridePendingTransition(R.anim.go_in, R.anim.go_out);
+        //overridePendingTransition(R.anim.go_in, R.anim.go_out);
 
         newActivity = false;
         hoursSet = 0;
@@ -122,7 +122,7 @@ public class NewTaskActivity extends AppCompatActivity {
         }
 
         super.finish();
-        overridePendingTransition(R.anim.back_out, R.anim.back_in);
+        //overridePendingTransition(R.anim.back_out, R.anim.back_in);
     }
 
     /**
