@@ -31,8 +31,11 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     //recyclerview
-    compile 'com.android.support:recyclerview-v7:28.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
 
     //floating action button
     implementation 'com.android.support:design:28.0.0'
+
+    //percentage margin
+    //implementation 'com.android.support.constraint:constraint-layout:1.1.0'
 }

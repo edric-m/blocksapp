@@ -212,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
             this.stopService(new Intent(this, BroadcastService.class));
         }
         Log.d("MyActivity", "destroy called" );
-        Process.killProcess(Process.myPid());
+        Process.killProcess(Process.myPid()); //app wasnt terminating properly in android studio debug
         super.onDestroy();
         //saveDb();
     }

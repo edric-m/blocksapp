@@ -4,4 +4,5 @@
     <color name="colorPrimaryDark">#3861a0</color>
     <color name="colorAccent">#f4b942</color>
     <color name="colorTimerBackground">#1B1F59</color>
+    <color name="black">#000000</color>
 </resources>

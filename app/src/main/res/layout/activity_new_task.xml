@@ -1,56 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewTask"
     android:background="@color/colorPrimary">
 
-    <TextView
-        android:id="@+id/textView"
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelinevertical"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="44dp"
-        android:layout_marginLeft="44dp"
-        android:layout_marginTop="136dp"
-        android:text="Name"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.1" />
 
-    <TextView
-        android:id="@+id/textView2"
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelinehorizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="220dp"
-        android:layout_marginRight="260dp"
-        android:text="Hours: 0"
-        app:layout_constraintRight_toRightOf="@id/newtime_seekbar"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.15" />
 
-    <EditText
-        android:id="@+id/editText"
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelineverticalright"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="120dp"
-        android:layout_marginEnd="48dp"
-        android:layout_marginRight="48dp"
-        android:ems="10"
-        android:inputType="textPersonName"
-        android:selectAllOnFocus="true"
-        android:text="rename"
-        android:textColor="@android:color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <SeekBar
-        android:id="@+id/newtime_seekbar"
-        android:layout_width="240dp"
-        android:layout_height="13dp"
-        android:layout_marginTop="220dp"
-        android:layout_marginRight="20dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.9" />
 
     <Button
         android:id="@+id/button"
@@ -65,33 +39,110 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="44dp"
-        android:layout_marginEnd="49dp"
-        android:layout_marginRight="49dp"
-        android:text="ADD A NEW TASK"
-        app:layout_constraintEnd_toStartOf="@+id/button"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="10dp"
+        app:layout_constraintStart_toStartOf="@+id/guidelinevertical"
+        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal"
+        android:text="Timer name" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="0dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:selectAllOnFocus="true"
+        android:text="rename"
+        android:textColor="@android:color/white"
+        app:layout_constraintLeft_toRightOf="@id/textView"
+        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal"
+        app:layout_constraintEnd_toStartOf="@id/guidelineverticalright"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:layout_marginLeft="140dp"
+        android:text="Hours: 0"
+        app:layout_constraintLeft_toLeftOf="@id/guidelinevertical"
+        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal" />
+
+    <Button
+        android:id="@+id/btn_hr_minus"
+        android:layout_width="30dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="87dp"
+        android:textColor="@color/black"
+        android:text="-"
+        app:layout_constraintLeft_toLeftOf="@id/guidelinevertical"
+        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal"/>
+
+    <SeekBar
+        android:id="@+id/newtime_seekbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="95dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintLeft_toRightOf="@id/btn_hr_minus"
+        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal"
+        app:layout_constraintRight_toLeftOf="@id/btn_hr_add"/>
+
+    <Button
+        android:id="@+id/btn_hr_add"
+        android:layout_width="30dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="87dp"
+        android:text="+"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal"
+        app:layout_constraintEnd_toStartOf="@id/guidelineverticalright"/>
 
     <TextView
         android:id="@+id/textView4"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="275dp"
-        android:layout_marginRight="260dp"
+        android:layout_marginTop="130dp"
+        android:layout_marginLeft="140dp"
         android:text="Mins: 0"
-        app:layout_constraintRight_toRightOf="@id/seekBar_min"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintLeft_toLeftOf="@id/guidelinevertical"
+        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal" />
+
+    <Button
+        android:id="@+id/btn_min_minus"
+        android:layout_width="30dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="162dp"
+        android:text="-"
+        android:textColor="@color/black"
+        app:layout_constraintLeft_toLeftOf="@id/guidelinevertical"
+        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal"/>
 
     <SeekBar
         android:id="@+id/seekBar_min"
-        android:layout_width="240dp"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="275dp"
-        android:layout_marginRight="20dp"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="170dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        app:layout_constraintLeft_toRightOf="@id/btn_min_minus"
+        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal"
+        app:layout_constraintRight_toLeftOf="@id/btn_min_plus"/>
+
+    <Button
+        android:id="@+id/btn_min_plus"
+        android:layout_width="30dp"
+        android:layout_height="34dp"
+        android:layout_marginTop="162dp"
+        android:layout_marginLeft="20dp"
+        android:text="+"
+        android:textColor="@color/black"
+        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal"
+        app:layout_constraintEnd_toStartOf="@id/guidelineverticalright"/>
 
 </android.support.constraint.ConstraintLayout>

@@ -6,10 +6,12 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.content.Intent;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import static java.lang.Math.min;
 import static java.lang.Math.round;
 
 public class NewTaskActivity extends AppCompatActivity {
@@ -20,6 +22,7 @@ public class NewTaskActivity extends AppCompatActivity {
     private EditText name; /*!< User text input for the new tasks name */
     private TextView mTimeLabel, mMinLabel; /*!< Label that shows the user input */
     private SeekBar mSeekBarHours, mSeekBarMinutes; /*!< Seekbar input for the desired hours and mins to set */
+    private Button mBtnHrM, mBtnHrA, mBtnMinM, mBtnMinA;
 
     private float initialX, initialY; /*!< Co-ordinates for the onTouch event */
     private int hoursSet, minSet; /*!< Time selected by user variables */
@@ -45,7 +48,43 @@ public class NewTaskActivity extends AppCompatActivity {
         mTimeLabel = findViewById(R.id.textView2);
         mMinLabel = findViewById(R.id.textView4);
         setupSeekbars();
+        setUpFineButtons();
         Log.d("NewTaskActivity", "onCreate called");
+    }
+
+    private void setUpFineButtons() {
+        mBtnHrM = findViewById(R.id.btn_hr_minus);
+        mBtnHrM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hoursSet = (int)Math.round((mSeekBarHours.getProgress()) -(1/0.16));
+                mSeekBarHours.setProgress(hoursSet);
+            }
+        });
+        mBtnHrA = findViewById(R.id.btn_hr_add);
+        mBtnHrA.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                hoursSet = (int)Math.round((mSeekBarHours.getProgress()) +(1/0.16));
+                mSeekBarHours.setProgress(hoursSet);
+            }
+        });
+        mBtnMinM = findViewById(R.id.btn_min_minus);
+        mBtnMinM.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                minSet = (int)Math.round((mSeekBarMinutes.getProgress()) -(1/0.6));
+                mSeekBarMinutes.setProgress(minSet);
+            }
+        });
+        mBtnMinA = findViewById(R.id.btn_min_plus);
+        mBtnMinA.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                minSet = (int)Math.round((mSeekBarMinutes.getProgress()) +(1/0.6));
+                mSeekBarMinutes.setProgress(minSet);
+            }
+        });
     }
 
     /**
