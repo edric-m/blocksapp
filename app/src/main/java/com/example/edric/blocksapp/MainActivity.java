@@ -408,7 +408,7 @@ public class MainActivity extends AppCompatActivity {
         int idx = 0;
         for (task t : list.getList()) {
             i.putExtra("item" + Integer.toString(idx), t.getName());
-            //i.putExtra("itemValue" + Integer.toString(idx), t.getTimeAllocated());
+            i.putExtra("itemValue" + Integer.toString(idx), t.getTimeAllocated());
             idx++;
         }
         i.putExtra("item_count", Integer.toString(idx));

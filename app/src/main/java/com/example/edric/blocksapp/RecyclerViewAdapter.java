@@ -1,7 +1,9 @@
 package com.example.edric.blocksapp;
 
 import android.content.Context;
+import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.RequiresApi;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,13 +17,16 @@ import java.util.ArrayList;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
 
     private ArrayList<String> mNameList = new ArrayList<>();
+    private ArrayList<task> mTaskList;
+    private double mtotalMs;
     //list of seekbars?
     //variable to layout?
     private SettingsActivity mContext;
 
-    public RecyclerViewAdapter(Context context, ArrayList<String> nameList) {
-        this.mNameList = nameList;
+    public RecyclerViewAdapter(Context context, ArrayList<task> taskList, int totalMs) {
+        this.mTaskList = taskList;
         this.mContext = (SettingsActivity)context;
+        this.mtotalMs = totalMs;
     }
 
     @NonNull
@@ -35,7 +40,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
 
-        viewHolder.itemName.setText(mNameList.get(i));
+        viewHolder.itemName.setText(mTaskList.get(i).getName());
+        viewHolder.position = (int)Math.round((mTaskList.get(i).getTimeAllocated()/mtotalMs)*100);
+        viewHolder.itemSeekbar.setProgress(viewHolder.position); //TODO: not converted to hours
+        //viewHolder.itemSeekbar.setProgress(50);
+        //viewHolder.position = 50; //TODO: works but cannot change text
         viewHolder.itemSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -59,7 +68,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public int getItemCount() {
-        return mNameList.size();
+        return mTaskList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

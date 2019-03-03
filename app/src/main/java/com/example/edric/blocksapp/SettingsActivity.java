@@ -26,6 +26,7 @@ public class SettingsActivity extends AppCompatActivity {
     private int count = 0;
     private double period = 1, plan = 48+46, blockSize = 10, mintoms = 60000; //46 blocks for r&r
     private ArrayList<String> strList = new ArrayList<String>();
+    private ArrayList<task> taskList = new ArrayList<task>();
     private boolean changesMade = false;
     private float initialX, initialY;
     //widget variables
@@ -93,15 +94,30 @@ public class SettingsActivity extends AppCompatActivity {
 
             }
         });
+
         recyclerView = findViewById(R.id.recyclerv_view);
         Intent i = getIntent();
         int y = Integer.parseInt(i.getStringExtra("item_count"));
         count = y;
+        int totalMsLoaded = 0;
+
         for(int x=0;x<y;x++) {
-            strList.add(i.getStringExtra("item"+Integer.toString(x)));
+            //strList.add(i.getStringExtra("item"+Integer.toString(x)));
+
+            taskList.add(new task(i.getStringExtra("item"+Integer.toString(x)),
+                    (int)i.getLongExtra("itemValue"+Integer.toString(x),0)));
+
+            totalMsLoaded += (int)i.getLongExtra("itemValue"+Integer.toString(x),0);
         }
 
-        initRecyclerView();
+        plan = (totalMsLoaded/(mintoms*10));
+        mTimeText.setText("Total time per day: "+new DecimalFormat("#.#").format(plan*0.16666)+" hrs");
+        initRecyclerView(totalMsLoaded);
+        changesMade = true;
+
+        //RecyclerViewAdapter.ViewHolder item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(1);
+        //item.itemValue.setText("poo hrs");
+        //calculateTime();
         //calculateTime(); //breaks
         /*
         t = (tasks)getIntent().getSerializableExtra("list");
@@ -114,8 +130,8 @@ public class SettingsActivity extends AppCompatActivity {
         */
     }
 
-    private void initRecyclerView(){
-        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, strList);
+    private void initRecyclerView(int totalMs){
+        RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, taskList, totalMs);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         /* //use intents inside the viewholder?
@@ -135,6 +151,7 @@ public class SettingsActivity extends AppCompatActivity {
         changesMade = true;
     }
 
+    /*
     public void testGetValue(View view) {
         RecyclerViewAdapter.ViewHolder item;
         int[] valueList = new int[count];
@@ -147,6 +164,7 @@ public class SettingsActivity extends AppCompatActivity {
             item.itemName.setText(Double.toString(3d/(double)total));
         }
     }
+    */
 
     public void calculateTime () {
         //calculation variables
@@ -154,7 +172,7 @@ public class SettingsActivity extends AppCompatActivity {
         double[] returnTimeList = new double[count];
         int[] valueList = new int[count];
         // Prepare data intent
-        Intent data = new Intent();
+        //Intent data = new Intent();
         RecyclerViewAdapter.ViewHolder item;
         DecimalFormat df = new DecimalFormat("#.#");
 
