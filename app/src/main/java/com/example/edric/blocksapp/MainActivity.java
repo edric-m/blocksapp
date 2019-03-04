@@ -440,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
      * bottom of the screen.
      * @Note: Changes mTimerRunning to false, pausing the tasks.
      */
-    public void addTask() { //TODO: called by action button
+    public void addTask() {
         //new task
         mTimerRunning = false;
         refreshDisplay(mTimerRunning);
@@ -517,7 +517,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                     break;
-                case 2:
+                case 2: //TODO: instead read from database to get tasks
                     selectedTask = list.selectFirstTask();
                     for(int x=0;x<list.size();x++) {
                         if(data.hasExtra("item"+Integer.toString(x))) {

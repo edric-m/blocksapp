@@ -86,20 +86,24 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         }
     }
 
-    public task readTask(int id) {
+    /*
+    public int readTask(String name) {
+        int id = -1;
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT * FROM tasks WHERE name=please_work";
+        String query = "SELECT " + DbContract.FeedEntry._ID + " FROM tasks WHERE name="+name;
         Cursor res =  db.rawQuery( query, null );
-        task t = new task(res.getString(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_NAME)),
-                          res.getInt(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING)));
-        return t;
+        if(res.getCount() > 0) {
+            id = res.getInt(res.getColumnIndex(DbContract.FeedEntry._ID));
+        }
+        return id;
     }
+    */
 
     /**
      * works so far
      * @return
      */
-    public tasks readAllTasks() {
+    public tasks readAllTasks() { //TODO: have to use join with group table
         SQLiteDatabase db = this.getReadableDatabase();
         tasks taskList = new tasks();
         //task focus;
@@ -122,7 +126,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
      * @param taskList
      * @return
      */
-    public boolean updateAllTasks(tasks taskList) {
+    public boolean updateAllTasks(tasks taskList) { //TODO update all tasks where plan = 0
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues contentValues = new ContentValues();
         boolean result = true;

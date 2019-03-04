@@ -25,4 +25,10 @@ public final class DbContract {
         public static final String STATUS_COLUMN_BREAK_TIME = "break_time";
         public static final String STATUS_COLUMN_TIME_PERIOD = "time_period";
     }
+
+    public static class TaskGroupEntry implements BaseColumns {
+        public static final String GROUP_TABLE_NAME = "group_tbl";
+        public static final String GROUP_COLUMN_PLAN_ID = "group_id";
+        public static final String GROUP_COLUMN_TASK_ID = "task_id";
+    }
 }

@@ -25,10 +25,10 @@ public class task {
         //int b = 255;//random.nextInt(max - min + 1) + min;
         //colour = String.format("#%02x%02x%02x", r, g, b);
     }
-
+    /*
     public void setPeriod(int setPref) {
-
     }
+    */
     public void decrementTime() {
         if (timeAllocated >= 0) {
             timeAllocated = timeAllocated - 1000;

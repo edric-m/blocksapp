@@ -146,7 +146,6 @@ public class SettingsActivity extends AppCompatActivity {
         */
     }
 
-
     public void setChangesMade() {
         changesMade = true;
     }
