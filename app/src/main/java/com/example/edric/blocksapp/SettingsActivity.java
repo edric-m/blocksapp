@@ -1,6 +1,8 @@
 package com.example.edric.blocksapp;
 
 import android.content.Intent;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,7 +19,7 @@ import android.widget.TextView;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity implements DialogPlan.OnInputListener {
     //multi activity variables
     public static final String PLAN_KEY = "plan";
     public static final String PERIOD_KEY = "period";
@@ -33,6 +35,7 @@ public class SettingsActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private SeekBar mTimeSeekbar, mPeriodSeekbar;
     private TextView mTimeText, mPeriodText;
+    private Button mLoadBtn;
     /*
     private RadioGroup group1, group2;
     private Button b;
@@ -50,6 +53,13 @@ public class SettingsActivity extends AppCompatActivity {
         group2 = findViewById(R.id.radioGroup2);
         b = findViewById(R.id.button2);
         */
+        mLoadBtn = findViewById(R.id.button_load);
+        mLoadBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadPlan();
+            }
+        });
         mPeriodText = findViewById(R.id.period_text);
         mPeriodSeekbar = findViewById(R.id.seekbar_period);
         mPeriodSeekbar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -128,6 +138,12 @@ public class SettingsActivity extends AppCompatActivity {
             ct = t.switchTask();
         }
         */
+    }
+
+    private void loadPlan() {
+        //create fragment
+        DialogPlan dialog = new DialogPlan();
+        dialog.show(getSupportFragmentManager(), "DialogPlan");
     }
 
     private void initRecyclerView(int totalMs){
@@ -231,6 +247,11 @@ public class SettingsActivity extends AppCompatActivity {
             setResult(RESULT_CANCELED, data);
         }
         super.finish();
+    }
+
+    @Override
+    public void savePlan(int input) {
+        mLoadBtn.setText(Integer.toString(input));
     }
     /* //probably best not to have this functionality TODO: load the time values in
     @Override

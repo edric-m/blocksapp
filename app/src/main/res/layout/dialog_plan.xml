@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <android.support.constraint.Guideline
+        android:id="@+id/guidelinevertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.1"/>
+    <TextView
+        android:id="@+id/textview_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="@id/guidelinevertical"
+        android:text="Select which plan to save to"
+        android:textColor="@color/black"/>
+    <Button
+        android:id="@+id/button_plan1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textview_title"
+        app:layout_constraintLeft_toRightOf="@id/guidelinevertical"
+        android:text="Plan 1"
+        android:textColor="@color/black"/>
+    <Button
+        android:id="@+id/button_plan2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/button_plan1"
+        app:layout_constraintLeft_toRightOf="@id/guidelinevertical"
+        android:text="Plan 2"
+        android:textColor="@color/black"/>
+    <Button
+        android:id="@+id/button_plan3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/button_plan2"
+        app:layout_constraintLeft_toRightOf="@id/guidelinevertical"
+        android:text="Plan 3"
+        android:textColor="@color/black"/>
+    <Button
+        android:id="@+id/button_plan4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/button_plan3"
+        app:layout_constraintLeft_toRightOf="@id/guidelinevertical"
+        android:text="Plan 4"
+        android:textColor="@color/black"/>
+    <Button
+        android:id="@+id/button_plan5"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/button_plan4"
+        app:layout_constraintLeft_toRightOf="@id/guidelinevertical"
+        android:text="Plan 5"
+        android:textColor="@color/black"/>
+    <Button
+        android:id="@+id/button_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/button_plan5"
+        app:layout_constraintLeft_toRightOf="@id/guidelinevertical"
+        android:text="cancel"
+        android:textColor="@color/black"/>
+
+</android.support.constraint.ConstraintLayout>

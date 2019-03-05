@@ -55,9 +55,16 @@
         android:id="@+id/button_cancel"
         android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_toLeftOf="@id/button_settings"
+        android:layout_toLeftOf="@id/button_load"
         android:onClick="cancelSettings"
         android:text="cancel" />
+
+    <Button
+        android:id="@+id/button_load"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/button_settings"
+        android:text="load"/>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

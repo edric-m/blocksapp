@@ -484,6 +484,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /*
+    @Override
+    protected void onPostResume() {
+        super.onPostResume();
+    }
+    */
+
+
     /**
      * @Brief: Called when an activity has a result for MainActivity.
      * @Param: -int requestCode - the code of the activity that has a result.
