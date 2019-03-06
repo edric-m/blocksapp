@@ -41,7 +41,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
 
         viewHolder.itemName.setText(mTaskList.get(i).getName());
-        viewHolder.position = (int)Math.round((mTaskList.get(i).getTimeAllocated()/mtotalMs)*100);
+        if(mtotalMs > 0) {
+            viewHolder.position = (int) Math.round((mTaskList.get(i).getTimeAllocated() / mtotalMs) * 100);
+        }
         viewHolder.itemSeekbar.setProgress(viewHolder.position); //TODO: not converted to hours
         //viewHolder.itemSeekbar.setProgress(50);
         //viewHolder.position = 50; //TODO: works but cannot change text

@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.DragEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -36,6 +37,8 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     private SeekBar mTimeSeekbar, mPeriodSeekbar;
     private TextView mTimeText, mPeriodText;
     private Button mLoadBtn;
+
+    private int selectedPlan;
     /*
     private RadioGroup group1, group2;
     private Button b;
@@ -53,6 +56,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         group2 = findViewById(R.id.radioGroup2);
         b = findViewById(R.id.button2);
         */
+        selectedPlan = 0;
         mLoadBtn = findViewById(R.id.button_load);
         mLoadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -250,10 +254,39 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     }
 
     @Override
-    public void savePlan(int input) {
-        mLoadBtn.setText(Integer.toString(input));
+    public void savePlan(int planNum) {
+        Log.d("SavePlan", "write started");
+        FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+        for(int x=0;x<count;x++){
+            if(!db.addToGroup(taskList.get(x).getName(), planNum))
+                Log.d("SavePlan", "write to group db failed");
+        }
+
     }
-    /* //probably best not to have this functionality TODO: load the time values in
+
+    public void loadPlanToMain() {//TODO: actual load function
+        //remove previous with 0 plan
+        //vaccum
+        //save tasks to 0 plan
+        //close settingsActivity
+    }
+
+    public void switchPlan() {
+        selectedPlan++;
+        if(selectedPlan == 6) {
+            selectedPlan = 0;
+        }
+        //load tasklist with those from next plan
+        FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+        taskList = db.readPlan(selectedPlan);
+        if(taskList.size() > 0) {
+            //get total
+            initRecyclerView(0);
+        }
+
+    }
+
+    //probably best not to have this functionality TODO: load the time values in
     @Override
     public boolean onTouchEvent (MotionEvent event) {
 
@@ -274,7 +307,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
                 float finalX = event.getX();
                 float finalY = event.getY();
 
-
+                /*
                 if (initialX < finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
                     //Log.d(TAG, "Left to Right swipe performed");
                     //goLeft();
@@ -283,17 +316,19 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
                 if (initialX > finalX && Math.abs(finalY - initialY) < Math.abs(initialX - finalX)) {
                     //Log.d(TAG, "Right to Left swipe performed");
                     //goRight();
-                    finish();
+
                 }
 
                 if (initialY < finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
                     //Log.d(TAG, "Up to Down swipe performed");
                     //goUp();
                 }
+                */
 
                 if (initialY > finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
                     //Log.d(TAG, "Down to Up swipe performed");
                     //goDown();
+                    switchPlan();
                 }
 
                 break;
@@ -308,5 +343,6 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         }
         return super.onTouchEvent(event);
     }
-    */
+
+
 }
