@@ -74,7 +74,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         Log.d("GroupHelper", "addToGroup() called name:" + name + " plan:" + Integer.toString(plan));
         SQLiteDatabase db = this.getReadableDatabase();
 
-        int taskid = readTask(name, db);
+        int taskid = readTask(name, db); //TODO: just use inner join here
         Log.d("GroupHelper", "readTask() finished id:" + Integer.toString(taskid));
         if(taskid == -1) {
             return false;
@@ -112,20 +112,24 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         //SELECT name, time from tasks_tbl INNER JOIN group_tbl ON group_.tbl.taskid = tasks_tbl._id
         String query = "SELECT " + DbContract.FeedEntry.TASK_COLUMN_NAME + "," +
                 DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING + " FROM " +
-                DbContract.FeedEntry.TASK_TABLE_NAME + "INNER JOIN " +
+                DbContract.FeedEntry.TASK_TABLE_NAME + "[INNER] JOIN " +
                 DbContract.TaskGroupEntry.GROUP_TABLE_NAME + " ON " +
-                DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + "=" +
+                DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + " = " +
                 DbContract.FeedEntry._ID + " WHERE " +
                 DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID + " = " +
                 Integer.toString(planId);
+        Log.d("SwitchPlan", "try query");
         Cursor res =  db.rawQuery( query, null );
+        Log.d("SwitchPlan", "query ok query count: " + Integer.toString(res.getCount()));
         res.moveToFirst();
         while(!res.isAfterLast()){
             taskList.add(new task(
                     res.getString(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_NAME)),
                     res.getInt(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING))));
+            Log.d("SwitchPlan", "task added to array");
             res.moveToNext();
         }
+        Log.d("SwitchPlan", "readPlan ended ok");
         return taskList;
     }
 
@@ -140,6 +144,20 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         return db.delete(DbContract.TaskGroupEntry.GROUP_TABLE_NAME,
                 DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + "=" + Integer.toString(id),
                 null) > 0;
+    }
+
+    public void deletePlan(int planID) {
+        SQLiteDatabase db = getReadableDatabase();
+        db.delete(DbContract.TaskGroupEntry.GROUP_TABLE_NAME,
+                DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID +"="+ Integer.toString(planID),
+                null);
+        db.execSQL("vacuum");
+    }
+
+    public void clearPlanTable() {
+        SQLiteDatabase db = getReadableDatabase();
+        db.delete(DbContract.TaskGroupEntry.GROUP_TABLE_NAME, null, null);
+        db.execSQL("vacuum");
     }
 
     ///////TASK TABLE FUNCTIONS
@@ -167,13 +185,27 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         String selection = DbContract.FeedEntry.TASK_COLUMN_NAME + " LIKE ?";
         // Specify arguments in placeholder order.
         String[] selectionArgs = { name };
-        // Issue SQL statement.
-        int deletedRows = db.delete(DbContract.FeedEntry.TASK_TABLE_NAME, selection, selectionArgs);
-        if(deletedRows != 0) {
-            return false;
+        //select planid from group inner join task on taskid = group.taskid where taskname = _name
+        String query = "SELECT " + DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID + " FROM " +
+                DbContract.TaskGroupEntry.GROUP_TABLE_NAME + "[INNER] JOIN " +
+                DbContract.FeedEntry.TASK_TABLE_NAME + " ON " +
+                DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + " = " +
+                DbContract.FeedEntry._ID + " WHERE " +
+                DbContract.FeedEntry.TASK_COLUMN_NAME + " = " +
+                name;
+        Cursor res = db.rawQuery(query, null);
+        //only delete the task if it is not part of any plan
+        if(res.getCount() == 1) {
+            // Issue SQL statement.
+            int deletedRows = db.delete(DbContract.FeedEntry.TASK_TABLE_NAME, selection, selectionArgs);
+            if (deletedRows != 0) {
+                return false;
+            } else {
+                db.execSQL("vacuum");
+                return true;
+            }
         } else {
-            db.execSQL("vacuum");
-            return true;
+            return false;
         }
     }
 
@@ -198,8 +230,13 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getReadableDatabase();
         tasks taskList = new tasks();
         //task focus;
-        Cursor res =  db.rawQuery(
-                "select * from " + DbContract.FeedEntry.TASK_TABLE_NAME, null );
+        //select * from tasktable inner join group on id = id where plan = 0
+        String query = "SELECT * FROM " + DbContract.FeedEntry.TASK_TABLE_NAME +
+                " [INNER] JOIN " + DbContract.TaskGroupEntry.GROUP_TABLE_NAME +
+                " ON " + DbContract.FeedEntry._ID + " = " +
+                DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + " WHERE " +
+                DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID + " = 0";
+        Cursor res =  db.rawQuery(query, null );
         res.moveToFirst();
         while(!res.isAfterLast()){
             taskList.addTask(
@@ -219,7 +256,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
      */
     public boolean updateAllTasks(tasks taskList) { //TODO update all tasks where plan = 0
         SQLiteDatabase db = this.getReadableDatabase();
-        ContentValues contentValues = new ContentValues();
+        ContentValues contentValues = new ContentValues(), newtask = new ContentValues();
         boolean result = true;
         int rowsAffected = 0;
 
@@ -238,7 +275,11 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
 
                 if(rowsAffected == 0) {
                     contentValues.put(DbContract.FeedEntry.TASK_COLUMN_NAME, selectedTask.getName());
-                    db.insert(DbContract.FeedEntry.TASK_TABLE_NAME, null, contentValues);
+                    long id = db.insert(DbContract.FeedEntry.TASK_TABLE_NAME, null, contentValues);
+                    //TODO: insert task into group table plan 0 also
+                    newtask.put(DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID, (int)id); //TODO: casting may cause future error if id is larger than integer.MAX_VALUE
+                    newtask.put(DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID,0);
+                    db.insert(DbContract.TaskGroupEntry.GROUP_TABLE_NAME, null, newtask);
                 }
 
             //} catch (Exception e) {

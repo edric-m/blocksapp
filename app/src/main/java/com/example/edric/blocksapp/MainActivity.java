@@ -240,7 +240,7 @@ public class MainActivity extends AppCompatActivity {
             //no need to pause timer
         }
 
-        super.onPause();
+        super.onPause(); //TODO: should these be at the beginning of the function?
         Log.d("MyActivity", "pause called" );
         saveDb();
     }
@@ -526,13 +526,15 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case 2: //TODO: instead read from database to get tasks
-                    selectedTask = list.selectFirstTask();
-                    for(int x=0;x<list.size();x++) {
+                    //selectedTask = list.selectFirstTask();
+                    list.clear();
+                    int count = data.getIntExtra("return_count", 0);
+                    for(int x=0;x<count;x++) {
                         if(data.hasExtra("item"+Integer.toString(x))) {
-                            selectedTask.setTimeAllocated(
-                                    (long)data.getExtras().getDouble("item"+Integer.toString(x)));
+                            list.addTask(data.getStringExtra("item"+Integer.toString(x)+"name"),
+                                    (int)data.getExtras().getDouble("item"+Integer.toString(x)));
                         }
-                        selectedTask = list.moveToNextTask();
+                        //selectedTask = list.moveToNextTask();
                     }
                     selectedTask = list.selectFirstTask();
                     mTimerRunning = true;

@@ -69,5 +69,9 @@ public class tasks implements Serializable {
     public void removeTask(task t) {
         taskList.remove(t);   //test this
     }
+
+    public void clear() {
+        taskList.clear();
+    }
 }
 

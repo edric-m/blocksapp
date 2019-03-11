@@ -36,7 +36,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     private RecyclerView recyclerView;
     private SeekBar mTimeSeekbar, mPeriodSeekbar;
     private TextView mTimeText, mPeriodText;
-    private Button mLoadBtn;
+    private Button mLoadBtn, mPlanDelBtn, mFinishBrn;
 
     private int selectedPlan;
     /*
@@ -56,7 +56,21 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         group2 = findViewById(R.id.radioGroup2);
         b = findViewById(R.id.button2);
         */
+        mFinishBrn = findViewById(R.id.button_settings);
+        mFinishBrn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loadPlanToMain();
+            }
+        });
         selectedPlan = 0;
+        mPlanDelBtn = findViewById(R.id.button_deleteplans);
+        mPlanDelBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deletePlans();
+            }
+        });
         mLoadBtn = findViewById(R.id.button_load);
         mLoadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -150,6 +164,11 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         dialog.show(getSupportFragmentManager(), "DialogPlan");
     }
 
+    private void deletePlans() {
+        FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+        db.clearPlanTable();
+    }
+
     private void initRecyclerView(int totalMs){
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, taskList, totalMs);
         recyclerView.setAdapter(adapter);
@@ -238,7 +257,9 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         for(int x=0;x<count;x++) {
             returnTimeList[x] = (int)Math.round((period * plan * blockSize * mintoms) * ((double)valueList[x]/(double)total));
             data.putExtra("item"+Integer.toString(x), returnTimeList[x]);
+            data.putExtra("item"+Integer.toString(x)+"name", taskList.get(x).getName());
         }
+        data.putExtra("return_count", count);
         //calculate break time
         //use a struct
         //calculate extra time
@@ -266,23 +287,39 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
 
     public void loadPlanToMain() {//TODO: actual load function
         //remove previous with 0 plan
-        //vaccum
+        FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+        db.deletePlan(0);
         //save tasks to 0 plan
+        savePlan(0);
         //close settingsActivity
+        finish();
     }
 
     public void switchPlan() {
-        selectedPlan++;
-        if(selectedPlan == 6) {
-            selectedPlan = 0;
-        }
+        //selectedPlan++;
+        //if(selectedPlan > 5) {
+        //    selectedPlan = 0;
+        //}
+        Log.d("SwitchPlan", "started");
         //load tasklist with those from next plan
-        FeedReaderDbHelper db = new FeedReaderDbHelper(this);
-        taskList = db.readPlan(selectedPlan);
-        if(taskList.size() > 0) {
-            //get total
+        try {
+            FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+            do {
+                taskList.clear();
+                taskList = db.readPlan(selectedPlan);
+                mPlanDelBtn.setText(Integer.toString(selectedPlan));
+                selectedPlan++;
+                if(selectedPlan > 5) {
+                    selectedPlan = 0;
+                }
+            } while (taskList.size() == 0);
+            count = taskList.size();
+            changesMade = true;
             initRecyclerView(0);
+        } catch (Exception e) {
+            Log.d("SwitchPlan", "error in readPlan()");
         }
+
 
     }
 
