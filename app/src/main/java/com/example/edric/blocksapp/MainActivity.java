@@ -501,9 +501,11 @@ public class MainActivity extends AppCompatActivity {
      * -is the only method that changes mhasTasks
      * -must refreshDisplay() before first if statement, breaks if its after.
      */
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         mTimerRunning = true;
+        Log.d("MyActivity", "requestCode:"+Integer.toString(requestCode) + " resultCode:"+Integer.toString(resultCode));
         refreshDisplay(!mTimerRunning); //fix this, its confusing
         if (resultCode == RESULT_OK) {
             switch(requestCode) {
@@ -545,4 +547,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 }

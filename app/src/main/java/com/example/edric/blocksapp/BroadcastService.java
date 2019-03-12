@@ -178,7 +178,7 @@ public class BroadcastService extends Service {
         builder.setSmallIcon(R.drawable.ic_action_name);
         builder.setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.largeicon));
-        builder.setTicker("App info string");
+        builder.setTicker("Background timer started");
         builder.setContentIntent(pi);
         builder.setOngoing(true);
         builder.setOnlyAlertOnce(true);

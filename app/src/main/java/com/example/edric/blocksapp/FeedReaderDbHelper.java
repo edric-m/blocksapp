@@ -185,23 +185,28 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         String selection = DbContract.FeedEntry.TASK_COLUMN_NAME + " LIKE ?";
         // Specify arguments in placeholder order.
         String[] selectionArgs = { name };
+        String id = Integer.toString(readTask(name, db));
         //select planid from group inner join task on taskid = group.taskid where taskname = _name
         String query = "SELECT " + DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID + " FROM " +
                 DbContract.TaskGroupEntry.GROUP_TABLE_NAME + "[INNER] JOIN " +
                 DbContract.FeedEntry.TASK_TABLE_NAME + " ON " +
                 DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + " = " +
                 DbContract.FeedEntry._ID + " WHERE " +
-                DbContract.FeedEntry.TASK_COLUMN_NAME + " = " +
-                name;
+                DbContract.FeedEntry.TASK_COLUMN_NAME + " = '" +
+                name + "'";
         Cursor res = db.rawQuery(query, null);
         //only delete the task if it is not part of any plan
         if(res.getCount() == 1) {
             // Issue SQL statement.
             int deletedRows = db.delete(DbContract.FeedEntry.TASK_TABLE_NAME, selection, selectionArgs);
+            db.delete(DbContract.TaskGroupEntry.GROUP_TABLE_NAME,
+                    DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + "=" + id,
+                            null);
+            db.execSQL("vacuum");
             if (deletedRows != 0) {
                 return false;
             } else {
-                db.execSQL("vacuum");
+
                 return true;
             }
         } else {
