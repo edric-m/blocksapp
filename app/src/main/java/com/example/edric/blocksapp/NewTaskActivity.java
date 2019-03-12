@@ -135,7 +135,7 @@ public class NewTaskActivity extends AppCompatActivity {
      */
     public void submitEntry(View view) {
         if(name.getText().toString().equals("rename")) {
-            newTaskName = "Alarm";
+            newTaskName = "Alarm ";
         } else {
             newTaskName = name.getText().toString();
         }

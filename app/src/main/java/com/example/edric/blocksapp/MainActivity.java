@@ -125,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 mTimerRunning = false;
                 mHasTasks = false;
-                taskName.setText("swipe to the left");
+                taskName.setText("create a new timer");
                 taskTime.setText("to begin");
                 layout.setBackgroundColor(Color.parseColor("#4576c1"));
                 mClearBtn.setVisibility(View.INVISIBLE);
@@ -514,6 +514,13 @@ public class MainActivity extends AppCompatActivity {
                         String n = data.getExtras().getString(NewTaskActivity.NAME_KEY);
                         String t = data.getExtras().getString(NewTaskActivity.TIME_KEY);
 
+                        //TODO: this is wrong, it must check with the db not the 'list' variable
+                        for(int x=0;x<list.size();x++) {
+                            if(list.getList().get(x).getName().equals(n)) {
+                                n = n + "i";
+                            }
+                            //list.moveToNextTask();
+                        }
                         list.addTask(n, Integer.parseInt(t) * MS_IN_1MIN); //t is in minutes, need to convert to ms
                         //pauseTimer();
                         selectedTask = list.selectNewTask();

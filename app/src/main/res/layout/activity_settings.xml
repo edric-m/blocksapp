@@ -8,20 +8,15 @@
     tools:context=".SettingsActivity"
     android:background="@color/colorPrimary">
 <!--
-    <Spinner
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/period_spinner"></Spinner>
-    <Spinner
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:id="@+id/plan_spinner"
-        android:layout_toRightOf="@+id/period_spinner"></Spinner>
+    @+id/button_deleteplans used for debugging the plan database
+        its visibility set to "gone" when not needed
 -->
     <Button
         android:id="@+id/button_deleteplans"
         android:layout_width="30dp"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:visibility="gone"/>
 
     <TextView
         android:layout_width="180dp"
