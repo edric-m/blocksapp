@@ -29,13 +29,13 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     private int count = 0;
     private double period = 1, plan = 48+46, blockSize = 10, mintoms = 60000; //46 blocks for r&r
     private ArrayList<String> strList = new ArrayList<String>();
-    private ArrayList<task> taskList = new ArrayList<task>();
+    private tasks taskList = new tasks();
     private boolean changesMade = false;
     private float initialX, initialY;
     //widget variables
     private RecyclerView recyclerView;
     private SeekBar mTimeSeekbar, mPeriodSeekbar;
-    private TextView mTimeText, mPeriodText;
+    private TextView mTimeText, mPeriodText, mPlanText;
     private Button mLoadBtn, mPlanDelBtn, mFinishBrn;
 
     private int selectedPlan;
@@ -56,6 +56,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         group2 = findViewById(R.id.radioGroup2);
         b = findViewById(R.id.button2);
         */
+        mPlanText = findViewById(R.id.textView_planNum);
         mFinishBrn = findViewById(R.id.button_settings);
         mFinishBrn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -132,8 +133,8 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         for(int x=0;x<y;x++) {
             //strList.add(i.getStringExtra("item"+Integer.toString(x)));
 
-            taskList.add(new task(i.getStringExtra("item"+Integer.toString(x)),
-                    (int)i.getLongExtra("itemValue"+Integer.toString(x),0)));
+            taskList.addTask(i.getStringExtra("item"+Integer.toString(x)),
+                    (int)i.getLongExtra("itemValue"+Integer.toString(x),0));
 
             totalMsLoaded += (int)i.getLongExtra("itemValue"+Integer.toString(x),0);
         }
@@ -156,6 +157,10 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
             ct = t.switchTask();
         }
         */
+    }
+
+    public void setPlanSeekBar(int totalMs) {
+        //mTimeSeekbar.setProgress(totalMs);
     }
 
     private void loadPlan() {
@@ -257,7 +262,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         for(int x=0;x<count;x++) {
             returnTimeList[x] = (int)Math.round((period * plan * blockSize * mintoms) * ((double)valueList[x]/(double)total));
             data.putExtra("item"+Integer.toString(x), returnTimeList[x]);
-            data.putExtra("item"+Integer.toString(x)+"name", taskList.get(x).getName());
+            data.putExtra("item"+Integer.toString(x)+"name", taskList.getList().get(x).getName());
         }
         data.putExtra("return_count", count);
         //calculate break time
@@ -278,8 +283,9 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     public void savePlan(int planNum) {
         Log.d("SavePlan", "write started");
         FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+        db.deletePlan(planNum);
         for(int x=0;x<count;x++){
-            if(!db.addToGroup(taskList.get(x).getName(), planNum))
+            if(!db.addToGroup(taskList.getList().get(x).getName(), planNum))
                 Log.d("SavePlan", "write to group db failed");
         }
 
@@ -307,7 +313,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
             do {
                 taskList.clear();
                 taskList = db.readPlan(selectedPlan);
-                mPlanDelBtn.setText(Integer.toString(selectedPlan));
+                mPlanText.setText("Plan: "+Integer.toString(selectedPlan));
                 selectedPlan++;
                 if(selectedPlan > 5) {
                     selectedPlan = 0;
@@ -315,7 +321,9 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
             } while (taskList.size() == 0);
             count = taskList.size();
             changesMade = true;
-            initRecyclerView(0);
+            plan = (taskList.getTotalMs()/(mintoms*10));
+            mTimeText.setText("Total time per day: "+new DecimalFormat("#.#").format(plan*0.16666)+" hrs");
+            initRecyclerView(taskList.getTotalMs());
         } catch (Exception e) {
             Log.d("SwitchPlan", "error in readPlan()");
         }

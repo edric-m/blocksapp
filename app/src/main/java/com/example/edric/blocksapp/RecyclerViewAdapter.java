@@ -17,13 +17,13 @@ import java.util.ArrayList;
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
 
     private ArrayList<String> mNameList = new ArrayList<>();
-    private ArrayList<task> mTaskList;
+    private tasks mTaskList;
     private double mtotalMs;
     //list of seekbars?
     //variable to layout?
     private SettingsActivity mContext;
 
-    public RecyclerViewAdapter(Context context, ArrayList<task> taskList, int totalMs) {
+    public RecyclerViewAdapter(Context context, tasks taskList, int totalMs) {
         this.mTaskList = taskList;
         this.mContext = (SettingsActivity)context;
         this.mtotalMs = totalMs;
@@ -40,9 +40,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
 
-        viewHolder.itemName.setText(mTaskList.get(i).getName());
+        viewHolder.itemName.setText(mTaskList.getList().get(i).getName());
         if(mtotalMs > 0) {
-            viewHolder.position = (int) Math.round((mTaskList.get(i).getTimeAllocated() / mtotalMs) * 100);
+            viewHolder.position = (int) Math.round((mTaskList.getList().get(i).getTimeAllocated() / mtotalMs) * 100);
+            //mContext.setPlanSeekBar((int)mtotalMs);
         }
         viewHolder.itemSeekbar.setProgress(viewHolder.position); //TODO: not converted to hours
         //viewHolder.itemSeekbar.setProgress(50);

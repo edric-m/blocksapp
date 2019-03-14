@@ -73,5 +73,13 @@ public class tasks implements Serializable {
     public void clear() {
         taskList.clear();
     }
+
+    public int getTotalMs() {
+        int total =0 ;
+        for(int x=0;x<taskList.size();x++) {
+            total = total + (int)taskList.get(x).getTimeAllocated();
+        }
+        return total;
+    }
 }
 

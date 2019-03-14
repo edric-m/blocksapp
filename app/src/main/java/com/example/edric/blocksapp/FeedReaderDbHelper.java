@@ -106,9 +106,9 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         return id;
     }
 
-    public ArrayList<task> readPlan(int planId) {
+    public tasks readPlan(int planId) {
         SQLiteDatabase db = this.getReadableDatabase();
-        ArrayList<task> taskList = new ArrayList<task>();
+        tasks taskList = new tasks();
         //SELECT name, time from tasks_tbl INNER JOIN group_tbl ON group_.tbl.taskid = tasks_tbl._id
         String query = "SELECT " + DbContract.FeedEntry.TASK_COLUMN_NAME + "," +
                 DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING + " FROM " +
@@ -123,9 +123,9 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         Log.d("SwitchPlan", "query ok query count: " + Integer.toString(res.getCount()));
         res.moveToFirst();
         while(!res.isAfterLast()){
-            taskList.add(new task(
+            taskList.addTask(
                     res.getString(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_NAME)),
-                    res.getInt(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING))));
+                    res.getInt(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING)));
             Log.d("SwitchPlan", "task added to array");
             res.moveToNext();
         }
@@ -210,6 +210,10 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
                 return true;
             }
         } else {
+            db.delete(DbContract.TaskGroupEntry.GROUP_TABLE_NAME,
+                    DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + "=" + id + " AND " +
+                    DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID + "=0",
+                    null);
             return false;
         }
     }
