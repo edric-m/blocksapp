@@ -148,6 +148,29 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
 
     public void deletePlan(int planID) {
         SQLiteDatabase db = getReadableDatabase();
+        //TODO: if task does not exist in any other plan delete task from task_tbl
+        //select tasks.name
+        //from tasks
+        //inner join group_tbl on tasks._id = group_tbl.task_id
+        //group by tasks.name having count(group_tbl.group_id) < 2 and group_tbl.group_id = planID;
+        String query = "SELECT " + DbContract.FeedEntry._ID +
+                " FROM " + DbContract.FeedEntry.TASK_TABLE_NAME +
+                "[INNER] JOIN " + DbContract.TaskGroupEntry.GROUP_TABLE_NAME +
+                " ON " + DbContract.FeedEntry._ID + " = " + DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID +
+                " GROUP BY " + DbContract.FeedEntry._ID +
+                " HAVING COUNT(" + DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + ") < 2" +
+                " AND " + DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID + " = " + Integer.toString(planID);
+        Cursor res = db.rawQuery(query, null);
+        //delete the unused plans from the tasks table
+        res.moveToFirst();
+        while(!res.isAfterLast()){
+            db.delete(DbContract.FeedEntry.TASK_TABLE_NAME,
+                    "WHERE " + DbContract.FeedEntry._ID +
+                    " = "+ Integer.toString(res.getInt(res.getColumnIndex(DbContract.FeedEntry._ID))),
+                    null);
+            res.moveToNext();
+        }
+        //delete the plan from the plan table
         db.delete(DbContract.TaskGroupEntry.GROUP_TABLE_NAME,
                 DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID +"="+ Integer.toString(planID),
                 null);
