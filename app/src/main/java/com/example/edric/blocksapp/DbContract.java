@@ -30,5 +30,6 @@ public final class DbContract {
         public static final String GROUP_TABLE_NAME = "group_tbl";
         public static final String GROUP_COLUMN_PLAN_ID = "group_id";
         public static final String GROUP_COLUMN_TASK_ID = "task_id";
+        public static final String GROUP_COLUMN_TASK_TIME = "task_time";
     }
 }

@@ -228,6 +228,8 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         //calculate task weight, then calculate the time
         for(int x=0;x<count;x++) {
             returnTimeList[x] = (period * plan * blockSize *0.01666) * ((double)valueList[x]/(double)total);
+            taskList.getList().get(x).setTimeAllocated(
+                    (int)Math.round((period * plan * blockSize * mintoms) * ((double)valueList[x]/(double)total))); //TODO: fix this ugly code
             item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(x);
             item.itemValue.setText(df.format(returnTimeList[x])+ " hrs");
             //data.putExtra("item"+Integer.toString(x), returnTimeList[x]);
@@ -285,7 +287,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         FeedReaderDbHelper db = new FeedReaderDbHelper(this);
         db.deletePlan(planNum);
         for(int x=0;x<count;x++){
-            if(!db.addToGroup(taskList.getList().get(x).getName(), planNum))
+            if(!db.addToGroup(taskList.getList().get(x).getName(), taskList.getList().get(x).getTimeAllocated(), planNum))
                 Log.d("SavePlan", "write to group db failed");
         }
 

@@ -14,7 +14,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
 
     //private SQLiteDatabase mydatabase;
     private static final String DATABASE_NAME = "allotawatch.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + DbContract.FeedEntry.TASK_TABLE_NAME + " (" +
@@ -31,6 +31,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + DbContract.TaskGroupEntry.GROUP_TABLE_NAME + " (" +
                     DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + " INTEGER NOT NULL," +
                     DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID + " INTEGER NOT NULL," +
+                    DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_TIME + " INTEGER NOT NULL," +
                     "PRIMARY KEY (" +DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID+", "+
                     DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID+"))";
 
@@ -70,11 +71,25 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
     */
 
     ///////GROUP TABLE FUNCTIONS
-    public boolean addToGroup(String name, int plan) {
+    public boolean addToGroup(String name, long time, int plan) {
         Log.d("GroupHelper", "addToGroup() called name:" + name + " plan:" + Integer.toString(plan));
         SQLiteDatabase db = this.getReadableDatabase();
+        //int time = 0;
+
 
         int taskid = readTask(name, db); //TODO: just use inner join here
+
+        /*
+        String query = "SELECT " + DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING +
+                " FROM "+ DbContract.FeedEntry.TASK_TABLE_NAME +
+                " WHERE " + DbContract.FeedEntry._ID + "="+Integer.toString(taskid);
+        Cursor res =  db.rawQuery( query, null );
+        if(res.moveToFirst()) {
+            time = res.getInt(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING));
+            //Log.d("GroupHelper", "readTask() id fetched");
+        }
+        */
+
         Log.d("GroupHelper", "readTask() finished id:" + Integer.toString(taskid));
         if(taskid == -1) {
             return false;
@@ -82,6 +97,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
             ContentValues contentValues = new ContentValues();
             contentValues.put(DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID, taskid);
             contentValues.put(DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID, plan);
+            contentValues.put(DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_TIME, (int)time);
             long result = db.insert(DbContract.TaskGroupEntry.GROUP_TABLE_NAME, null, contentValues);
 
             if (result == -1) {
@@ -111,7 +127,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         tasks taskList = new tasks();
         //SELECT name, time from tasks_tbl INNER JOIN group_tbl ON group_.tbl.taskid = tasks_tbl._id
         String query = "SELECT " + DbContract.FeedEntry.TASK_COLUMN_NAME + "," +
-                DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING + " FROM " +
+                DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_TIME + " FROM " +
                 DbContract.FeedEntry.TASK_TABLE_NAME + "[INNER] JOIN " +
                 DbContract.TaskGroupEntry.GROUP_TABLE_NAME + " ON " +
                 DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + " = " +
@@ -125,7 +141,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         while(!res.isAfterLast()){
             taskList.addTask(
                     res.getString(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_NAME)),
-                    res.getInt(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING)));
+                    res.getInt(res.getColumnIndex(DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_TIME)));
             Log.d("SwitchPlan", "task added to array");
             res.moveToNext();
         }
@@ -162,11 +178,12 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
                 " AND " + DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID + " = " + Integer.toString(planID);
         Cursor res = db.rawQuery(query, null);
         //delete the unused plans from the tasks table
+        //Log.d("SavePlan", "returned from query:" + Integer.toString(res.getCount()));
         res.moveToFirst();
         while(!res.isAfterLast()){
             db.delete(DbContract.FeedEntry.TASK_TABLE_NAME,
-                    "WHERE " + DbContract.FeedEntry._ID +
-                    " = "+ Integer.toString(res.getInt(res.getColumnIndex(DbContract.FeedEntry._ID))),
+                    DbContract.FeedEntry._ID +
+                    "=" + Integer.toString(res.getInt(res.getColumnIndex(DbContract.FeedEntry._ID))),
                     null);
             res.moveToNext();
         }
@@ -311,6 +328,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
                     //TODO: insert task into group table plan 0 also
                     newtask.put(DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID, (int)id); //TODO: casting may cause future error if id is larger than integer.MAX_VALUE
                     newtask.put(DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID,0);
+                    newtask.put(DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_TIME, (int)selectedTask.getTimeAllocated());
                     db.insert(DbContract.TaskGroupEntry.GROUP_TABLE_NAME, null, newtask);
                 }
 
