@@ -87,7 +87,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
                 period = (int)Math.round(progress/7);
                 if(period == 0)
                     period = 1;
-                mPeriodText.setText("Total days: "+Double.toString(period));
+                mPeriodText.setText("      over "+Integer.toString((int)period)+ " days");
                 calculateTime();
             }
 
@@ -109,7 +109,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
                 plan = progress;
                 if(plan == 0)
                     plan = 1;
-                mTimeText.setText("Total time per day: "+new DecimalFormat("#.#").format(plan*0.16666)+" hrs");
+                mTimeText.setText(" "+new DecimalFormat("#.#").format(plan*0.16666)+" hrs       work per day");
                 calculateTime();
             }
 
@@ -140,7 +140,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         }
 
         plan = (totalMsLoaded/(mintoms*10));
-        mTimeText.setText("Total time per day: "+new DecimalFormat("#.#").format(plan*0.16666)+" hrs");
+        mTimeText.setText(" "+new DecimalFormat("#.#").format(plan*0.16666)+" hrs       work per day");
         initRecyclerView(totalMsLoaded);
         changesMade = true;
 
@@ -324,7 +324,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
             count = taskList.size();
             changesMade = true;
             plan = (taskList.getTotalMs()/(mintoms*10));
-            mTimeText.setText("Total time per day: "+new DecimalFormat("#.#").format(plan*0.16666)+" hrs");
+            mTimeText.setText(" "+new DecimalFormat("#.#").format(plan*0.16666)+" hrs       work per day");
             initRecyclerView(taskList.getTotalMs());
         } catch (Exception e) {
             Log.d("SwitchPlan", "error in readPlan()");

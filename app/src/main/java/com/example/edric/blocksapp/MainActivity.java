@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private task selectedTask; /*!< The task that the activity will focus on */
 
     private TextView taskName; /*!< Controls the TextView that displays the current action*/
-    private TextView taskTime, mtextviewBreak; /*!< Controls the TextView that displays the time */
+    private TextView taskTime, mtextviewBreak, mtaskIndex; /*!< Controls the TextView that displays the time */
     private ConstraintLayout layout; /*!< Needed to set the background colour of the activity */
     private ImageView mImageView; /*!< Controls the background image */
     private Button mClearBtn;
@@ -145,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         //load tasks from the database
 
         //View variables that will be used
+        mtaskIndex = findViewById(R.id.textView_taskIndex);
         taskName = findViewById(R.id.task_name);
         taskTime = findViewById(R.id.task_time);
         layout = findViewById(R.id.layout);
@@ -474,14 +475,31 @@ public class MainActivity extends AppCompatActivity {
                 taskName.setText("");
                 mtextviewBreak.setText(BREAK_TIME_TEXT);
                 mClearBtn.setVisibility(View.INVISIBLE);
+                mtaskIndex.setVisibility(View.INVISIBLE);
             } else {
                 taskName.setText(selectedTask.getName());
                 mtextviewBreak.setText("");
                 mClearBtn.setVisibility(View.VISIBLE);
+                mtaskIndex.setVisibility(View.VISIBLE);
+                showTaskInfo();
             }
             setBackground(paused);
             updateCountDownText(paused);
         }
+    }
+
+    private void showTaskInfo() {
+        //show "Task 1 of 5"
+        mtaskIndex.setText("#" + Integer.toString(list.getCurrentTaskIndex()) + "/" + Integer.toString(list.size()));
+        //finish time and date for this task + time left
+        //time left for all tasks + finish time and date
+        //time spent since last break
+        //DAY TRACKER
+        //time spent working today
+        //recommended time to spend working (based on philosophy)
+        //free time left today asuuming you sleep at 10pm
+        //if free time left below recommended say 'not on track to accomplish this 24 hour period'
+        //calculated sleep time this 24 hour set
     }
 
     /*

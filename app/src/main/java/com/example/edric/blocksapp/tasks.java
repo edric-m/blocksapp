@@ -81,5 +81,9 @@ public class tasks implements Serializable {
         }
         return total;
     }
+
+    public int getCurrentTaskIndex() {
+        return current+1;
+    }
 }
 

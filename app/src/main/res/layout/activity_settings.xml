@@ -24,11 +24,12 @@
         android:layout_height="wrap_content" />
 
     <TextView
-        android:layout_width="180dp"
+        android:layout_width="130dp"
         android:layout_height="40dp"
         android:id="@+id/period_text"
-        android:text="Total days:"
-        android:layout_below="@+id/time_text"/>
+        android:text="      total days"
+        android:layout_below="@+id/time_text"
+        android:layout_toLeftOf="@id/seekbar_period"/>
     <SeekBar
         android:layout_width="match_parent"
         android:layout_height="40dp"
