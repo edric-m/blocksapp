@@ -34,6 +34,7 @@ public class BroadcastService extends Service {
     private String taskName;
     private int pauseTime;
     private boolean paused = false;
+    private int totalPauseTime = 0;
     //private Notification n;
     private NotificationCompat.Builder b;
     PowerManager.WakeLock wl;
@@ -61,7 +62,13 @@ public class BroadcastService extends Service {
                 //Log.d(TAG, "service tick");
                 if(paused) {
                     pauseTime = pauseTime + 1000;
-                    bi.putExtra("pause_time", pauseTime);
+                    //tempPauseTime = tempPauseTime + 1000;
+                    bi.putExtra("pause_time", totalPauseTime + pauseTime);
+
+                    if(pauseTime == 600000) {
+                        //send 10min notification
+                        notifyTenMinBreak(); //TODO: test this
+                    }
 
                     b.setContentText(convertMsToClock(pauseTime));
                     notificationManager.notify(NOTIFICATION_ID, b.build());
@@ -107,6 +114,31 @@ public class BroadcastService extends Service {
         return timeLeftFormatted;
     }
 
+    private void notifyTenMinBreak() {
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this, "default")
+                        //.setSmallIcon(R.drawable.abc)
+                        .setSmallIcon(R.drawable.ic_action_name)
+                        .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
+                                R.drawable.aw_iconcheck))
+                        .setContentTitle("10 mins passed")
+                        .setContentText("youve been on break for 10 minutes")
+                        .setLights(Color.WHITE,1,1)
+                        .setSound(alarmSound)
+                        .setAutoCancel(true)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+        //builder.build().flags |= Notification.FLAG_AUTO_CANCEL; //doesn't need this
+
+        // Add as notification
+        notificationManager.notify(0, builder.build());
+    }
     private void notifyTaskEnd() {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
@@ -149,6 +181,7 @@ public class BroadcastService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         paused = intent.getBooleanExtra("paused", false);
         pauseTime = intent.getIntExtra("pause_time", 0);
+        totalPauseTime = intent.getIntExtra("total_pause", 0);
         taskTime = intent.getIntExtra("set_time", 0);
         if(paused) {
             //load in and remember the current pause time instead

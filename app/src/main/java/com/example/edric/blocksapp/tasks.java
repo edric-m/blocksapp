@@ -54,12 +54,12 @@ public class tasks implements Serializable {
         return taskList.get(current);
     }
 
-    public boolean addTask(String name, int time) {
+    public boolean addTask(String name, int time, int timeSpent) {
         boolean tooManyTasks;
         if(this.size() <= TASK_LIMIT)
         {
             tooManyTasks = false;
-            taskList.add(new task(name,time));
+            taskList.add(new task(name,time, timeSpent));
         } else {
             tooManyTasks = true;
         }

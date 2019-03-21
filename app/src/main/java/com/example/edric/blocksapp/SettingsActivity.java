@@ -19,6 +19,7 @@ import android.widget.TextView;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class SettingsActivity extends AppCompatActivity implements DialogPlan.OnInputListener {
     //multi activity variables
@@ -64,7 +65,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
                 loadPlanToMain();
             }
         });
-        selectedPlan = 0;
+        selectedPlan = 1;
         mPlanDelBtn = findViewById(R.id.button_deleteplans);
         mPlanDelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,7 +135,8 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
             //strList.add(i.getStringExtra("item"+Integer.toString(x)));
 
             taskList.addTask(i.getStringExtra("item"+Integer.toString(x)),
-                    (int)i.getLongExtra("itemValue"+Integer.toString(x),0));
+                    (int)i.getLongExtra("itemValue"+Integer.toString(x),0),
+                    (int)i.getLongExtra("itemSpent"+Integer.toString(x),0));
 
             totalMsLoaded += (int)i.getLongExtra("itemValue"+Integer.toString(x),0);
         }
@@ -231,9 +233,16 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
             taskList.getList().get(x).setTimeAllocated(
                     (int)Math.round((period * plan * blockSize * mintoms) * ((double)valueList[x]/(double)total))); //TODO: fix this ugly code
             item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(x);
-            item.itemValue.setText(df.format(returnTimeList[x])+ " hrs");
+            //item.itemValue.setText(df.format(returnTimeList[x])+ " hrs");
+            item.itemValue.setText(formatMsToTime(taskList.getList().get(x).getTimeAllocated()));
             //data.putExtra("item"+Integer.toString(x), returnTimeList[x]);
         }
+    }
+
+    private String formatMsToTime(long ms) { //TODO: this function is pasted over multiple classes, this should not be so
+        int hours = (int) (ms / 3600000);
+        int minutes = (int) (ms / 60000) % 60;
+        return String.format(Locale.getDefault(),"%02d:%02d",hours, minutes);
     }
 
     public void closeSettings(View view) {
@@ -265,6 +274,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
             returnTimeList[x] = (int)Math.round((period * plan * blockSize * mintoms) * ((double)valueList[x]/(double)total));
             data.putExtra("item"+Integer.toString(x), returnTimeList[x]);
             data.putExtra("item"+Integer.toString(x)+"name", taskList.getList().get(x).getName());
+            data.putExtra("item"+Integer.toString(x)+"spent", taskList.getList().get(x).getTimeSpent());
         }
         data.putExtra("return_count", count);
         //calculate break time
@@ -315,7 +325,11 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
             do {
                 taskList.clear();
                 taskList = db.readPlan(selectedPlan);
-                mPlanText.setText("Plan: "+Integer.toString(selectedPlan));
+                if(selectedPlan == 0) {
+                    mPlanText.setText("Loaded Plan");
+                } else {
+                    mPlanText.setText("Plan: " + Integer.toString(selectedPlan));
+                }
                 selectedPlan++;
                 if(selectedPlan > 5) {
                     selectedPlan = 0;
@@ -329,8 +343,6 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         } catch (Exception e) {
             Log.d("SwitchPlan", "error in readPlan()");
         }
-
-
     }
 
     //probably best not to have this functionality TODO: load the time values in

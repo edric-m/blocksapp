@@ -13,6 +13,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Locale;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
 
@@ -37,12 +38,19 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return holder;
     }
 
+    private String formatMsToTime(long ms) {
+        int hours = (int) (ms / 3600000);
+        int minutes = (int) (ms / 60000) % 60;
+        return String.format(Locale.getDefault(),"%02d:%02d",hours, minutes);
+    }
+
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
 
         viewHolder.itemName.setText(mTaskList.getList().get(i).getName());
         if(mtotalMs > 0) {
             viewHolder.position = (int) Math.round((mTaskList.getList().get(i).getTimeAllocated() / mtotalMs) * 100);
+            viewHolder.itemValue.setText(formatMsToTime(mTaskList.getList().get(i).getTimeAllocated()));
             //mContext.setPlanSeekBar((int)mtotalMs);
         }
         viewHolder.itemSeekbar.setProgress(viewHolder.position); //TODO: not converted to hours

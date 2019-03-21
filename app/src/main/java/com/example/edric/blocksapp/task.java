@@ -10,11 +10,11 @@ public class task {
     //private String colour; //String.format("#%02x%02x%02x", r, g, b);
     //private Random random = new Random();
 
-    public task (String _name, int _timeAllocated) {
+    public task (String _name, int _timeAllocated, int _timeSpent) {
         //id = _id;
         //Random random = new Random();
         this.name = _name;
-        timeSpent = 0;
+        timeSpent = _timeSpent;
         timeAllocated = _timeAllocated;
 
         //set random colour that lies within specific range
@@ -59,6 +59,7 @@ public class task {
 
     public void setTimeAllocated(long newTime) {
         this.timeAllocated = newTime;
+        this.timeSpent = timeSpent + 1000; //TODO: change reciever code and dont to this here
     }
 
     /*

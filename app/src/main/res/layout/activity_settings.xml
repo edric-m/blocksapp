@@ -20,8 +20,11 @@
 
     <TextView
         android:id="@+id/textView_planNum"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:text="Loaded Plan"
+        android:layout_below="@+id/button_settings"/>
 
     <TextView
         android:layout_width="130dp"
@@ -41,12 +44,12 @@
         android:layout_height="40dp"
         android:id="@+id/time_text"
         android:text="Total time per day:"
-        android:layout_below="@+id/button_settings"/>
+        android:layout_below="@+id/textView_planNum"/>
     <SeekBar
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_toRightOf="@+id/time_text"
-        android:layout_below="@+id/button_settings"
+        android:layout_below="@+id/textView_planNum"
         android:id="@+id/seekbar_time"/>
 
     <Button
@@ -54,7 +57,7 @@
         android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:text="finish" />
+        android:text="load" />
 
     <Button
         android:id="@+id/button_cancel"

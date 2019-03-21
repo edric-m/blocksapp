@@ -37,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     private CountDownTimer mOnTickTimer; /*!< Timer class to start an onTick event */
     private long timePaused; /*!< Counts the amount of time the pause timer has run */
+    private int switchedTime=0;
     private boolean mTimerRunning; /*!< Bool for whether the timer for a task is running */
     private boolean mHasTasks; /*!< Bool for whether a task has been added to the activity */
     private boolean mServiceStarted;
@@ -225,7 +226,8 @@ public class MainActivity extends AppCompatActivity {
             mServiceStarted = true;
             //start service
             Intent i = new Intent(this, BroadcastService.class);
-            i.putExtra("pause_time", (int)timePaused);
+            i.putExtra("pause_time", (int)switchedTime);
+            i.putExtra("total_pause", (int)timePaused);
             i.putExtra("set_time", (int) selectedTask.getTimeAllocated());
             i.putExtra("task_name", selectedTask.getName());
             if(mTimerRunning) {
@@ -295,6 +297,7 @@ public class MainActivity extends AppCompatActivity {
                 if (initialY < finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
                     //Log.d(TAG, "Up to Down swipe performed");
                     if(mHasTasks)
+                        switchedTime = 0;
                         startWorkBreak(); //work break
                 }
 
@@ -304,6 +307,7 @@ public class MainActivity extends AppCompatActivity {
                         if(mTimerRunning) {
                             openSettings();
                         } else {
+                            switchedTime = 0;
                             mTimerRunning = true;
                             refreshDisplay(false);
                             //toast.setText(selectedTask.getName() + " resumed");
@@ -332,13 +336,16 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onTick(long millisUntilFinished) {
                 if(mHasTasks) {
+                    switchedTime = switchedTime + 1000;
                     if(mTimerRunning) {
                         selectedTask.decrementTime();
                         updateCountDownText(false);
+                        showTaskInfo();
                     }
                     else {
                         timePaused = timePaused + 1000;
                         updateCountDownText(true);
+                        showBreakInfo();
                     }
                 }
             }
@@ -361,7 +368,7 @@ public class MainActivity extends AppCompatActivity {
         long time = 0;
 
         if (paused) {
-            time = timePaused;
+            time = switchedTime;
         }
         if (!paused) {
             time = selectedTask.getTimeAllocated();
@@ -373,6 +380,13 @@ public class MainActivity extends AppCompatActivity {
         String timeLeftFormatted = String.format(Locale.getDefault(),"%02d:%02d:%02d",hours, minutes, seconds);
 
         taskTime.setText(timeLeftFormatted);
+    }
+
+    private String formatMsToTime(long ms) {
+        int hours = (int) (ms / 3600000);
+        int minutes = (int) (ms / 60000) % 60;
+        int seconds = (int) (ms / 1000) % 60;
+        return String.format(Locale.getDefault(),"%02d:%02d:%02d",hours, minutes, seconds);
     }
 
     /**
@@ -410,6 +424,7 @@ public class MainActivity extends AppCompatActivity {
         for (task t : list.getList()) {
             i.putExtra("item" + Integer.toString(idx), t.getName());
             i.putExtra("itemValue" + Integer.toString(idx), t.getTimeAllocated());
+            i.putExtra("itemSpent" + Integer.toString(idx), t.getTimeSpent());
             idx++;
         }
         i.putExtra("item_count", Integer.toString(idx));
@@ -423,6 +438,7 @@ public class MainActivity extends AppCompatActivity {
      */
     public void switchTask(Direction direction) {
         if(mTimerRunning) {
+            //switchedTime = 0;
             switch (direction) {
                 case PREVIOUS:
                     selectedTask = list.moveToPrevTask();
@@ -475,12 +491,12 @@ public class MainActivity extends AppCompatActivity {
                 taskName.setText("");
                 mtextviewBreak.setText(BREAK_TIME_TEXT);
                 mClearBtn.setVisibility(View.INVISIBLE);
-                mtaskIndex.setVisibility(View.INVISIBLE);
+                showBreakInfo();
             } else {
                 taskName.setText(selectedTask.getName());
                 mtextviewBreak.setText("");
                 mClearBtn.setVisibility(View.VISIBLE);
-                mtaskIndex.setVisibility(View.VISIBLE);
+                //mtaskIndex.setVisibility(View.VISIBLE);
                 showTaskInfo();
             }
             setBackground(paused);
@@ -488,10 +504,18 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void showBreakInfo() {
+        mtaskIndex.setText("\n\nTotal break time: " + formatMsToTime(timePaused));
+    }
+
     private void showTaskInfo() {
+        int index = list.getCurrentTaskIndex();
         //show "Task 1 of 5"
-        mtaskIndex.setText("#" + Integer.toString(list.getCurrentTaskIndex()) + "/" + Integer.toString(list.size()));
+        mtaskIndex.setText("#" + Integer.toString(index) + "/" + Integer.toString(list.size()));
         //finish time and date for this task + time left
+        mtaskIndex.append("\n\nTime since last break: " + formatMsToTime(switchedTime));
+        mtaskIndex.append("\nTotal time spent this session: " + formatMsToTime(list.getList().get(index-1).getTimeSpent()));
+        mtaskIndex.append("\nTime left for all tasks: " + formatMsToTime(list.getTotalMs()));
         //time left for all tasks + finish time and date
         //time spent since last break
         //DAY TRACKER
@@ -539,7 +563,7 @@ public class MainActivity extends AppCompatActivity {
                             }
                             //list.moveToNextTask();
                         }
-                        list.addTask(n, Integer.parseInt(t) * MS_IN_1MIN); //t is in minutes, need to convert to ms
+                        list.addTask(n, Integer.parseInt(t) * MS_IN_1MIN, 0); //t is in minutes, need to convert to ms
                         //pauseTimer();
                         selectedTask = list.selectNewTask();
                         mTimerRunning = true;
@@ -559,7 +583,8 @@ public class MainActivity extends AppCompatActivity {
                     for(int x=0;x<count;x++) {
                         if(data.hasExtra("item"+Integer.toString(x))) {
                             list.addTask(data.getStringExtra("item"+Integer.toString(x)+"name"),
-                                    (int)data.getExtras().getDouble("item"+Integer.toString(x)));
+                                    (int)data.getExtras().getDouble("item"+Integer.toString(x)),
+                                    (int)data.getExtras().getLong("item"+Integer.toString(x)+"spent"));
                         }
                         //selectedTask = list.moveToNextTask();
                     }

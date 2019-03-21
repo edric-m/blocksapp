@@ -127,7 +127,8 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         tasks taskList = new tasks();
         //SELECT name, time from tasks_tbl INNER JOIN group_tbl ON group_.tbl.taskid = tasks_tbl._id
         String query = "SELECT " + DbContract.FeedEntry.TASK_COLUMN_NAME + "," +
-                DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_TIME + " FROM " +
+                DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_TIME + "," +
+                DbContract.FeedEntry.TASK_COLUMN_TIME_SPENT + " FROM " +
                 DbContract.FeedEntry.TASK_TABLE_NAME + "[INNER] JOIN " +
                 DbContract.TaskGroupEntry.GROUP_TABLE_NAME + " ON " +
                 DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + " = " +
@@ -141,7 +142,8 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         while(!res.isAfterLast()){
             taskList.addTask(
                     res.getString(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_NAME)),
-                    res.getInt(res.getColumnIndex(DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_TIME)));
+                    res.getInt(res.getColumnIndex(DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_TIME)),
+                    res.getInt(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_TIME_SPENT)));
             Log.d("SwitchPlan", "task added to array");
             res.moveToNext();
         }
@@ -290,7 +292,10 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         while(!res.isAfterLast()){
             taskList.addTask(
                     res.getString(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_NAME)),
-                    res.getInt(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING)));
+                    res.getInt(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING)),
+                    //res.getInt(res.getColumnIndex(DbContract.FeedEntry.TASK_COLUMN_TIME_SPENT))
+                    0
+            );
             res.moveToNext();
         }
         res.close();
