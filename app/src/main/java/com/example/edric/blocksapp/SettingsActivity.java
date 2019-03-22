@@ -23,13 +23,14 @@ import java.util.Locale;
 
 public class SettingsActivity extends AppCompatActivity implements DialogPlan.OnInputListener {
     //multi activity variables
-    public static final String PLAN_KEY = "plan";
-    public static final String PERIOD_KEY = "period";
-    public static final String TASKS_KEY = "list";
+    //public static final String PLAN_KEY = "plan";
+    //public static final String PERIOD_KEY = "period";
+    //public static final String TASKS_KEY = "list";
     //class variables
     private int count = 0;
-    private double period = 1, plan = 48+46, blockSize = 10, mintoms = 60000; //46 blocks for r&r
-    private ArrayList<String> strList = new ArrayList<String>();
+    private double period = 1, plan = 48+31, blockSize = 10, mintoms = 60000; //46 blocks for r&r
+    //private int planLimit = 48+31; //48 blocks is 8 hours
+    //private ArrayList<String> strList = new ArrayList<String>();
     private tasks taskList = new tasks();
     private boolean changesMade = false;
     private float initialX, initialY;
@@ -110,6 +111,10 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
                 plan = progress;
                 if(plan == 0)
                     plan = 1;
+                /* //choose to limit how much time one can allot for them self
+                if(plan > planLimit)
+                    plan = planLimit;
+                */
                 mTimeText.setText(" "+new DecimalFormat("#.#").format(plan*0.16666)+" hrs       work per day");
                 calculateTime();
             }
@@ -214,7 +219,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     public void calculateTime () {
         //calculation variables
         int total = 0;
-        double[] returnTimeList = new double[count];
+        //double[] returnTimeList = new double[count];
         int[] valueList = new int[count];
         // Prepare data intent
         //Intent data = new Intent();
@@ -229,7 +234,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         }
         //calculate task weight, then calculate the time
         for(int x=0;x<count;x++) {
-            returnTimeList[x] = (period * plan * blockSize *0.01666) * ((double)valueList[x]/(double)total);
+            //returnTimeList[x] = (period * plan * blockSize *0.01666) * ((double)valueList[x]/(double)total);
             taskList.getList().get(x).setTimeAllocated(
                     (int)Math.round((period * plan * blockSize * mintoms) * ((double)valueList[x]/(double)total))); //TODO: fix this ugly code
             item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(x);

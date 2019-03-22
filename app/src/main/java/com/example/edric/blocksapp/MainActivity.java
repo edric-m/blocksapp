@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
     private CountDownTimer mOnTickTimer; /*!< Timer class to start an onTick event */
     private long timePaused; /*!< Counts the amount of time the pause timer has run */
     private int switchedTime=0;
+    private long breakRecommend=0;
     private boolean mTimerRunning; /*!< Bool for whether the timer for a task is running */
     private boolean mHasTasks; /*!< Bool for whether a task has been added to the activity */
     private boolean mServiceStarted;
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity {
             list.removeTask(selectedTask);
             if(list.size()>0) {
                 selectedTask = list.selectFirstTask();
+                breakRecommend = ((list.getTotalMs()/3600000)*600000);
                 refreshDisplay(false);
             } else {
                 mTimerRunning = false;
@@ -169,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
             //taskName.setText("good load db");
             Log.d("MyActivity", "db loaded" );
         }
+        breakRecommend = ((list.getTotalMs()/3600000)*600000);
     }
 
     private boolean readDb() {
@@ -297,7 +300,6 @@ public class MainActivity extends AppCompatActivity {
                 if (initialY < finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
                     //Log.d(TAG, "Up to Down swipe performed");
                     if(mHasTasks)
-                        switchedTime = 0;
                         startWorkBreak(); //work break
                 }
 
@@ -305,6 +307,7 @@ public class MainActivity extends AppCompatActivity {
                     //Log.d(TAG, "Down to Up swipe performed");
                     if(mHasTasks)
                         if(mTimerRunning) {
+                            switchedTime = 0; //TODO: not good to do this here
                             openSettings();
                         } else {
                             switchedTime = 0;
@@ -395,6 +398,7 @@ public class MainActivity extends AppCompatActivity {
      * @Note: Changes mTimerRunning to false
      */
     public void startWorkBreak() {
+        switchedTime = 0;
         mTimerRunning = false;
         refreshDisplay(true);
         Toast toast = Toast.makeText(getApplicationContext(), "all timers paused", Toast.LENGTH_SHORT);
@@ -506,6 +510,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showBreakInfo() {
         mtaskIndex.setText("\n\nTotal break time: " + formatMsToTime(timePaused));
+        mtaskIndex.append("\nRecommended break time: " + formatMsToTime(breakRecommend));
     }
 
     private void showTaskInfo() {
@@ -516,6 +521,7 @@ public class MainActivity extends AppCompatActivity {
         mtaskIndex.append("\n\nTime since last break: " + formatMsToTime(switchedTime));
         mtaskIndex.append("\nTotal time spent this session: " + formatMsToTime(list.getList().get(index-1).getTimeSpent()));
         mtaskIndex.append("\nTime left for all tasks: " + formatMsToTime(list.getTotalMs()));
+        //mtaskIndex.append("\n\nFinish time including breaks: " + formatMsToTime(list.getTotalMs()+((list.getTotalMs()/3600000)*600000)));
         //time left for all tasks + finish time and date
         //time spent since last break
         //DAY TRACKER
@@ -568,6 +574,7 @@ public class MainActivity extends AppCompatActivity {
                         selectedTask = list.selectNewTask();
                         mTimerRunning = true;
                         mHasTasks = true;
+                        breakRecommend = ((list.getTotalMs()/3600000)*600000);
                         refreshDisplay(false);
                         //startTimer();
 
@@ -590,6 +597,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                     selectedTask = list.selectFirstTask();
                     mTimerRunning = true;
+                    breakRecommend = ((list.getTotalMs()/3600000)*600000);
                     refreshDisplay(false);
                     break;
                 default:

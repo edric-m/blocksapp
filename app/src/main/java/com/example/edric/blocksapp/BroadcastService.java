@@ -39,6 +39,7 @@ public class BroadcastService extends Service {
     private NotificationCompat.Builder b;
     PowerManager.WakeLock wl;
     NotificationManager notificationManager;
+    private int check10min = 0;
 
     private static final int MS_IN_1SEC = 1000; /*!< Constant used for onTick event*/
     private static final int MS_IN_10MIN = 600000;
@@ -65,9 +66,11 @@ public class BroadcastService extends Service {
                     //tempPauseTime = tempPauseTime + 1000;
                     bi.putExtra("pause_time", totalPauseTime + pauseTime);
 
-                    if(pauseTime == 600000) {
+
+                    if((pauseTime % 600000)==0) {
+                        check10min = pauseTime / 600000;
                         //send 10min notification
-                        notifyTenMinBreak(); //TODO: test this
+                        notifyTenMinBreak(check10min); //TODO: test this
                     }
 
                     b.setContentText(convertMsToClock(pauseTime));
@@ -114,7 +117,7 @@ public class BroadcastService extends Service {
         return timeLeftFormatted;
     }
 
-    private void notifyTenMinBreak() {
+    private void notifyTenMinBreak(int factor) {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
 
         NotificationCompat.Builder builder =
@@ -123,8 +126,8 @@ public class BroadcastService extends Service {
                         .setSmallIcon(R.drawable.ic_action_name)
                         .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
                                 R.drawable.aw_iconcheck))
-                        .setContentTitle("10 mins passed")
-                        .setContentText("youve been on break for 10 minutes")
+                        .setContentTitle("10 mins break elapsed")
+                        .setContentText("youve been on break for "+Integer.toString(factor*10)+" minutes")
                         .setLights(Color.WHITE,1,1)
                         .setSound(alarmSound)
                         .setAutoCancel(true)
