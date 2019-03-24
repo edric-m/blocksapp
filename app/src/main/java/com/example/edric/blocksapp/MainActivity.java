@@ -519,7 +519,7 @@ public class MainActivity extends AppCompatActivity {
         mtaskIndex.setText("#" + Integer.toString(index) + "/" + Integer.toString(list.size()));
         //finish time and date for this task + time left
         mtaskIndex.append("\n\nTime since last break: " + formatMsToTime(switchedTime));
-        mtaskIndex.append("\nTotal time spent this session: " + formatMsToTime(list.getList().get(index-1).getTimeSpent()));
+        //mtaskIndex.append("\nTotal time spent this session: " + formatMsToTime(list.getList().get(index-1).getTimeSpent()));
         mtaskIndex.append("\nTime left for all tasks: " + formatMsToTime(list.getTotalMs()));
         //mtaskIndex.append("\n\nFinish time including breaks: " + formatMsToTime(list.getTotalMs()+((list.getTotalMs()/3600000)*600000)));
         //time left for all tasks + finish time and date
