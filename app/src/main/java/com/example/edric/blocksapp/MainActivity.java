@@ -1,9 +1,15 @@
 package com.example.edric.blocksapp;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.BitmapFactory;
+import android.media.RingtoneManager;
+import android.net.Uri;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
@@ -33,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView taskTime, mtextviewBreak, mtaskIndex; /*!< Controls the TextView that displays the time */
     private ConstraintLayout layout; /*!< Needed to set the background colour of the activity */
     private ImageView mImageView; /*!< Controls the background image */
-    private Button mClearBtn;
+    private Button mClearBtn, mAlarmBtn;
     private CountDownTimer mOnTickTimer; /*!< Timer class to start an onTick event */
 
     private long timePaused; /*!< Counts the amount of time the pause timer has run */
@@ -42,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean mTimerRunning; /*!< Bool for whether the timer for a task is running */
     private boolean mHasTasks; /*!< Bool for whether a task has been added to the activity */
     private boolean mServiceStarted;
+    private boolean alarmSet=false;
+    private int alarmMin=0;
+    private NotificationManager notificationManager;
 
     private float initialX, initialY; /*!< Screen x,y position used for screen touch events */
 
@@ -56,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
         NEXT
     }
 
+    //Broadcast receivers
     private BroadcastReceiver br = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -75,6 +85,21 @@ public class MainActivity extends AppCompatActivity {
             selectedTask.setTimeAllocated((long) intent.getIntExtra("time_left",(int)selectedTask.getTimeAllocated()));
             timePaused = intent.getIntExtra("pause_time", (int)timePaused);
             Log.d("MyActivity", "onRecieve called");
+        }
+    };
+    private BroadcastReceiver alarmBroadcast = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if(alarmMin==0) {
+                //notify
+                notifyAlarmEnd();
+                //turn off reciever
+                setQuickAlarm();
+                Log.d("alarm", "alarm receiver done");
+            } else {
+                alarmMin--;
+                Log.d("alarm", "alarm receiver tick");
+            }
         }
     };
 
@@ -148,6 +173,14 @@ public class MainActivity extends AppCompatActivity {
         //load tasks from the database
 
         //View variables that will be used
+        notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        mAlarmBtn = findViewById(R.id.brn_alarm);
+        mAlarmBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setQuickAlarm();
+            }
+        });
         mtaskIndex = findViewById(R.id.textView_taskIndex);
         taskName = findViewById(R.id.task_name);
         taskTime = findViewById(R.id.task_time);
@@ -211,15 +244,58 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onDestroy() {
+        unregisterReceiver(alarmBroadcast); //TODO good idea?
+        Log.d("alarm", "alarm unregister receiver");
         //stop service
         if(mServiceStarted) {
             unregisterReceiver(br); //TODO: this is not a good idea, ondestroy is not always called
             this.stopService(new Intent(this, BroadcastService.class));
         }
-        Log.d("MyActivity", "destroy called" );
+        //Log.d("MyActivity", "destroy called" );
         Process.killProcess(Process.myPid()); //app wasnt terminating properly in android studio debug
         super.onDestroy();
         //saveDb();
+    }
+
+    private void setQuickAlarm() {
+        if(!alarmSet) {
+            alarmMin = 10;
+            alarmSet = true;
+            mAlarmBtn.setText("stop alarm");
+            this.registerReceiver(alarmBroadcast, new IntentFilter(Intent.ACTION_TIME_TICK));
+            Log.d("alarm", "alarm register receiver");
+        } else {
+            mAlarmBtn.setText("set 10min alarm");
+            this.unregisterReceiver(alarmBroadcast);
+            Log.d("alarm", "alarm un-register receiver");
+            alarmSet = false;
+        }
+    }
+
+    private void notifyAlarmEnd() {
+        Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        NotificationCompat.Builder builder =
+                new NotificationCompat.Builder(this, "default")
+                        //.setSmallIcon(R.drawable.abc)
+                        .setSmallIcon(R.drawable.ic_action_name)
+                        .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
+                                R.drawable.aw_iconcheck))
+                        .setContentTitle("10 min alarm ended!")
+                        .setContentText("do what gotta be done...")
+                        .setLights(Color.WHITE,1,1)
+                        .setSound(alarmSound)
+                        .setAutoCancel(true)
+                        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC);
+
+        Intent notificationIntent = new Intent(this, MainActivity.class);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.setContentIntent(contentIntent);
+        //builder.build().flags |= Notification.FLAG_AUTO_CANCEL; //doesn't need this
+
+        // Add as notification
+        notificationManager.notify(0, builder.build());
     }
 
     @Override
@@ -243,6 +319,7 @@ public class MainActivity extends AppCompatActivity {
             this.startService(i);
             //register reciever
             this.registerReceiver(br, new IntentFilter(BroadcastService.COUNTDOWN_BR));
+
             //no need to pause timer
         }
 
