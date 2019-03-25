@@ -333,6 +333,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         db.deletePlan(0);
         //save tasks to 0 plan
         savePlan(0);
+        db.updateAllTasks(taskList);
         //close settingsActivity
         finish();
     }

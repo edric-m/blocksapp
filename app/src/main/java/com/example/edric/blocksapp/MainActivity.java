@@ -244,8 +244,8 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     protected void onDestroy() {
-        unregisterReceiver(alarmBroadcast); //TODO good idea?
-        Log.d("alarm", "alarm unregister receiver");
+        //unregisterReceiver(alarmBroadcast); //TODO good idea?
+        //Log.d("alarm", "alarm unregister receiver");
         //stop service
         if(mServiceStarted) {
             unregisterReceiver(br); //TODO: this is not a good idea, ondestroy is not always called
