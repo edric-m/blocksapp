@@ -203,17 +203,30 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
     }
 
     ///////TASK TABLE FUNCTIONS
-    public boolean addTask() {
+    public boolean addNewTask(String name, int time, int plan) {
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues contentValues = new ContentValues();
+        ContentValues planValues = new ContentValues();
         boolean result = true;
 
                 //contentValues.put(DbContract.FeedEntry.TASK_COLUMN_NAME, selectedTask.getName());
-                contentValues.put(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING, 600000);
-                contentValues.put(DbContract.FeedEntry.TASK_COLUMN_TIME_SPENT, 0);
-                contentValues.put(DbContract.FeedEntry.TASK_COLUMN_LIFETIME, 0);
-                contentValues.put(DbContract.FeedEntry.TASK_COLUMN_NAME, "dbtest3 10min");
-                db.insert(DbContract.FeedEntry.TASK_TABLE_NAME, null, contentValues);
+        try {
+            contentValues.put(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING, time);
+            contentValues.put(DbContract.FeedEntry.TASK_COLUMN_TIME_SPENT, 0);
+            contentValues.put(DbContract.FeedEntry.TASK_COLUMN_LIFETIME, 0);
+            contentValues.put(DbContract.FeedEntry.TASK_COLUMN_NAME, name);
+            long id = db.insert(DbContract.FeedEntry.TASK_TABLE_NAME, null, contentValues);
+            if(id != -1) {
+                planValues.put(DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_TIME, time);
+                planValues.put(DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID, plan);
+                planValues.put(DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID, id);
+                db.insert(DbContract.TaskGroupEntry.GROUP_TABLE_NAME, null, planValues);
+            } else {
+                result = false;
+            }
+        } catch (Exception e) {
+            result = false;
+        }
         return result;
     }
 

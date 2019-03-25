@@ -24,10 +24,13 @@ public class NewTaskActivity extends AppCompatActivity {
     private SeekBar mSeekBarHours, mSeekBarMinutes; /*!< Seekbar input for the desired hours and mins to set */
     private Button mBtnHrM, mBtnHrA, mBtnMinM, mBtnMinA;
 
-    private float initialX, initialY; /*!< Co-ordinates for the onTouch event */
-    private int hoursSet, minSet; /*!< Time selected by user variables */
+    //private float initialX, initialY; /*!< Co-ordinates for the onTouch event */
+    private int hoursSet, minSet, planSet; /*!< Time selected by user variables */
     private boolean newActivity; /*!< Used to determine if the user wants to make another task */
     private String newTaskName;
+
+    //constants
+    private static final int MS_IN_1MIN = 60000;
 
     /**
      * @Brief: Initialises the variables and sets up the view events
@@ -39,16 +42,19 @@ public class NewTaskActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_task);
         //overridePendingTransition(R.anim.go_in, R.anim.go_out);
+        Intent i = getIntent();
 
         newActivity = false;
         hoursSet = 0;
         minSet = 0;
+        planSet = 0;
         newTaskName = "Alarm";
         name = findViewById(R.id.editText);
         mTimeLabel = findViewById(R.id.textView2);
         mMinLabel = findViewById(R.id.textView4);
         setupSeekbars();
         setUpFineButtons();
+        planSet = i.getIntExtra("plan", 0);
         Log.d("NewTaskActivity", "onCreate called");
     }
 
@@ -156,9 +162,13 @@ public class NewTaskActivity extends AppCompatActivity {
             setResult(RESULT_CANCELED, data);
         }
         else {
-            data.putExtra(NAME_KEY, newTaskName);
-            data.putExtra(TIME_KEY, Integer.toString(x));
-            data.putExtra("StartNew", newActivity);
+            //data.putExtra(NAME_KEY, newTaskName);
+            //data.putExtra(TIME_KEY, Integer.toString(x));
+            //data.putExtra("StartNew", newActivity);
+            FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+            if(planSet > 5 || planSet < 0)
+                planSet = 0;
+            db.addNewTask(newTaskName, x * MS_IN_1MIN, planSet);
             // Activity finished ok, return the data
             setResult(RESULT_OK, data);
         }

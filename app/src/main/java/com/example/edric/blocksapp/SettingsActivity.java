@@ -1,6 +1,7 @@
 package com.example.edric.blocksapp;
 
 import android.content.Intent;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +40,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     private SeekBar mTimeSeekbar, mPeriodSeekbar;
     private TextView mTimeText, mPeriodText, mPlanText;
     private Button mLoadBtn, mPlanDelBtn, mFinishBrn;
+    private FloatingActionButton mFabSettings;
 
     private int selectedPlan;
     /*
@@ -58,6 +60,13 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         group2 = findViewById(R.id.radioGroup2);
         b = findViewById(R.id.button2);
         */
+        mFabSettings = findViewById(R.id.fab_settings);
+        mFabSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addNewTask();
+            }
+        });
         mPlanText = findViewById(R.id.textView_planNum);
         mFinishBrn = findViewById(R.id.button_settings);
         mFinishBrn.setOnClickListener(new View.OnClickListener() {
@@ -166,9 +175,16 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         */
     }
 
+    private void addNewTask() {
+        Intent i = new Intent(this, NewTaskActivity.class);
+        i.putExtra("plan", selectedPlan-1); //TODO selectedPlan variable name is confusing
+        startActivityForResult(i,3); //TODO try request code 1 for now with startActivityForResult()
+    }
+    /*
     public void setPlanSeekBar(int totalMs) {
         //mTimeSeekbar.setProgress(totalMs);
     }
+    */
 
     private void loadPlan() {
         //create fragment
@@ -244,7 +260,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         }
     }
 
-    private String formatMsToTime(long ms) { //TODO: this function is pasted over multiple classes, this should not be so
+    private String formatMsToTime(long ms) { //TODO: make this a tasks class function
         int hours = (int) (ms / 3600000);
         int minutes = (int) (ms / 60000) % 60;
         return String.format(Locale.getDefault(),"%02d:%02d",hours, minutes);
@@ -254,18 +270,20 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         finish();
     }
     public void cancelSettings(View view) {
-        changesMade = false;
+        //changesMade = false;
         finish();
     }
 
     @Override
     public void finish() {
+        Intent data = new Intent();
         //calculation variables
+        /*
         int total = 0;
         double[] returnTimeList = new double[count];
         int[] valueList = new int[count];
         // Prepare data intent
-        Intent data = new Intent();
+
         RecyclerViewAdapter.ViewHolder item;
 
         for(int x=0;x<count;x++)  {
@@ -285,6 +303,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         //calculate break time
         //use a struct
         //calculate extra time
+        */
 
         // Activity finished ok, return the data
         if(changesMade) {
@@ -408,5 +427,14 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         return super.onTouchEvent(event);
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK) {
+            if(requestCode == 3) {
+                selectedPlan--; //TODO find a better way to switch to plan 0
+                switchPlan();
+            }
+        }
+    }
 
 }

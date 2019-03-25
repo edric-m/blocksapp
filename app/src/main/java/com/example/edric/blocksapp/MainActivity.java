@@ -34,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private ConstraintLayout layout; /*!< Needed to set the background colour of the activity */
     private ImageView mImageView; /*!< Controls the background image */
     private Button mClearBtn;
-
     private CountDownTimer mOnTickTimer; /*!< Timer class to start an onTick event */
+
     private long timePaused; /*!< Counts the amount of time the pause timer has run */
     private int switchedTime=0;
     private long breakRecommend=0;
@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     //constant variables
     private static final int MS_IN_1SEC = 1000; /*!< Constant used for onTick event*/
     private static final int MS_IN_10MIN = 600000; /*!< Constant used for onTick event */
-    private static final int MS_IN_1MIN = 60000; /*!< Constant used for adding new tasks */
+    //private static final int MS_IN_1MIN = 60000; /*!< Constant used for adding new tasks */
     private static final String BREAK_TIME_TEXT = "work break";/*!< Constant used when setting a textview */
 
     private enum Direction {
@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
         //not start service here
 
         //floating action button setup listener
-        FloatingActionButton fab = findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab); //TODO should this be a class variable?
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -558,34 +558,36 @@ public class MainActivity extends AppCompatActivity {
         if (resultCode == RESULT_OK) {
             switch(requestCode) {
                 case 1:
-                    if (data.hasExtra(NewTaskActivity.NAME_KEY) && data.hasExtra(NewTaskActivity.TIME_KEY)) {
-                        String n = data.getExtras().getString(NewTaskActivity.NAME_KEY);
-                        String t = data.getExtras().getString(NewTaskActivity.TIME_KEY);
+                    //if (data.hasExtra(NewTaskActivity.NAME_KEY) && data.hasExtra(NewTaskActivity.TIME_KEY)) {
+                        //String n = data.getExtras().getString(NewTaskActivity.NAME_KEY);
+                        //String t = data.getExtras().getString(NewTaskActivity.TIME_KEY);
 
                         //TODO: this is wrong, it must check with the db not the 'list' variable
-                        for(int x=0;x<list.size();x++) {
-                            if(list.getList().get(x).getName().equals(n)) {
-                                n = n + "i";
-                            }
+                        //for(int x=0;x<list.size();x++) {
+                            //if(list.getList().get(x).getName().equals(n)) {
+                            //    n = n + "i";
+                            //}
                             //list.moveToNextTask();
-                        }
-                        list.addTask(n, Integer.parseInt(t) * MS_IN_1MIN, 0); //t is in minutes, need to convert to ms
-                        //pauseTimer();
-                        selectedTask = list.selectNewTask();
-                        mTimerRunning = true;
-                        mHasTasks = true;
-                        breakRecommend = ((list.getTotalMs()/3600000)*600000);
-                        refreshDisplay(false);
+                        //}
+                    readDb();
+                    //list.addTask(n, Integer.parseInt(t) * MS_IN_1MIN, 0); //t is in minutes, need to convert to ms
+                    //pauseTimer();
+                    selectedTask = list.selectNewTask(); //TODO: will this work?
+                    mTimerRunning = true;
+                    mHasTasks = true;
+                    breakRecommend = ((list.getTotalMs()/3600000)*600000);
+                    refreshDisplay(false);
                         //startTimer();
 
-                        if(data.getBooleanExtra("StartNew", false)) {
+                        //if(data.getBooleanExtra("StartNew", false)) {
                             //addTask(); //TODO: remove this functionality?
-                        }
-                    }
+                        //}
+                    //}
                     break;
                 case 2: //TODO: instead read from database to get tasks
                     //selectedTask = list.selectFirstTask();
                     list.clear();
+                    /*
                     int count = data.getIntExtra("return_count", 0);
                     for(int x=0;x<count;x++) {
                         if(data.hasExtra("item"+Integer.toString(x))) {
@@ -595,6 +597,8 @@ public class MainActivity extends AppCompatActivity {
                         }
                         //selectedTask = list.moveToNextTask();
                     }
+                    */
+                    readDb();
                     selectedTask = list.selectFirstTask();
                     mTimerRunning = true;
                     breakRecommend = ((list.getTotalMs()/3600000)*600000);
