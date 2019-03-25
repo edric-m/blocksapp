@@ -337,6 +337,13 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         finish();
     }
 
+    public void removeTask(String name) {
+        FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+        db.deleteTaskFromGroup(name, selectedPlan-1);
+        selectedPlan--;
+        switchPlan();
+    }
+
     public void switchPlan() {
         //selectedPlan++;
         //if(selectedPlan > 5) {

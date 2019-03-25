@@ -151,16 +151,20 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         return taskList;
     }
 
-    public boolean deleteTaskFromGroup(String name) {//delete from group table
+    public boolean deleteTaskFromGroup(String name, int planid) {//delete from group table
         SQLiteDatabase db = this.getReadableDatabase();
+        Log.d("delete", "Name: "+name);
+        Log.d("delete", "Plan ID: "+Integer.toString(planid));
         int id = readTask(name, db);
+        Log.d("delete", "ID: "+Integer.toString(id));
         //String[] selectionArgs = { id };
         /*String query = "DELETE FROM" + DbContract.TaskGroupEntry.GROUP_TABLE_NAME +
                 "WHERE " + DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID +
                 "=" + Integer.toString(id);
         Cursor res = db.rawQuery(query, null);*/
         return db.delete(DbContract.TaskGroupEntry.GROUP_TABLE_NAME,
-                DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + "=" + Integer.toString(id),
+                DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_ID + "='" + Integer.toString(id)
+                + "' AND " + DbContract.TaskGroupEntry.GROUP_COLUMN_PLAN_ID + "='" + Integer.toString(planid) + "'",
                 null) > 0;
     }
 

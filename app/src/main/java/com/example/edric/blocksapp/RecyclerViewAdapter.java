@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -47,6 +48,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
 
+        viewHolder.name = mTaskList.getList().get(i).getName();
         viewHolder.itemName.setText(mTaskList.getList().get(i).getName());
         if(mtotalMs > 0) {
             viewHolder.position = (int) Math.round((mTaskList.getList().get(i).getTimeAllocated() / mtotalMs) * 100);
@@ -75,6 +77,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
             }
         });
+        viewHolder.itemCloseBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mContext.removeTask(viewHolder.name);
+            }
+        });
     }
 
     @Override
@@ -87,14 +95,17 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView itemName;
         SeekBar itemSeekbar;
         TextView itemValue;
+        Button itemCloseBtn;
         RelativeLayout listitemLayout; //example uses it for onclick listener
         int position;
+        String name;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             itemName = itemView.findViewById(R.id.list_name);
             itemSeekbar = itemView.findViewById(R.id.list_seekbar);
             itemValue = itemView.findViewById(R.id.list_value);
+            itemCloseBtn = itemView.findViewById(R.id.list_close);
             listitemLayout = itemView.findViewById(R.id.listitem_layout);
             position = 1;
         }

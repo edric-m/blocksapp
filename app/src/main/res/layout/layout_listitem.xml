@@ -5,7 +5,7 @@
     android:id="@+id/listitem_layout">
 
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="30dp"
         android:id="@+id/list_name"
         android:layout_toRightOf="@+id/list_value"
@@ -14,7 +14,7 @@
         android:textStyle="bold"/>
 
     <SeekBar
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="30dp"
         android:id="@+id/list_seekbar"
         android:layout_below="@+id/list_name"
@@ -26,5 +26,13 @@
         android:id="@+id/list_value"
         android:text=" - "
         android:layout_below="@+id/list_name"/>
+
+    <Button
+        android:id="@+id/list_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/list_name"
+        android:layout_alignParentRight="true"
+        android:text="X"/>
 
 </RelativeLayout>
