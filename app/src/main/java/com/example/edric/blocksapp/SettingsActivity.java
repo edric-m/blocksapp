@@ -40,7 +40,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     private RecyclerView recyclerView;
     private SeekBar mTimeSeekbar, mPeriodSeekbar;
     private TextView mTimeText, mPeriodText, mPlanText;
-    private Button mLoadBtn, mPlanDelBtn, mFinishBrn, mNewBtn;
+    private Button mLoadBtn, mFinishBrn, mNewBtn; //mPlanDelBtn,
     private FloatingActionButton mFabSettings;
 
     private int selectedPlan;
@@ -84,13 +84,13 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
             }
         });
         selectedPlan = 1;
-        mPlanDelBtn = findViewById(R.id.button_deleteplans);
-        mPlanDelBtn.setOnClickListener(new View.OnClickListener() {
+        //mPlanDelBtn = findViewById(R.id.button_deleteplans);
+        /*mPlanDelBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 deletePlans();
             }
-        });
+        });*/
         mLoadBtn = findViewById(R.id.button_load);
         mLoadBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -212,10 +212,12 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         dialog.show(getSupportFragmentManager(), "DialogPlan");
     }
 
+    /*
     private void deletePlans() {
         FeedReaderDbHelper db = new FeedReaderDbHelper(this);
         db.clearPlanTable();
     }
+    */
 
     private void newPlan() {
         FeedReaderDbHelper db = new FeedReaderDbHelper(this);
@@ -402,12 +404,18 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         finish();
     }
 
-    public void removeTask(String name) {
-        FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+    public void removeTask(String name, int idx) {
+        //FeedReaderDbHelper db = new FeedReaderDbHelper(this); //dont delete these two lines
+        //db.deleteTaskFromGroup(name, selectedPlan-1);
+        taskList.getList().remove(idx);
+        //selectedPlan--;
+        //switchPlan();
+        count = taskList.size();
+        changesMade = true;
+        plan = (taskList.getTotalMs()/(mintoms*10));
+        mTimeText.setText(" "+new DecimalFormat("#.#").format(plan*0.16666)+" hrs       work per day");
+        initRecyclerView(taskList.getTotalMs());
         Log.d("deletetaskfromsettings", "delete " + name);
-        db.deleteTaskFromGroup(name, selectedPlan-1);
-        selectedPlan--;
-        switchPlan();
     }
 
     public void switchPlan() {
@@ -431,7 +439,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
                 if(selectedPlan > 5) {
                     selectedPlan = 0;
                 }
-            } while (taskList.size() == 0);
+            } while (taskList.size() == 0); //could have endless loop here?
             count = taskList.size();
             changesMade = true;
             plan = (taskList.getTotalMs()/(mintoms*10));

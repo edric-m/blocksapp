@@ -183,6 +183,8 @@ public class MainActivity extends AppCompatActivity {
                 mClearBtn.setVisibility(View.INVISIBLE);
                 mtaskIndex.setVisibility(View.INVISIBLE);
                 mtaskIndex.setVisibility(View.INVISIBLE);
+                mAlarmBtn.setVisibility(View.INVISIBLE);
+                mAlarmBtn.setEnabled(false);
                 mImageView.setImageDrawable(null);
                 //refreshDisplay(true); //TODO do this instead?
             }
@@ -300,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
             //wl.acquire(); //TODO: look into setting a timeout
             Log.d("alarm", "alarm register receiver");
         } else {
-            //mAlarmBtn.setText("set 10min alarm");
+            mAlarmBtn.setText("set 1 min alarm");
             //this.unregisterReceiver(alarmBroadcast);
             //wl.release();
             //Log.d("alarm", "alarm un-register receiver");

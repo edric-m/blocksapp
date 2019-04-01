@@ -85,7 +85,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         viewHolder.itemCloseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mContext.removeTask(viewHolder.name);
+                mContext.removeTask(viewHolder.name, viewHolder.idx);
             }
         });
     }
