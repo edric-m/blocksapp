@@ -182,8 +182,9 @@ public class MainActivity extends AppCompatActivity {
                 layout.setBackgroundColor(Color.parseColor("#4576c1"));
                 mClearBtn.setVisibility(View.INVISIBLE);
                 mtaskIndex.setVisibility(View.INVISIBLE);
+                mtaskIndex.setVisibility(View.INVISIBLE);
                 mImageView.setImageDrawable(null);
-                refreshDisplay(true); //TODO do this instead
+                //refreshDisplay(true); //TODO do this instead?
             }
         }
         /* //delete the whole list of tasks. then exit app
@@ -609,7 +610,7 @@ public class MainActivity extends AppCompatActivity {
                 mtextviewBreak.setText(BREAK_TIME_TEXT);
                 mClearBtn.setVisibility(View.INVISIBLE);
                 mClearBtn.setEnabled(false);
-                mtaskIndex.setVisibility(View.INVISIBLE);
+                //mtaskIndex.setVisibility(View.INVISIBLE);
                 mAlarmBtn.setVisibility(View.INVISIBLE);
                 mAlarmBtn.setEnabled(false);
                 showBreakInfo();
@@ -724,8 +725,8 @@ public class MainActivity extends AppCompatActivity {
                         selectedTask = list.selectFirstTask();
                         mTimerRunning = true;
                         breakRecommend = ((list.getTotalMs() / 3600000) * 600000);
-                        refreshDisplay(false);
                     }
+                    refreshDisplay(false);
                     break;
                 default:
                     break;

@@ -40,7 +40,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     private RecyclerView recyclerView;
     private SeekBar mTimeSeekbar, mPeriodSeekbar;
     private TextView mTimeText, mPeriodText, mPlanText;
-    private Button mLoadBtn, mPlanDelBtn, mFinishBrn;
+    private Button mLoadBtn, mPlanDelBtn, mFinishBrn, mNewBtn;
     private FloatingActionButton mFabSettings;
 
     private int selectedPlan;
@@ -61,6 +61,13 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         group2 = findViewById(R.id.radioGroup2);
         b = findViewById(R.id.button2);
         */
+        mNewBtn = findViewById(R.id.button_new);
+        mNewBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                newPlan();
+            }
+        });
         mFabSettings = findViewById(R.id.fab_settings);
         mFabSettings.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -210,6 +217,13 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         db.clearPlanTable();
     }
 
+    private void newPlan() {
+        FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+        db.deletePlan(0);
+        selectedPlan = 1; //selects plan 0
+        addNewTask();
+    }
+
     private void initRecyclerView(int totalMs){
         if(totalMs <= 0) {
             switchPlan();
@@ -320,7 +334,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         finish();
     }
     public void cancelSettings(View view) {
-        changesMade = false;
+        //changesMade = false;
         finish();
     }
 
