@@ -144,6 +144,13 @@ public class NewTaskActivity extends AppCompatActivity {
             newTaskName = "Alarm ";
         } else {
             newTaskName = name.getText().toString();
+            FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+            //check that the task name doesn't already exist in the database
+            if(db.readTask(newTaskName)>0)
+            {
+                hoursSet = 0;
+                minSet = 0; //this invalidates the creation of a task
+            }
         }
         finish();
     }
@@ -160,6 +167,7 @@ public class NewTaskActivity extends AppCompatActivity {
         int x = (hoursSet * 60) + minSet;
         if(x <= 0) {
             setResult(RESULT_CANCELED, data);
+            //TODO notify user that creation failed
         }
         else {
             //data.putExtra(NAME_KEY, newTaskName);

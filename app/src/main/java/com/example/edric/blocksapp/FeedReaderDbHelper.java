@@ -277,18 +277,21 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         }
     }
 
-    /*
+
     public int readTask(String name) {
         int id = -1;
         SQLiteDatabase db = this.getReadableDatabase();
-        String query = "SELECT " + DbContract.FeedEntry._ID + " FROM tasks WHERE name="+name;
+        String query = "SELECT " + DbContract.FeedEntry._ID +
+                " FROM "+DbContract.FeedEntry.TASK_TABLE_NAME +
+                " WHERE "+DbContract.FeedEntry.TASK_COLUMN_NAME+"='"+name+"'";
         Cursor res =  db.rawQuery( query, null );
         if(res.getCount() > 0) {
-            id = res.getInt(res.getColumnIndex(DbContract.FeedEntry._ID));
+            //id = res.getInt(res.getColumnIndex(DbContract.FeedEntry._ID));
+            id = 1;
         }
         return id;
     }
-    */
+
 
     /**
      * works so far

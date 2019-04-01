@@ -690,9 +690,9 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        //mTimerRunning = true;
+        mTimerRunning = true;
         Log.d("MyActivity", "requestCode:"+Integer.toString(requestCode) + " resultCode:"+Integer.toString(resultCode));
-        //refreshDisplay(!mTimerRunning); //fix this, its confusing
+        refreshDisplay(!mTimerRunning); //fix this, its confusing
         if (resultCode == RESULT_OK) {
             switch(requestCode) {
                 case 1:
