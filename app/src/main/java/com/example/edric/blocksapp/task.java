@@ -7,6 +7,7 @@ public class task {
     private String name;
     private long timeSpent; //mins
     private long timeAllocated; //mins
+    private int listPosition;
     //private String colour; //String.format("#%02x%02x%02x", r, g, b);
     //private Random random = new Random();
 
@@ -41,6 +42,17 @@ public class task {
     //public String getColour() {
         //return colour;
     //}
+    public boolean setListPosition(int x) {
+        if(x > 100 || x < 0) {
+            return false;
+        } else {
+            listPosition = x;
+            return true;
+        }
+    }
+    public int getListPosition() {
+        return listPosition;
+    }
     public String getName() {
         return name;
     }

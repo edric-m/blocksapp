@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean alarmSet=false;
     private int alarmMin=0;
     private NotificationManager notificationManager;
+    //PowerManager.WakeLock wl;
 
     private float initialX, initialY; /*!< Screen x,y position used for screen touch events */
 
@@ -84,10 +86,11 @@ public class MainActivity extends AppCompatActivity {
             */
             selectedTask.setTimeAllocated((long) intent.getIntExtra("time_left",(int)selectedTask.getTimeAllocated()));
             timePaused = intent.getIntExtra("pause_time", (int)timePaused);
+            checkQuickAlarm();
             Log.d("MyActivity", "onRecieve called");
         }
     };
-    private BroadcastReceiver alarmBroadcast = new BroadcastReceiver() {
+    /*private BroadcastReceiver alarmBroadcast = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             if(alarmMin==0) {
@@ -98,11 +101,31 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("alarm", "alarm receiver done");
             } else {
                 alarmMin--;
+                mAlarmBtn.setText(Integer.toString(alarmMin) + "mins left");
                 Log.d("alarm", "alarm receiver tick");
             }
         }
-    };
+    };*/
 
+    private void checkQuickAlarm() {
+        if(alarmSet) {
+            if (alarmMin == 0) {
+                //notify
+                notifyAlarmEnd();
+                //turn off reciever
+                mAlarmBtn.setText("set 10min alarm");
+                //this.unregisterReceiver(alarmBroadcast);
+                //wl.release();
+                //Log.d("alarm", "alarm un-register receiver");
+                alarmSet = false;
+                Log.d("alarm", "alarm receiver done");
+            } else {
+                alarmMin = alarmMin - 1000;
+                mAlarmBtn.setText(Integer.toString(alarmMin) + "mins left");
+                Log.d("alarm", "alarm receiver tick");
+            }
+        }
+    }
     /**
      * @Brief: onCreate method for MainActivity
      * @Param: savedInstanceState
@@ -149,6 +172,7 @@ public class MainActivity extends AppCompatActivity {
             if(list.size()>0) {
                 selectedTask = list.selectFirstTask();
                 breakRecommend = ((list.getTotalMs()/3600000)*600000);
+                switchedTime = 0;
                 refreshDisplay(false);
             } else {
                 mTimerRunning = false;
@@ -178,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
         mAlarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setQuickAlarm();
+                setQuickAlarm(1);
             }
         });
         mtaskIndex = findViewById(R.id.textView_taskIndex);
@@ -257,17 +281,21 @@ public class MainActivity extends AppCompatActivity {
         //saveDb();
     }
 
-    private void setQuickAlarm() {
+    private void setQuickAlarm(int mins) {
         if(!alarmSet) {
-            alarmMin = 10;
+            alarmMin = mins * 1000*60;
             alarmSet = true;
             mAlarmBtn.setText("stop alarm");
-            this.registerReceiver(alarmBroadcast, new IntentFilter(Intent.ACTION_TIME_TICK));
+            //this.registerReceiver(alarmBroadcast, new IntentFilter(Intent.ACTION_TIME_TICK));
+            //PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            //wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "myapp:alrmwklck");
+            //wl.acquire(); //TODO: look into setting a timeout
             Log.d("alarm", "alarm register receiver");
         } else {
-            mAlarmBtn.setText("set 10min alarm");
-            this.unregisterReceiver(alarmBroadcast);
-            Log.d("alarm", "alarm un-register receiver");
+            //mAlarmBtn.setText("set 10min alarm");
+            //this.unregisterReceiver(alarmBroadcast);
+            //wl.release();
+            //Log.d("alarm", "alarm un-register receiver");
             alarmSet = false;
         }
     }
@@ -415,7 +443,8 @@ public class MainActivity extends AppCompatActivity {
         mOnTickTimer = new CountDownTimer(MS_IN_10MIN, MS_IN_1SEC) {
             @Override
             public void onTick(long millisUntilFinished) {
-                if(mHasTasks) {
+                //checkQuickAlarm();
+                if(mHasTasks) { //TODO: move this check to broadcast receiver
                     switchedTime = switchedTime + 1000;
                     if(mTimerRunning) {
                         selectedTask.decrementTime();
@@ -587,7 +616,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void showBreakInfo() {
         mtaskIndex.setText("\n\nTotal break time: " + formatMsToTime(timePaused));
-        mtaskIndex.append("\nRecommended break time: " + formatMsToTime(breakRecommend));
+        mtaskIndex.append("\nRecommended break time: " + formatMsToTime(breakRecommend-timePaused));
     }
 
     private void showTaskInfo() {

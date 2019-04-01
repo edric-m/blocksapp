@@ -18,7 +18,7 @@ import java.util.Locale;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.ViewHolder>{
 
-    private ArrayList<String> mNameList = new ArrayList<>();
+    //private ArrayList<String> mNameList = new ArrayList<>();
     private tasks mTaskList;
     private double mtotalMs;
     //list of seekbars?
@@ -29,6 +29,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         this.mTaskList = taskList;
         this.mContext = (SettingsActivity)context;
         this.mtotalMs = totalMs;
+        //this.setHasStableIds(true);
     }
 
     @NonNull
@@ -45,13 +46,16 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return String.format(Locale.getDefault(),"%02d:%02d",hours, minutes);
     }
 
+
     @Override
     public void onBindViewHolder(@NonNull final ViewHolder viewHolder, int i) {
 
         viewHolder.name = mTaskList.getList().get(i).getName();
+        viewHolder.idx = i;
         viewHolder.itemName.setText(mTaskList.getList().get(i).getName());
         if(mtotalMs > 0) {
             viewHolder.position = (int) Math.round((mTaskList.getList().get(i).getTimeAllocated() / mtotalMs) * 100);
+            mContext.setItemPosition(viewHolder.idx,viewHolder.position);
             viewHolder.itemValue.setText(formatMsToTime(mTaskList.getList().get(i).getTimeAllocated()));
             //mContext.setPlanSeekBar((int)mtotalMs);
         }
@@ -64,6 +68,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
                 //viewHolder.itemValue.setText(Integer.toString(progress));
                 viewHolder.position = progress;
                 mContext.setChangesMade();
+                mContext.setItemPosition(viewHolder.idx, progress);
                 mContext.calculateTime();
             }
 
@@ -97,7 +102,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         TextView itemValue;
         Button itemCloseBtn;
         RelativeLayout listitemLayout; //example uses it for onclick listener
-        int position;
+        int position, idx;
         String name;
 
         public ViewHolder(@NonNull View itemView) {

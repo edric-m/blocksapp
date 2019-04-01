@@ -1,6 +1,7 @@
 package com.example.edric.blocksapp;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -140,6 +141,18 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         });
 
         recyclerView = findViewById(R.id.recyclerv_view);
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+            }
+
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                calculateTime();
+            }
+        });
         Intent i = getIntent();
         int y = Integer.parseInt(i.getStringExtra("item_count"));
         count = y;
@@ -198,9 +211,19 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     }
 
     private void initRecyclerView(int totalMs){
+        //recyclerView = new RecyclerView(this);
+        //recyclerView = findViewById(R.id.recyclerv_view); //these two lines needed?
+        //recyclerView.invalidate();
+        //recyclerView.getAdapter().
         RecyclerViewAdapter adapter = new RecyclerViewAdapter(this, taskList, totalMs);
+        //adapter.setHasStableIds(true);
+        //recyclerView.
         recyclerView.setAdapter(adapter);
+        //recyclerView.s
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        Log.d("recyclerview", Integer.toString(recyclerView.getAdapter().getItemCount()));
+        //recyclerView.getAdapter().notifyDataSetChanged();
+        //recyclerView.invalidate();
         /* //use intents inside the viewholder?
         recyclerView.setOnDragListener(new RecyclerView.OnDragListener() {
             @Override
@@ -232,6 +255,9 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     }
     */
 
+    public void setItemPosition(int idx, int value) {
+        taskList.getList().get(idx).setListPosition(value);
+    }
     public void calculateTime () {
         //calculation variables
         int total = 0;
@@ -240,12 +266,29 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         // Prepare data intent
         //Intent data = new Intent();
         RecyclerViewAdapter.ViewHolder item;
+        View itemView;
+        //RecyclerView.Adapter item;
         DecimalFormat df = new DecimalFormat("#.#");
+        Log.d("recyclerview", Integer.toString(count));
+        //recyclerView.getAdapter().notifyDataSetChanged();
+        //itemView = recyclerView.getRootView();
 
+        //TODO try this -> recyclerView.getAdapter().getItemId(1);
+        //recyclerView.invalidate();
         for(int x=0;x<count;x++)  {
-            item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(x);
+            //item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(x);
+            //item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForItemId(x);
+            //itemView = recyclerView.findViewHolderForAdapterPosition(x).itemView;
+            //itemView.findViewById;
             //process the task
-            valueList[x] = item.position;
+            /*
+            if(item != null) {
+                //valueList[x] = item.position;
+            } else {
+                valueList[x] = 1;
+            }
+            */
+            valueList[x] = taskList.getList().get(x).getListPosition();
             total = total + valueList[x];
         }
         //calculate task weight, then calculate the time
@@ -253,8 +296,10 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
             //returnTimeList[x] = (period * plan * blockSize *0.01666) * ((double)valueList[x]/(double)total);
             taskList.getList().get(x).setTimeAllocated(
                     (int)Math.round((period * plan * blockSize * mintoms) * ((double)valueList[x]/(double)total))); //TODO: fix this ugly code
-            item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(x);
+            //item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForAdapterPosition(x);
+            item = (RecyclerViewAdapter.ViewHolder)recyclerView.findViewHolderForLayoutPosition(x);
             //item.itemValue.setText(df.format(returnTimeList[x])+ " hrs");
+            if(item != null)
             item.itemValue.setText(formatMsToTime(taskList.getList().get(x).getTimeAllocated()));
             //data.putExtra("item"+Integer.toString(x), returnTimeList[x]);
         }
@@ -340,6 +385,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
 
     public void removeTask(String name) {
         FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+        Log.d("deletetaskfromsettings", "delete " + name);
         db.deleteTaskFromGroup(name, selectedPlan-1);
         selectedPlan--;
         switchPlan();
