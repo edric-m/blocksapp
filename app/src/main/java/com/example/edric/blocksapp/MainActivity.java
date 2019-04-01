@@ -181,7 +181,9 @@ public class MainActivity extends AppCompatActivity {
                 taskTime.setText("to begin");
                 layout.setBackgroundColor(Color.parseColor("#4576c1"));
                 mClearBtn.setVisibility(View.INVISIBLE);
+                mtaskIndex.setVisibility(View.INVISIBLE);
                 mImageView.setImageDrawable(null);
+                refreshDisplay(true); //TODO do this instead
             }
         }
         /* //delete the whole list of tasks. then exit app
@@ -220,6 +222,11 @@ public class MainActivity extends AppCompatActivity {
         if(!readDb()) {
             list = new tasks();
             //taskName.setText("bad load db");
+            mClearBtn.setVisibility(View.INVISIBLE);
+            mClearBtn.setEnabled(false);
+            mtaskIndex.setVisibility(View.INVISIBLE);
+            mAlarmBtn.setVisibility(View.INVISIBLE);
+            mAlarmBtn.setEnabled(false);
             Log.d("MyActivity", "db not loaded" );
         } else {
             //mHasTasks = true;
@@ -410,8 +417,8 @@ public class MainActivity extends AppCompatActivity {
 
                 if (initialY > finalY && Math.abs(finalX - initialX) < Math.abs(initialY - finalY)) {
                     //Log.d(TAG, "Down to Up swipe performed");
-                    if(mHasTasks)
-                        if(mTimerRunning) {
+                    //if(mHasTasks)
+                        if(mTimerRunning || !mHasTasks) {  //TODO double check this
                             switchedTime = 0; //TODO: not good to do this here
                             openSettings();
                         } else {
@@ -596,16 +603,24 @@ public class MainActivity extends AppCompatActivity {
      * @Param: boolean paused - if tasks are paused or not
      */
     private void refreshDisplay(boolean paused) {
-        if(mHasTasks) {
+        if(mHasTasks) { //TODO might need this
             if (paused) {
                 taskName.setText("");
                 mtextviewBreak.setText(BREAK_TIME_TEXT);
                 mClearBtn.setVisibility(View.INVISIBLE);
+                mClearBtn.setEnabled(false);
+                mtaskIndex.setVisibility(View.INVISIBLE);
+                mAlarmBtn.setVisibility(View.INVISIBLE);
+                mAlarmBtn.setEnabled(false);
                 showBreakInfo();
             } else {
                 taskName.setText(selectedTask.getName());
                 mtextviewBreak.setText("");
                 mClearBtn.setVisibility(View.VISIBLE);
+                mClearBtn.setEnabled(true);
+                mtaskIndex.setVisibility(View.VISIBLE);
+                mAlarmBtn.setVisibility(View.VISIBLE);
+                mAlarmBtn.setEnabled(true);
                 //mtaskIndex.setVisibility(View.VISIBLE);
                 showTaskInfo();
             }
@@ -658,9 +673,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        mTimerRunning = true;
+        //mTimerRunning = true;
         Log.d("MyActivity", "requestCode:"+Integer.toString(requestCode) + " resultCode:"+Integer.toString(resultCode));
-        refreshDisplay(!mTimerRunning); //fix this, its confusing
+        //refreshDisplay(!mTimerRunning); //fix this, its confusing
         if (resultCode == RESULT_OK) {
             switch(requestCode) {
                 case 1:
@@ -675,20 +690,21 @@ public class MainActivity extends AppCompatActivity {
                             //}
                             //list.moveToNextTask();
                         //}
-                    readDb();
-                    //list.addTask(n, Integer.parseInt(t) * MS_IN_1MIN, 0); //t is in minutes, need to convert to ms
-                    //pauseTimer();
-                    selectedTask = list.selectNewTask(); //TODO: will this work?
-                    mTimerRunning = true;
-                    mHasTasks = true;
-                    breakRecommend = ((list.getTotalMs()/3600000)*600000);
-                    refreshDisplay(false);
+                    if(readDb()) {
+                        //list.addTask(n, Integer.parseInt(t) * MS_IN_1MIN, 0); //t is in minutes, need to convert to ms
+                        //pauseTimer();
+                        selectedTask = list.selectNewTask(); //TODO: will this work?
+                        mTimerRunning = true;
+                        mHasTasks = true;
+                        breakRecommend = ((list.getTotalMs() / 3600000) * 600000);
+                        refreshDisplay(false);
                         //startTimer();
 
                         //if(data.getBooleanExtra("StartNew", false)) {
-                            //addTask(); //TODO: remove this functionality?
+                        //addTask(); //TODO: remove this functionality?
                         //}
-                    //}
+                        //}
+                    }
                     break;
                 case 2: //TODO: instead read from database to get tasks
                     //selectedTask = list.selectFirstTask();
@@ -704,11 +720,12 @@ public class MainActivity extends AppCompatActivity {
                         //selectedTask = list.moveToNextTask();
                     }
                     */
-                    readDb();
-                    selectedTask = list.selectFirstTask();
-                    mTimerRunning = true;
-                    breakRecommend = ((list.getTotalMs()/3600000)*600000);
-                    refreshDisplay(false);
+                    if(readDb()) {
+                        selectedTask = list.selectFirstTask();
+                        mTimerRunning = true;
+                        breakRecommend = ((list.getTotalMs() / 3600000) * 600000);
+                        refreshDisplay(false);
+                    }
                     break;
                 default:
                     break;

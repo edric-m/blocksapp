@@ -211,6 +211,11 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     }
 
     private void initRecyclerView(int totalMs){
+        if(totalMs <= 0) {
+            switchPlan();
+            totalMs = taskList.getTotalMs();
+            //calculateTime();
+        }
         //recyclerView = new RecyclerView(this);
         //recyclerView = findViewById(R.id.recyclerv_view); //these two lines needed?
         //recyclerView.invalidate();
@@ -315,7 +320,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         finish();
     }
     public void cancelSettings(View view) {
-        //changesMade = false;
+        changesMade = false;
         finish();
     }
 
