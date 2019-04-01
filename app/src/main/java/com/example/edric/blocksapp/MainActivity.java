@@ -32,7 +32,7 @@ import android.support.design.widget.FloatingActionButton;
 
 //TODO: implement try-catch where needed
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInputListener{
     private tasks list; /*!< Contains the array list of the tasks */
     private task selectedTask; /*!< The task that the activity will focus on */
 
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity {
                 //notify
                 notifyAlarmEnd();
                 //turn off reciever
-                mAlarmBtn.setText("set 10min alarm");
+                mAlarmBtn.setText("set alarm");
                 //this.unregisterReceiver(alarmBroadcast);
                 //wl.release();
                 //Log.d("alarm", "alarm un-register receiver");
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("alarm", "alarm receiver done");
             } else {
                 alarmMin = alarmMin - 1000;
-                mAlarmBtn.setText(Integer.toString(alarmMin) + "mins left");
+                //mAlarmBtn.setText(formatMsToTime(alarmMin) + " mins left");
                 Log.d("alarm", "alarm receiver tick");
             }
         }
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
         mAlarmBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setQuickAlarm(1);
+                showAlarmDialog();
             }
         });
         mtaskIndex = findViewById(R.id.textView_taskIndex);
@@ -291,23 +291,37 @@ public class MainActivity extends AppCompatActivity {
         //saveDb();
     }
 
-    private void setQuickAlarm(int mins) {
+    private void showAlarmDialog() {
         if(!alarmSet) {
-            alarmMin = mins * 1000*60;
-            alarmSet = true;
-            mAlarmBtn.setText("stop alarm");
-            //this.registerReceiver(alarmBroadcast, new IntentFilter(Intent.ACTION_TIME_TICK));
-            //PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-            //wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "myapp:alrmwklck");
-            //wl.acquire(); //TODO: look into setting a timeout
-            Log.d("alarm", "alarm register receiver");
+            DialogAlarm dialog = new DialogAlarm();
+            dialog.show(getSupportFragmentManager(), "DialogAlarm");
         } else {
-            mAlarmBtn.setText("set 1 min alarm");
+            mAlarmBtn.setText("set alarm");
             //this.unregisterReceiver(alarmBroadcast);
             //wl.release();
             //Log.d("alarm", "alarm un-register receiver");
             alarmSet = false;
         }
+    }
+
+    @Override
+    public void setQuickAlarm(int mins) {
+        //if(!alarmSet) {
+            alarmMin = mins * 1000*60;
+            alarmSet = true;
+            mAlarmBtn.setText("stop "+ Integer.toString(mins)+" min alarm");
+            //this.registerReceiver(alarmBroadcast, new IntentFilter(Intent.ACTION_TIME_TICK));
+            //PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+            //wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "myapp:alrmwklck");
+            //wl.acquire(); //TODO: look into setting a timeout
+            Log.d("alarm", "alarm set");
+        //} else {
+            //mAlarmBtn.setText("set alarm");
+            //this.unregisterReceiver(alarmBroadcast);
+            //wl.release();
+            //Log.d("alarm", "alarm un-register receiver");
+            //alarmSet = false;
+        //}
     }
 
     private void notifyAlarmEnd() {
@@ -613,8 +627,8 @@ public class MainActivity extends AppCompatActivity {
                 mClearBtn.setVisibility(View.INVISIBLE);
                 mClearBtn.setEnabled(false);
                 //mtaskIndex.setVisibility(View.INVISIBLE);
-                mAlarmBtn.setVisibility(View.INVISIBLE);
-                mAlarmBtn.setEnabled(false);
+                //mAlarmBtn.setVisibility(View.INVISIBLE);
+                //mAlarmBtn.setEnabled(false);
                 showBreakInfo();
             } else {
                 taskName.setText(selectedTask.getName());

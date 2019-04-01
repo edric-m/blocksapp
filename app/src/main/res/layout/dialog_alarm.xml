@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/textview_alarm_heading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="Set minutes"
+        android:textColor="@color/black"/>
+
+    <Button
+        android:id="@+id/button_1min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/textview_alarm_heading"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="1"
+        android:textColor="@color/black"/>
+
+    <Button
+        android:id="@+id/button_5min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/textview_alarm_heading"
+        app:layout_constraintLeft_toRightOf="@+id/button_1min"
+        android:text="5"
+        android:textColor="@color/black"/>
+
+    <Button
+        android:id="@+id/button_10min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/textview_alarm_heading"
+        app:layout_constraintLeft_toRightOf="@+id/button_5min"
+        android:text="10"
+        android:textColor="@color/black"/>
+
+    <Button
+        android:id="@+id/button_15min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/button_5min"
+        app:layout_constraintLeft_toLeftOf="parent"
+        android:text="15"
+        android:textColor="@color/black"/>
+
+    <Button
+        android:id="@+id/button_30min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/button_5min"
+        app:layout_constraintLeft_toRightOf="@+id/button_1min"
+        android:text="30"
+        android:textColor="@color/black"/>
+
+    <Button
+        android:id="@+id/button_60min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/button_5min"
+        app:layout_constraintLeft_toRightOf="@+id/button_5min"
+        android:text="60"
+        android:textColor="@color/black"/>
+
+    <Button
+        android:id="@+id/button_alarm_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/button_30min"
+        app:layout_constraintLeft_toRightOf="@+id/button_1min"
+        android:text="cancel"
+        android:textColor="@color/black"/>
+
+</android.support.constraint.ConstraintLayout>
