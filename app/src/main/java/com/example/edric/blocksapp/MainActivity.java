@@ -40,8 +40,8 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
     private TextView taskTime, mtextviewBreak, mtaskIndex; /*!< Controls the TextView that displays the time */
     private ConstraintLayout layout; /*!< Needed to set the background colour of the activity */
     private ImageView mImageView; /*!< Controls the background image */
-    private Button mClearBtn, mAlarmBtn;
-    private CountDownTimer mOnTickTimer; /*!< Timer class to start an onTick event */
+    private Button mClearBtn, mAlarmBtn, mStartBtn;
+    //private CountDownTimer mOnTickTimer; /*!< Timer class to start an onTick event */
 
     private long timePaused; /*!< Counts the amount of time the pause timer has run */
     private int switchedTime=0;
@@ -57,8 +57,8 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
     private float initialX, initialY; /*!< Screen x,y position used for screen touch events */
 
     //constant variables
-    private static final int MS_IN_1SEC = 1000; /*!< Constant used for onTick event*/
-    private static final int MS_IN_10MIN = 600000; /*!< Constant used for onTick event */
+    //private static final int MS_IN_1SEC = 1000; /*!< Constant used for onTick event*/
+    //private static final int MS_IN_10MIN = 600000; /*!< Constant used for onTick event */
     //private static final int MS_IN_1MIN = 60000; /*!< Constant used for adding new tasks */
     private static final String BREAK_TIME_TEXT = "work break";/*!< Constant used when setting a textview */
 
@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
             selectedTask.setTimeAllocated((long) intent.getIntExtra("time_left",(int)selectedTask.getTimeAllocated()));
             timePaused = intent.getIntExtra("pause_time", (int)timePaused);
             checkQuickAlarm();
+            timerTick();
             Log.d("MyActivity", "onRecieve called");
         }
     };
@@ -151,7 +152,11 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                 deleteTask();
             }
         });
-        startOnTickEvent();
+
+        //START TIMER
+        //startOnTickEvent();
+
+
         //not start service here
 
         //floating action button setup listener
@@ -202,6 +207,13 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
         //load tasks from the database
 
         //View variables that will be used
+        mStartBtn = findViewById(R.id.btn_startTimer);
+        mStartBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleTimer();
+            }
+        });
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         mAlarmBtn = findViewById(R.id.brn_alarm);
         mAlarmBtn.setOnClickListener(new View.OnClickListener() {
@@ -352,7 +364,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
 
     @Override
     protected void onPause() {
-
+        /*
         if(mHasTasks && selectedTask.getTimeAllocated() > 1) {
             mServiceStarted = true;
             //start service
@@ -374,6 +386,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
 
             //no need to pause timer
         }
+        */
 
         super.onPause(); //TODO: should these be at the beginning of the function?
         Log.d("MyActivity", "pause called" );
@@ -382,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
 
     @Override
     protected void onResume() {
-
+        /*
         if (mServiceStarted) {
             stopService(new Intent(this, BroadcastService.class));
             //unregister reciever
@@ -391,6 +404,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
             Log.d("MyActivity", "service canceled" );
             mServiceStarted = false;
         }
+        */
         super.onResume();
     }
 
@@ -440,7 +454,9 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                             openSettings();
                         } else {
                             switchedTime = 0;
+                            toggleTimer();
                             mTimerRunning = true;
+                            toggleTimer();
                             refreshDisplay(false);
                             //toast.setText(selectedTask.getName() + " resumed");
                             //toast.show();
@@ -459,10 +475,55 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
         return super.onTouchEvent(event);
     }
 
+    private void toggleTimer() { //TODO confusing (function) names
+        if(mServiceStarted) {
+            stopTimer();
+            mStartBtn.setText("Start");
+        } else {
+            startTimer();
+            mStartBtn.setText("Stop");
+        }
+    }
+
+    private void startTimer() {
+        if(mHasTasks && selectedTask.getTimeAllocated() > 1) {
+            mServiceStarted = true;
+            //start service
+            Intent i = new Intent(this, BroadcastService.class);
+            i.putExtra("pause_time", (int)switchedTime);
+            i.putExtra("total_pause", (int)timePaused);
+            i.putExtra("set_time", (int) selectedTask.getTimeAllocated());
+            i.putExtra("task_name", selectedTask.getName());
+            if(mTimerRunning) {
+
+                Log.d("MyActivity", "time send");
+            } else {
+                i.putExtra("paused",true);
+
+            }
+            this.startService(i);
+            //register reciever
+            this.registerReceiver(br, new IntentFilter(BroadcastService.COUNTDOWN_BR));
+
+            //no need to pause timer
+        }
+    }
+
+    private void stopTimer() {
+        if (mServiceStarted) {
+            stopService(new Intent(this, BroadcastService.class));
+            //unregister reciever
+            this.unregisterReceiver(br);
+            //stop service
+            Log.d("MyActivity", "service canceled" );
+            mServiceStarted = false;
+        }
+    }
     /**
      * @Brief: Initialises infinite onTick event. Called by onCreate. Is called only once.
      * @Note: Depends on mHasTasks and mTimerRunning booleans.
      */
+    /*
     public void startOnTickEvent() {
         mOnTickTimer = new CountDownTimer(MS_IN_10MIN, MS_IN_1SEC) {
             @Override
@@ -488,6 +549,23 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                 mOnTickTimer.start();
             }
         }.start();
+    }
+    */
+
+    private void timerTick() {
+        if(mHasTasks) {
+            switchedTime = switchedTime + 1000;
+            if(mTimerRunning) {
+                //selectedTask.decrementTime();
+                updateCountDownText(false);
+                showTaskInfo();
+            }
+            else {
+                //timePaused = timePaused + 1000;
+                updateCountDownText(true);
+                showBreakInfo();
+            }
+        }
     }
 
     /**
@@ -528,9 +606,12 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
      * @Note: Changes mTimerRunning to false
      */
     public void startWorkBreak() {
+        toggleTimer();
         switchedTime = 0;
         mTimerRunning = false;
         refreshDisplay(true);
+        toggleTimer();
+
         Toast toast = Toast.makeText(getApplicationContext(), "all timers paused", Toast.LENGTH_SHORT);
 
         //pause timer
@@ -550,7 +631,9 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
         int duration = Toast.LENGTH_SHORT;
         Toast toast = Toast.makeText(context, text, duration);
         */
+        toggleTimer();
         mTimerRunning = false;
+        toggleTimer();
         refreshDisplay(mTimerRunning);
         //settings //TODO: load current tasks into settings
         Intent i = new Intent(this, SettingsActivity.class);
@@ -572,6 +655,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
      */
     public void switchTask(Direction direction) {
         if(mTimerRunning) {
+            toggleTimer();
             //switchedTime = 0;
             switch (direction) {
                 case PREVIOUS:
@@ -582,6 +666,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                     break;
                 default:
             }
+            toggleTimer();
             refreshDisplay(false);
         }
     }
@@ -593,7 +678,9 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
      */
     public void addTask() {
         //new task
+        toggleTimer();
         mTimerRunning = false;
+        toggleTimer();
         refreshDisplay(mTimerRunning);
         Intent i = new Intent(this, NewTaskActivity.class);
         startActivityForResult(i, 1); //request code is so we know who we are hearing back from
@@ -690,7 +777,9 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        toggleTimer();
         mTimerRunning = true;
+        toggleTimer();
         Log.d("MyActivity", "requestCode:"+Integer.toString(requestCode) + " resultCode:"+Integer.toString(resultCode));
         refreshDisplay(!mTimerRunning); //fix this, its confusing
         if (resultCode == RESULT_OK) {
