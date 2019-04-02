@@ -149,6 +149,8 @@ public class NewTaskActivity extends AppCompatActivity {
         //check that the task name doesn't already exist in the database
         if(db.readTask(newTaskName)>0)
         {
+            //delete task from group if its there
+            db.deleteTaskFromGroup(newTaskName, planSet);
             //add task to group table
             long x = (hoursSet * 60) + minSet;
             db.addToGroup(newTaskName, x*MS_IN_1MIN, planSet);
