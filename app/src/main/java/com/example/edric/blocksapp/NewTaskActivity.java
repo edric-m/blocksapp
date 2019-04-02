@@ -144,13 +144,18 @@ public class NewTaskActivity extends AppCompatActivity {
             newTaskName = "Alarm ";
         } else {
             newTaskName = name.getText().toString();
-            FeedReaderDbHelper db = new FeedReaderDbHelper(this);
-            //check that the task name doesn't already exist in the database
-            if(db.readTask(newTaskName)>0)
-            {
-                hoursSet = 0;
-                minSet = 0; //this invalidates the creation of a task
-            }
+        }
+        FeedReaderDbHelper db = new FeedReaderDbHelper(this);
+        //check that the task name doesn't already exist in the database
+        if(db.readTask(newTaskName)>0)
+        {
+            //add task to group table
+            long x = (hoursSet * 60) + minSet;
+            db.addToGroup(newTaskName, x*MS_IN_1MIN, planSet);
+
+            //invalidate entry //TODO there is a cleaner way to do this
+            hoursSet = 0;
+            minSet = 0; //this invalidates the creation of a task
         }
         finish();
     }

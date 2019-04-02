@@ -278,7 +278,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
     }
 
 
-    public int readTask(String name) {
+    public int readTask(String name) { //TODO rename to taskExists and return boolean
         int id = -1;
         SQLiteDatabase db = this.getReadableDatabase();
         String query = "SELECT " + DbContract.FeedEntry._ID +

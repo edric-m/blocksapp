@@ -431,7 +431,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
                 taskList.clear();
                 taskList = db.readPlan(selectedPlan);
                 if(selectedPlan == 0) {
-                    mPlanText.setText("Loaded Plan");
+                    mPlanText.setText("Current Plan");
                 } else {
                     mPlanText.setText("Plan: " + Integer.toString(selectedPlan));
                 }
@@ -510,12 +510,12 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK) {
-            if(requestCode == 3) {
+        //if (resultCode == RESULT_OK) {
+        //    if(requestCode == 3) {
                 selectedPlan--; //TODO find a better way to switch to plan 0
                 switchPlan();
-            }
-        }
+        //    }
+        //}
     }
 
 }

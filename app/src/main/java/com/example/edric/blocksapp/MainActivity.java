@@ -333,7 +333,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                         .setSmallIcon(R.drawable.ic_action_name)
                         .setLargeIcon(BitmapFactory.decodeResource(this.getResources(),
                                 R.drawable.aw_iconcheck))
-                        .setContentTitle("10 min alarm ended!")
+                        .setContentTitle("alarm has ended")
                         .setContentText("do what gotta be done...")
                         .setLights(Color.WHITE,1,1)
                         .setSound(alarmSound)
