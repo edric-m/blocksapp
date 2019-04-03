@@ -779,7 +779,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         toggleTimer();
         mTimerRunning = true;
-        toggleTimer();
+
         Log.d("MyActivity", "requestCode:"+Integer.toString(requestCode) + " resultCode:"+Integer.toString(resultCode));
         refreshDisplay(!mTimerRunning); //fix this, its confusing
         if (resultCode == RESULT_OK) {
@@ -837,6 +837,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                     break;
             }
         }
+        toggleTimer();
     }
 
 }
