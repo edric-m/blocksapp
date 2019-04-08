@@ -84,6 +84,48 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                 refreshDisplay(mTimerRunning);
             }
             */
+
+            int x = 3;
+            x = intent.getIntExtra("start_pause", 3);
+            if(x!=3){
+                switch(x){
+                    case 0:
+                        startWorkBreak();
+                        break;
+                    case 1:
+                        switchedTime = 0;
+                        toggleTimer();
+                        mTimerRunning = true;
+                        toggleTimer();
+                        refreshDisplay(false);
+                        break;
+                    case 2:
+                        switchTask(Direction.NEXT);
+                        break;
+                    default:
+                        break;
+                }
+
+
+                intent.putExtra("start_pause",3);
+                intent.removeExtra("start_pause");
+            }
+            /*
+            if(intent.getBooleanExtra("resume_task", false)){
+                switchedTime = 0;
+                toggleTimer();
+                mTimerRunning = true;
+                toggleTimer();
+                refreshDisplay(false);
+                //intent.removeExtra("resume_task");
+                intent.putExtra("resume_task",false);
+            }
+            if(intent.getBooleanExtra("next_task", false)){
+                switchTask(Direction.NEXT);
+                //intent.removeExtra("next_task");
+                intent.putExtra("next_task",false);
+            }
+            */
             selectedTask.setTimeAllocated((long) intent.getIntExtra("time_left",(int)selectedTask.getTimeAllocated()));
             timePaused = intent.getIntExtra("pause_time", (int)timePaused);
             checkQuickAlarm();
@@ -811,7 +853,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                         //list.addTask(n, Integer.parseInt(t) * MS_IN_1MIN, 0); //t is in minutes, need to convert to ms
                         //pauseTimer();
                         selectedTask = list.selectNewTask(); //TODO: will this work?
-                        mTimerRunning = true;
+                        //mTimerRunning = true;
                         mHasTasks = true;
                         breakRecommend = ((list.getTotalMs() / 3600000) * 600000);
                         refreshDisplay(false);
@@ -825,7 +867,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                     break;
                 case 2: //TODO: instead read from database to get tasks
                     //selectedTask = list.selectFirstTask();
-                    //list.clear();
+                    list.clear();
                     /*
                     int count = data.getIntExtra("return_count", 0);
                     for(int x=0;x<count;x++) {
@@ -838,7 +880,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                     }
                     */
                     if(readDb()) {
-                        list.clear();
+                        //list.clear();
                         selectedTask = list.selectFirstTask();
                         mTimerRunning = true;
                         breakRecommend = ((list.getTotalMs() / 3600000) * 600000);

@@ -28,6 +28,7 @@ public class BroadcastService extends Service {
     public static final String COUNTDOWN_BR = "com.example.edric.blocksapp.timer_br";
     private final static int NOTIFICATION_ID = 7373;
     Intent bi = new Intent(COUNTDOWN_BR);
+    //use different intent for buttons
 
     CountDownTimer cdt = null;
     private int taskTime;
@@ -223,6 +224,25 @@ public class BroadcastService extends Service {
         builder.setShowWhen(false);
         builder.setContentText(convertMsToClock(taskTime));
         builder.setPriority(NotificationCompat.PRIORITY_LOW); //TODO: no difference?
+
+        //notifications buttons update //TODO clean up notification buttons code
+        Intent btni0 = new Intent(COUNTDOWN_BR);
+        btni0.putExtra("start_pause", 0);
+        //btni0.setAction("0");
+        PendingIntent pauseIntent = PendingIntent.getBroadcast(this, 1, btni0, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.addAction(R.drawable.ic_action_name, "pause", pauseIntent);
+
+        Intent btni1 = new Intent(COUNTDOWN_BR);
+        btni1.putExtra("start_pause", 1);
+        //btni1.setAction("1");
+        PendingIntent resumeIntent = PendingIntent.getBroadcast(this, 2, btni1, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.addAction(R.drawable.ic_action_name, "resume", resumeIntent);
+
+        Intent btni2 = new Intent(COUNTDOWN_BR);
+        btni2.putExtra("start_pause", 2);
+        //btni2.setAction("2");
+        PendingIntent nextIntent = PendingIntent.getBroadcast(this, 3, btni2, PendingIntent.FLAG_UPDATE_CURRENT);
+        builder.addAction(R.drawable.ic_action_name, "next", nextIntent);
 
         b = builder;
         Notification notification = builder.build();
