@@ -138,10 +138,11 @@ public class BroadcastService extends Service {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(contentIntent);
-        //builder.build().flags |= Notification.FLAG_AUTO_CANCEL; //doesn't need this
+        Notification notification = builder.build();
+        notification.flags |= Notification.FLAG_AUTO_CANCEL; //doesn't need this
 
         // Add as notification
-        notificationManager.notify(0, builder.build());
+        notificationManager.notify(0, notification);
     }
     private void notifyTaskEnd() {
         Uri alarmSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -163,10 +164,11 @@ public class BroadcastService extends Service {
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(contentIntent);
-        //builder.build().flags |= Notification.FLAG_AUTO_CANCEL; //doesn't need this
+        Notification notification = builder.build();
+        notification.flags |= Notification.FLAG_AUTO_CANCEL; //doesn't need this
 
         // Add as notification
-        notificationManager.notify(0, builder.build());
+        notificationManager.notify(0, notification);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -246,6 +248,7 @@ public class BroadcastService extends Service {
 
         b = builder;
         Notification notification = builder.build();
+        notification.flags = Notification.FLAG_NO_CLEAR;
         // optionally set a custom view
 
         startForeground(NOTIFICATION_ID, notification);

@@ -1,22 +1,23 @@
 package com.example.edric.blocksapp;
 
+import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
-import android.database.sqlite.SQLiteDatabase;
+//import android.database.sqlite.SQLiteDatabase;
 import android.graphics.BitmapFactory;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.PowerManager;
+//import android.os.PowerManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.constraint.ConstraintLayout;
-import android.os.CountDownTimer;
+//import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -25,9 +26,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.os.Process;
 
-import java.io.IOException;
+//import java.io.IOException;
 import java.util.Locale;
-import android.widget.Toast;
+//import android.widget.Toast;
 import android.support.design.widget.FloatingActionButton;
 
 //TODO: implement try-catch where needed
@@ -400,10 +401,11 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
         PendingIntent contentIntent = PendingIntent.getActivity(this, 0, notificationIntent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
         builder.setContentIntent(contentIntent);
-        //builder.build().flags |= Notification.FLAG_AUTO_CANCEL; //doesn't need this
+        Notification notification = builder.build();
+        notification.flags |= Notification.FLAG_AUTO_CANCEL; //doesn't need this
 
         // Add as notification
-        notificationManager.notify(0, builder.build());
+        notificationManager.notify(0, notification);
     }
 
     @Override
@@ -663,11 +665,11 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
         refreshDisplay(true);
         toggleTimer();
 
-        Toast toast = Toast.makeText(getApplicationContext(), "all timers paused", Toast.LENGTH_SHORT);
+        //Toast toast = Toast.makeText(getApplicationContext(), "all timers paused", Toast.LENGTH_SHORT);
 
         //pause timer
         //pauseTimer();
-        toast.show();
+        //toast.show();
     }
 
     /**
@@ -884,6 +886,21 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                         selectedTask = list.selectFirstTask();
                         mTimerRunning = true;
                         breakRecommend = ((list.getTotalMs() / 3600000) * 600000);
+                    } else {
+                        mTimerRunning = false;
+                        mHasTasks = false;
+                        taskName.setText("create a new timer");
+                        taskTime.setText("to begin");
+                        layout.setBackgroundColor(Color.parseColor("#4576c1"));
+                        mClearBtn.setVisibility(View.INVISIBLE);
+                        mtaskIndex.setVisibility(View.INVISIBLE);
+                        mtaskIndex.setVisibility(View.INVISIBLE);
+                        mAlarmBtn.setVisibility(View.INVISIBLE);
+                        mAlarmBtn.setEnabled(false);
+                        mImageView.setImageDrawable(null);
+                        //mStartBtn.setVisibility(View.INVISIBLE);
+                        //mStartBtn.setEnabled(false);
+                        stopTimer();
                     }
                     refreshDisplay(false);
                     break;
