@@ -154,8 +154,8 @@ public class NewTaskActivity extends AppCompatActivity {
             //add task to group table
             long x = (hoursSet * 60) + minSet;
             db.addToGroup(newTaskName, x*MS_IN_1MIN, planSet);
-
-            //invalidate entry //TODO there is a cleaner way to do this
+            db.updateTask(newTaskName, x*MS_IN_1MIN);
+            //invalidate new entry //TODO there is a cleaner way to do this
             hoursSet = 0;
             minSet = 0; //this invalidates the creation of a task
         }
@@ -173,7 +173,7 @@ public class NewTaskActivity extends AppCompatActivity {
         Intent data = new Intent();
         int x = (hoursSet * 60) + minSet;
         if(x <= 0) {
-            setResult(RESULT_CANCELED, data);
+            setResult(RESULT_OK, data);
             //TODO notify user that creation failed
         }
         else {

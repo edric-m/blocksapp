@@ -405,8 +405,8 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     }
 
     public void removeTask(String name, int idx) {
-        //FeedReaderDbHelper db = new FeedReaderDbHelper(this); //dont delete these two lines
-        //db.deleteTaskFromGroup(name, selectedPlan-1);
+        FeedReaderDbHelper db = new FeedReaderDbHelper(this); //dont delete these two lines
+        db.deleteTaskFromGroup(name, selectedPlan-1);
         taskList.getList().remove(idx);
         //selectedPlan--;
         //switchPlan();

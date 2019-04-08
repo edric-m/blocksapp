@@ -222,6 +222,8 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                 showAlarmDialog();
             }
         });
+        mAlarmBtn.setVisibility(View.INVISIBLE);
+        mAlarmBtn.setEnabled(false);
         mtaskIndex = findViewById(R.id.textView_taskIndex);
         taskName = findViewById(R.id.task_name);
         taskTime = findViewById(R.id.task_time);
@@ -476,12 +478,16 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
     }
 
     private void toggleTimer() { //TODO confusing (function) names
-        if(mServiceStarted) {
-            stopTimer();
-            mStartBtn.setText("Start");
-        } else {
-            startTimer();
-            mStartBtn.setText("Stop");
+        if(mHasTasks) {
+            if (mServiceStarted) {
+                stopTimer();
+                mStartBtn.setText("Start");
+
+            } else {
+                startTimer();
+                mStartBtn.setText("Stop");
+
+            }
         }
     }
 
@@ -504,7 +510,8 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
             this.startService(i);
             //register reciever
             this.registerReceiver(br, new IntentFilter(BroadcastService.COUNTDOWN_BR));
-
+            mAlarmBtn.setVisibility(View.VISIBLE);
+            mAlarmBtn.setEnabled(true);
             //no need to pause timer
         }
     }
@@ -516,6 +523,8 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
             this.unregisterReceiver(br);
             //stop service
             Log.d("MyActivity", "service canceled" );
+            mAlarmBtn.setVisibility(View.INVISIBLE);
+            mAlarmBtn.setEnabled(false);
             mServiceStarted = false;
         }
     }
@@ -723,8 +732,10 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                 mClearBtn.setVisibility(View.VISIBLE);
                 mClearBtn.setEnabled(true);
                 mtaskIndex.setVisibility(View.VISIBLE);
-                mAlarmBtn.setVisibility(View.VISIBLE);
-                mAlarmBtn.setEnabled(true);
+                if(mServiceStarted) {
+                    mAlarmBtn.setVisibility(View.VISIBLE);
+                    mAlarmBtn.setEnabled(true);
+                }
                 //mtaskIndex.setVisibility(View.VISIBLE);
                 showTaskInfo();
             }
@@ -814,7 +825,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                     break;
                 case 2: //TODO: instead read from database to get tasks
                     //selectedTask = list.selectFirstTask();
-                    list.clear();
+                    //list.clear();
                     /*
                     int count = data.getIntExtra("return_count", 0);
                     for(int x=0;x<count;x++) {
@@ -827,6 +838,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                     }
                     */
                     if(readDb()) {
+                        list.clear();
                         selectedTask = list.selectFirstTask();
                         mTimerRunning = true;
                         breakRecommend = ((list.getTotalMs() / 3600000) * 600000);

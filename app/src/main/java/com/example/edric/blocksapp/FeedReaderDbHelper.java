@@ -100,6 +100,14 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
             contentValues.put(DbContract.TaskGroupEntry.GROUP_COLUMN_TASK_TIME, (int)time);
             long result = db.insert(DbContract.TaskGroupEntry.GROUP_TABLE_NAME, null, contentValues);
 
+            /*
+            if(plan == 0){
+                contentValues.clear();
+                contentValues.put(DbContract.FeedEntry.TASK_COLUMN_NAME, name);
+                contentValues.put(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING, (int)time);
+                db.insert(DbContract.FeedEntry.TASK_TABLE_NAME, null, contentValues);
+            }*/
+
             if (result == -1) {
                 return false;
             }
@@ -234,7 +242,19 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    public boolean updateTask(int id) {
+    public boolean updateTask(String name, long time) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        ContentValues contentValues = new ContentValues();
+
+        //contentValues.put(DbContract.FeedEntry.TASK_COLUMN_NAME, selectedTask.getName());
+        contentValues.put(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING, time);
+        //contentValues.put(DbContract.FeedEntry.TASK_COLUMN_TIME_SPENT, selectedTask.getTimeSpent());
+        //contentValues.put(DbContract.FeedEntry.TASK_COLUMN_LIFETIME, 0);
+        db.update(DbContract.FeedEntry.TASK_TABLE_NAME,
+                contentValues,
+                DbContract.FeedEntry.TASK_COLUMN_NAME + " = ? ",
+                //new String[]{Integer.toString(x)});
+                new String[] { name});
         return false;
     }
 
