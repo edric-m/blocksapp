@@ -28,7 +28,7 @@ import android.os.Process;
 
 //import java.io.IOException;
 import java.util.Locale;
-//import android.widget.Toast;
+import android.widget.Toast;
 import android.support.design.widget.FloatingActionButton;
 
 //TODO: implement try-catch where needed
@@ -234,6 +234,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                 mAlarmBtn.setVisibility(View.INVISIBLE);
                 mAlarmBtn.setEnabled(false);
                 mImageView.setImageDrawable(null);
+                stopTimer();
                 //refreshDisplay(true); //TODO do this instead?
             }
         }
@@ -720,6 +721,8 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                 default:
             }
             toggleTimer();
+            Toast toast = Toast.makeText(getApplicationContext(), "Starting "+selectedTask.getName(), Toast.LENGTH_SHORT);
+            toast.show();
             refreshDisplay(false);
         }
     }
