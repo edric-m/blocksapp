@@ -453,6 +453,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
         }
         */
         super.onResume();
+        //refreshDisplay(!mTimerRunning);
     }
 
     /**

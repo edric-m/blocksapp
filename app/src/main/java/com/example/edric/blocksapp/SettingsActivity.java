@@ -39,7 +39,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
     //widget variables
     private RecyclerView recyclerView;
     private SeekBar mTimeSeekbar, mPeriodSeekbar;
-    private TextView mTimeText, mPeriodText, mPlanText;
+    private TextView mTimeText, mPeriodText, mPlanText, mTotalText;
     private Button mLoadBtn, mFinishBrn, mNewBtn; //mPlanDelBtn,
     private FloatingActionButton mFabSettings;
 
@@ -61,6 +61,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
         group2 = findViewById(R.id.radioGroup2);
         b = findViewById(R.id.button2);
         */
+        mTotalText = findViewById(R.id.textview_total_time);
         mNewBtn = findViewById(R.id.button_new);
         mNewBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -324,6 +325,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
             item.itemValue.setText(formatMsToTime(taskList.getList().get(x).getTimeAllocated()));
             //data.putExtra("item"+Integer.toString(x), returnTimeList[x]);
         }
+        mTotalText.setText(formatMsToTime(taskList.getTotalMs())+ " hrs");
     }
 
     private String formatMsToTime(long ms) { //TODO: make this a tasks class function
