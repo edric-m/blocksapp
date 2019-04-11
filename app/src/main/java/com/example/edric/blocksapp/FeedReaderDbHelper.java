@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class FeedReaderDbHelper extends SQLiteOpenHelper {
 
@@ -348,14 +349,14 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
      * @param taskList
      * @return
      */
-    public boolean updateAllTasks(tasks taskList) { //TODO update all tasks where plan = 0
+    public boolean updateAllTasks(LinkedList<task> taskList) { //TODO update all tasks where plan = 0
         SQLiteDatabase db = this.getReadableDatabase();
         ContentValues contentValues = new ContentValues(), newtask = new ContentValues();
         boolean result = true;
         int rowsAffected = 0;
 
-        task selectedTask = taskList.selectFirstTask();
-        for(int x=1;x<taskList.size()+1;x++) {
+        task selectedTask = taskList.get(0);
+        for(int x=1;x<taskList.size();x++) {
             //try {
                 //contentValues.put(DbContract.FeedEntry.TASK_COLUMN_NAME, selectedTask.getName());
                 contentValues.put(DbContract.FeedEntry.TASK_COLUMN_TIME_REMAINING, selectedTask.getTimeAllocated());
@@ -381,7 +382,7 @@ public class FeedReaderDbHelper extends SQLiteOpenHelper {
                 //task name not found probably
                 //result = false;
             //} finally {
-                selectedTask = taskList.moveToNextTask();
+                selectedTask = taskList.get(x);
                 contentValues.clear();
             //}
         }

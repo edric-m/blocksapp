@@ -322,10 +322,12 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
     private void saveDb() {
         //super.finish();
         Log.d("MyActivity", "save called" );
+        //tasks t = new tasks();
+        //t.getList() = list.getList();
         try {
             FeedReaderDbHelper db = new FeedReaderDbHelper(this);
             if(list.size() > 0)
-                db.updateAllTasks(list);
+                db.updateAllTasks(list.getList());
         } catch (Exception e) {
             Log.d("MyActivity", e.getMessage());
         }
@@ -453,7 +455,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
         }
         */
         super.onResume();
-        //refreshDisplay(!mTimerRunning);
+        refreshDisplay(!mTimerRunning);
     }
 
     /**
