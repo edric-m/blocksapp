@@ -230,6 +230,7 @@ public class BroadcastService extends Service {
         //notifications buttons update //TODO clean up notification buttons code
         Intent btni0 = new Intent(COUNTDOWN_BR);
         btni0.putExtra("start_pause", 0);
+        btni0.addFlags(Intent.FLAG_ACTIVITY_NO_USER_ACTION); //TODO could be useless
         //btni0.setAction("0");
         PendingIntent pauseIntent = PendingIntent.getBroadcast(this, 1, btni0, PendingIntent.FLAG_UPDATE_CURRENT);
         builder.addAction(R.drawable.ic_action_name, "pause", pauseIntent);

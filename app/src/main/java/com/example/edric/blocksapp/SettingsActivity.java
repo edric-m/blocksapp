@@ -325,7 +325,7 @@ public class SettingsActivity extends AppCompatActivity implements DialogPlan.On
             item.itemValue.setText(formatMsToTime(taskList.getList().get(x).getTimeAllocated()));
             //data.putExtra("item"+Integer.toString(x), returnTimeList[x]);
         }
-        mTotalText.setText(formatMsToTime(taskList.getTotalMs())+ " hrs");
+        mTotalText.setText(formatMsToTime(taskList.getTotalMs())+ " hrs (+" + formatMsToTime((taskList.getTotalMs()/3600000)*600000) + ")");
     }
 
     private String formatMsToTime(long ms) { //TODO: make this a tasks class function

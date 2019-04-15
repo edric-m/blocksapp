@@ -38,29 +38,22 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        app:layout_constraintStart_toStartOf="@+id/guidelinevertical"
-        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal"
-        android:text="Timer name" />
-
     <EditText
         android:id="@+id/editText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:selectAllOnFocus="true"
         android:text="rename"
+        android:gravity="center_horizontal"
         android:textColor="@android:color/white"
-        app:layout_constraintLeft_toRightOf="@id/textView"
-        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal"
-        app:layout_constraintEnd_toStartOf="@id/guidelineverticalright"/>
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@id/guidelineverticalright"
+        app:layout_constraintStart_toStartOf="@+id/guidelinevertical"
+        app:layout_constraintTop_toTopOf="@id/guidelinehorizontal" />
 
     <TextView
         android:id="@+id/textView2"
