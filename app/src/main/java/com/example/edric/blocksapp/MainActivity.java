@@ -216,9 +216,13 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
         if(mTimerRunning) {
             FeedReaderDbHelper db = new FeedReaderDbHelper(this);
             db.deleteTask(selectedTask.getName());
+            //list.moveToNextTask();
             list.removeTask(selectedTask);
             if(list.size()>0) {
-                selectedTask = list.selectFirstTask();
+                //selectedTask = list.selectFirstTask();
+                stopTimer();
+                selectedTask = list.moveToPrevTask();  //bug fix done here <<<<<<<<<
+                startTimer();
                 breakRecommend = ((list.getTotalMs()/3600000)*600000);
                 switchedTime = 0;
                 refreshDisplay(false);
