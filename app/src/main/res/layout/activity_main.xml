@@ -7,7 +7,23 @@
     tools:context=".MainActivity"
     android:id="@+id/layout"
     android:background="@color/colorPrimary">
+<!--
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="Home"
+            app:subtitle="subtitle"
+            app:navigationIcon="@drawable/ic_action_name"/>
+
+    </android.support.design.widget.AppBarLayout>
+-->
     <ImageView
         android:id="@+id/imageview_back"
         android:layout_width="match_parent"

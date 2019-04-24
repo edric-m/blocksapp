@@ -162,6 +162,11 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                 //wl.release();
                 //Log.d("alarm", "alarm un-register receiver");
                 alarmSet = false;
+
+                //TODO repeater alarm
+                /*
+                if(repeater == true) alarmMin = repeaterSetValue
+                 */
                 Log.d("alarm", "alarm receiver done");
             } else {
                 alarmMin = alarmMin - 1000;
@@ -220,9 +225,11 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
             list.removeTask(selectedTask);
             if(list.size()>0) {
                 //selectedTask = list.selectFirstTask();
-                stopTimer();
+                //stopTimer(); //TODO test toggle
+                toggleTimer();
                 selectedTask = list.moveToPrevTask();  //bug fix done here <<<<<<<<<
-                startTimer();
+                //startTimer();
+                toggleTimer();
                 breakRecommend = ((list.getTotalMs()/3600000)*600000);
                 switchedTime = 0;
                 refreshDisplay(false);
@@ -371,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
     @Override
     public void setQuickAlarm(int mins) {
         //if(!alarmSet) {
-            alarmMin = mins * 1000*60;
+            alarmMin = mins * 1000*60; //repeater = alarmMin
             alarmSet = true;
             mAlarmBtn.setText("stop "+ Integer.toString(mins)+" min alarm");
             //this.registerReceiver(alarmBroadcast, new IntentFilter(Intent.ACTION_TIME_TICK));
@@ -545,7 +552,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
 
     private void startTimer() {
         if(mHasTasks && selectedTask.getTimeAllocated() > 1) {
-            mServiceStarted = true;
+            //mServiceStarted = true; //TODO test moving this outside. originaly here
             //start service
             Intent i = new Intent(this, BroadcastService.class);
             i.putExtra("pause_time", (int)switchedTime);
@@ -566,6 +573,7 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
             mAlarmBtn.setEnabled(true);
             //no need to pause timer
         }
+        mServiceStarted = true; //because the timer is starting when switched from a finished activity
     }
 
     private void stopTimer() {
@@ -896,6 +904,8 @@ public class MainActivity extends AppCompatActivity implements DialogAlarm.OnInp
                         selectedTask = list.selectFirstTask();
                         mTimerRunning = true;
                         breakRecommend = ((list.getTotalMs() / 3600000) * 600000);
+                        timePaused = 0;
+
                     } else {
                         mTimerRunning = false;
                         mHasTasks = false;
